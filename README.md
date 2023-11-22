@@ -10,12 +10,25 @@ This repo is only to show the codes and data.
 To see the details about the insights from his project, check out this link below to my Facebook page's post:
 https://www.facebook.com/permalink.php?story_fbid=pfbid02F7Ex6e9sZsZwMMazqo9WWpN16DY9phiTVW47uXFuGeKu6MacMyhNQJPhTiVGJrCYl&id=61553626169836
 
-# Process
-- Run web_scrap.py.
-- Choose either:
-    - Use get_urls_auto.py to automatically get all URLs linked to each character page from the website.
-    - Manually enter the URLs to the character page.
-- Wait for the web_scrap.py to finish web scraping data from each character page.
-- The data of each character is saved as an Excel for each given character.
-
 # Codes
+```web_scrap.py```: 
+- Scrape ATK, DEF, HP, SPD, of each Level of the given character from the website.
+- Save the data in an Excel at the specified directory.
+
+```stats_of_desired_lvl.py```:
+- Run through all Excels in the specific directory.
+- Process each Excel.
+  - Extract ATK, DEF, HP, SPD of the given Level.
+- Combined processed Excel into one.       
+   
+```scrape_paths_elements_rarities.py```:
+- Scrape Paths, Elements, Rarities of all character from the website.
+- Save the data into an Excel.
+
+```get_urls_auto.py```:
+- Automatically gather all URLs to each character page from the website.
+
+```calculate_hsr.py```:
+- Process an Excel.
+  - Add growth rate and growth rate % for all stats as columns.
+- Save the processed Excel at the given directory.
