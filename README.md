@@ -13,7 +13,9 @@ https://www.facebook.com/permalink.php?story_fbid=pfbid02F7Ex6e9sZsZwMMazqo9WWpN
 # Process
 - Run web_scrap.py.
 - Choose either:
-    - Use get_urls_auto.py to automatically get the all urls link to each character page from the website.
-    - Manually enter the urls to the character page.
+    - Use get_urls_auto.py to automatically get all URLs linked to each character page from the website.
+    - Manually enter the URLs to the character page.
 - Wait for the web_scrap.py to finish web scraping data from each character page.
 - The data of each character is saved as an Excel for each given character.
+
+# Codes
