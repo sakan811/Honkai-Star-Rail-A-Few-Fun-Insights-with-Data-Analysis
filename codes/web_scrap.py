@@ -4,7 +4,6 @@ This script performs web scraping of HSR character stats from the https://www.pr
 
 import re
 from urllib.parse import urlparse
-
 import pandas as pd
 from selenium.common import TimeoutException, NoSuchElementException
 import calculate_hsr as cal

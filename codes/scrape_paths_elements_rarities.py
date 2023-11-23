@@ -5,8 +5,6 @@ and saves the collected data to an Excel file.
 
 """
 
-from selenium import webdriver
-from selenium.webdriver.common.by import By
 import web_scrap as ws
 import pandas as pd
 import get_urls_auto as get_urls
