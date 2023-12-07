@@ -1,7 +1,7 @@
 """
 This script performs web scraping of HSR character stats from the https://www.prydwen.gg/star-rail/ website.
 """
-
+import os
 import re
 from urllib.parse import urlparse
 import pandas as pd
@@ -12,6 +12,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import get_urls_auto as get_urls
+
+
+script_directory = os.path.dirname(os.path.abspath(__file__))
+os.chdir(script_directory)
 
 
 def click_drop_down(driver, first_dropdown_xpath):
@@ -148,7 +152,7 @@ def check_if_path_exist(driver, first_dropdown_xpath, hsr_name):
 def scrape(url):
     # Extract the character name from the URL
     hsr_name = extract_char_name(url)
-    output_name = f"hsr/{hsr_name}.xlsx"
+    output_name = f"../hsr/{hsr_name}.xlsx"
 
     # Create a new instance of the Chrome driver
     driver = webdriver.Chrome()

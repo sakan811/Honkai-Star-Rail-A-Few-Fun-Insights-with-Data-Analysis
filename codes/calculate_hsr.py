@@ -42,7 +42,7 @@ def main(file_path, hsr_name):
     calculate(df)
 
     # Save the modified DataFrame to a new Excel file in the 'hsr_updated' directory
-    df.to_excel(f"hsr/hsr_updated/{hsr_name}.xlsx", index=False)
+    df.to_excel(f"../hsr/hsr_updated/{hsr_name}.xlsx", index=False)
 
 
 if __name__ == '__main__':
