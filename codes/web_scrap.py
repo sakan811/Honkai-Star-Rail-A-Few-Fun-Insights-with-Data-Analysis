@@ -3,7 +3,6 @@ This script performs web scraping of HSR character stats from the https://www.pr
 """
 import os
 import re
-from urllib.parse import urlparse
 import pandas as pd
 from selenium.common import TimeoutException, NoSuchElementException
 import calculate_hsr as cal
@@ -12,7 +11,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import get_urls_auto as get_urls
-
+from validators import url as validate_url
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
@@ -193,6 +192,10 @@ def scrape(url):
 
 
 def enter_input():
+    """
+    Prompts the user to enter URLs and returns a list of valid URLs.
+    The user can enter '1' to finish entering URLs.
+    """
     user_input_list = []
 
     while True:
@@ -205,20 +208,8 @@ def enter_input():
         if user_input == '1':
             break
 
-        if user_input.isdigit() and user_input != '1':
-            print('Please enter a valid URL or press 1 to finish.')
-            continue
-
-        if not isinstance(user_input, str):
-            print('Please enter a valid URL or press 1 to finish.')
-            continue
-
         # Additional check to ensure the user enters a valid URL
-        try:
-            parsed_url = urlparse(user_input)
-            if not (parsed_url.scheme and parsed_url.netloc):
-                raise ValueError("Invalid URL")
-        except ValueError:
+        if not validate_url(user_input):
             print('Invalid URL. Please enter a valid URL or press 1 to finish.')
             continue
 
