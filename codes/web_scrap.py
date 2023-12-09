@@ -12,6 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import get_urls_auto as get_urls
 from validators import url as validate_url
+import logging
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
@@ -80,27 +81,40 @@ def check_level(level_result_text, level):
 
 
 def create_excel(stats_list, output_name):
-    # Create a dictionary to store the data
-    data = {"Level": [], "HP": [], "ATK": [], "DEF": [], "Speed": []}
+    """
+    Create an Excel file from a list of stats.
 
-    # Iterate through the list and populate the dictionary
+    Args:
+        stats_list (list): A list of strings representing the stats.
+        output_name (str): The name of the output Excel file.
+
+    Returns:
+        None
+    """
+
+    # Create a list of dictionaries to store the data
+    level_data = []
+
+    # Iterate through the list and populate the list of dictionaries
     for stat_str in stats_list:
         lines = stat_str.split('\n')
         current_level = int(lines[0].split()[1])
 
         # Create a dictionary for the current level
-        level_data = {"Level": current_level, "HP": None, "ATK": None, "DEF": None, "Speed": None}
+        level_dict = {"Level": current_level, "HP": None, "ATK": None, "DEF": None, "Speed": None}
 
-        for i in range(1, len(lines), 2):
-            stat, value = lines[i], int(lines[i + 1])
-            level_data[stat] = value
+        # Store the result of split() in a variable
+        stat_values = lines[1::2]
+        stat_names = lines[::2]
 
-        # Append the level data to the main data dictionary
-        for key, value in level_data.items():
-            data[key].append(value)
+        for stat_name, stat_value in zip(stat_names, stat_values):
+            level_dict[stat_name] = int(stat_value)
+
+        # Append the level dictionary to the list of dictionaries
+        level_data.append(level_dict)
 
     # Create a DataFrame
-    df = pd.DataFrame(data)
+    df = pd.DataFrame(level_data)
 
     # Save the DataFrame to an Excel file
     df.to_excel(output_name, index=False)
@@ -117,6 +131,15 @@ def extract_char_name(url):
 
 
 def check_cookie(driver):
+    """
+    Check if the cookie consent dialog is present and handle it accordingly.
+
+    Args:
+        driver: The WebDriver instance.
+
+    Returns:
+        None
+    """
     # Check if the cookie consent dialog is present
     cookie_dialog_xpath = '//*[@id="qc-cmp2-ui"]'
 
@@ -132,11 +155,11 @@ def check_cookie(driver):
 
     except TimeoutException:
         # Handle the case where the dialog is not present or not displayed within the timeout
-        print("Cookie consent dialog not found or not displayed. Moving on.")
+        logging.error("Cookie consent dialog not found or not displayed. Moving on.")
 
     except NoSuchElementException:
         # Handle the case where the agree button is not found
-        print("Agree button not found. Moving on.")
+        logging.error("Agree button not found. Moving on.")
 
 
 def check_if_path_exist(driver, first_dropdown_xpath, hsr_name):
