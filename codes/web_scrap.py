@@ -5,6 +5,7 @@ import os
 import re
 import pandas as pd
 from selenium.common import TimeoutException, NoSuchElementException
+
 import calculate_hsr as cal
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -20,7 +21,10 @@ os.chdir(script_directory)
 
 def click_drop_down(driver, first_dropdown_xpath):
     try:
-        first_dropdown = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, first_dropdown_xpath)))
+        first_dropdown = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, first_dropdown_xpath)))
+        first_dropdown_location = first_dropdown.location
+        script = f"window.scrollTo({first_dropdown_location['x']}, {first_dropdown_location['y'] - 200});"
+        driver.execute_script(script)
         first_dropdown.click()
     except TimeoutException:
         print("The first dropdown was not found within the specified timeout. Moving on.")
@@ -35,7 +39,7 @@ def click_level(driver, level):
     while retries < max_retries:
         try:
             # Wait for the element to be present
-            level_element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, level_xpath)))
+            level_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, level_xpath)))
             level_element.click()
             # Break the loop if click is successful
             break
@@ -49,7 +53,7 @@ def click_level(driver, level):
 
 def extract_all_visible_text(driver, store, level, level_result_xpath, first_dropdown_xpath):
     # Find and extract all visible text in the specified path
-    level_result_element = WebDriverWait(driver, 10).until(
+    level_result_element = WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located((By.XPATH, level_result_xpath)))
 
     level_text = str(level_result_element.text)  # Convert to string
@@ -104,8 +108,8 @@ def create_excel(stats_list, output_name):
         level_dict = {"Level": current_level, "HP": None, "ATK": None, "DEF": None, "Speed": None}
 
         # Store the result of split() in a variable
-        stat_values = lines[1::2]
-        stat_names = lines[::2]
+        stat_names = lines[1::2]
+        stat_values = lines[2::2]
 
         for stat_name, stat_value in zip(stat_names, stat_values):
             level_dict[stat_name] = int(stat_value)
@@ -144,13 +148,13 @@ def check_cookie(driver):
     cookie_dialog_xpath = '//*[@id="qc-cmp2-ui"]'
 
     try:
-        cookie_dialog = WebDriverWait(driver, 10).until(
+        cookie_dialog = WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.XPATH, cookie_dialog_xpath)))
 
         # If the cookie consent dialog is present, click on the specified element
         if cookie_dialog.is_displayed():
             agree_button_xpath = '//*[@id="qc-cmp2-ui"]/div[2]/div/button[2]/span'
-            agree_button = WebDriverWait(driver, 10).until(EC.element_to_be_clickable((By.XPATH, agree_button_xpath)))
+            agree_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, agree_button_xpath)))
             agree_button.click()
 
     except TimeoutException:

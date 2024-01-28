@@ -3,7 +3,7 @@ The project gives insights that delve into the Honkai Star Rail's character's st
 
 I used web scraping scripts written with Python to gather data from https://www.prydwen.gg/star-rail/
 
-Latest update: 7 Dec 23
+Latest update: 29 Jan 2024
 
 This repo is only to show the codes and data.
 
@@ -16,7 +16,7 @@ https://www.facebook.com/permalink.php?story_fbid=pfbid02F7Ex6e9sZsZwMMazqo9WWpN
   - 1: Automatically gather all URLs to each character's page.
   - 2: Manually enter URLs of each character's page.
 - Scrape ATK, DEF, HP, SPD, of each Level of the given character from the website.
-- Save the data in an Excel at the specified directory.
+- Save the data of each character in an Excel at the specified directory.
 - Call a function from ```calculate_hsr.py``` to add additional columns to each file.
 - Save them to the specified directory.
 
@@ -31,7 +31,7 @@ https://www.facebook.com/permalink.php?story_fbid=pfbid02F7Ex6e9sZsZwMMazqo9WWpN
   - 1: Automatically gather all URLs to each character's page.
   - 2: Manually enter URLs of each character's page.
 - Scrape Paths, Elements, Rarities of all character from the website.
-- Save the data into an Excel.
+- Combined and save these data into an Excel file.
 
 ```get_urls_auto.py```:
 - Automatically gather all URLs to each character page from the website.
