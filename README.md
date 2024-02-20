@@ -7,8 +7,8 @@ Latest update: 29 Jan 2024
 
 This repo is only to show the codes and data.
 
-To see the details about the insights from his project, check out this link below to my Facebook page's post:
-https://www.facebook.com/permalink.php?story_fbid=pfbid02F7Ex6e9sZsZwMMazqo9WWpN16DY9phiTVW47uXFuGeKu6MacMyhNQJPhTiVGJrCYl&id=61553626169836
+To see the details about the insights from this project, check out this link below to my Facebook page's post:
+https://www.facebook.com/permalink.php?story_fbid=pfbid0C3Vva972MnyiSt1Zi1Q1QFyDb3aCyvQPg3NbMV52J5atYJwB2AGimRPXendp17q9l&id=61553626169836
 
 # Codes
 ```web_scrap.py```:
