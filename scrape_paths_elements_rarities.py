@@ -4,12 +4,12 @@ from the https://www.prydwen.gg/star-rail/ website. It allows users to input URL
 and saves the collected data to an Excel file.
 
 """
-
-import web_scrap as ws
 import pandas as pd
-import get_urls_auto as get_urls
 import requests
 from bs4 import BeautifulSoup
+
+from codes import web_scrap as ws
+from codes import get_urls_auto as get_urls
 
 
 def scrape_paths_elements_rarities(url, data):

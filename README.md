@@ -11,10 +11,14 @@ To see the details about the insights from this project, check out this link bel
 https://www.facebook.com/permalink.php?story_fbid=pfbid0C3Vva972MnyiSt1Zi1Q1QFyDb3aCyvQPg3NbMV52J5atYJwB2AGimRPXendp17q9l&id=61553626169836
 
 # Codes
-```web_scrap.py```:
+
+```main.py```:
+
 - Ask user to press 1 or 2:
   - 1: Automatically gather all URLs to each character's page.
   - 2: Manually enter URLs of each character's page.
+
+```web_scrap.py```:
 - Scrape ATK, DEF, HP, SPD, of each Level of the given character from the website.
 - Save the data of each character in an Excel at the specified directory.
 - Call a function from ```calculate_hsr.py``` to add additional columns to each file.

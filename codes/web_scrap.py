@@ -5,15 +5,14 @@ import os
 import re
 import pandas as pd
 from selenium.common import TimeoutException, NoSuchElementException
-
-import calculate_hsr as cal
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-import get_urls_auto as get_urls
-from validators import url as validate_url
 import logging
+from validators import url as validate_url
+
+import calculate_hsr as cal
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
@@ -178,7 +177,7 @@ def check_if_path_exist(driver, first_dropdown_xpath, hsr_name):
 def scrape(url):
     # Extract the character name from the URL
     hsr_name = extract_char_name(url)
-    output_name = f"../hsr/{hsr_name}.xlsx"
+    output_name = f"/hsr/{hsr_name}.xlsx"
 
     # Create a new instance of the Chrome driver
     driver = webdriver.Chrome()
@@ -245,25 +244,5 @@ def enter_input():
     return user_input_list
 
 
-def main():
-    print('Automatically get urls: press 1')
-    print('Manually get urls: press 2')
-
-    while True:
-        user_input = input('Enter number: ')
-
-        if user_input == '1':
-            user_input_list = get_urls.get_urls_auto()
-            break
-        elif user_input == '2':
-            user_input_list = enter_input()
-            break
-        else:
-            print('Invalid input. Please enter 1 or 2.')
-
-    for url in user_input_list:
-        scrape(url)
-
-
 if __name__ == '__main__':
-    main()
+    pass
