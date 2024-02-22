@@ -12,7 +12,7 @@ from selenium.webdriver.support import expected_conditions as EC
 import logging
 from validators import url as validate_url
 
-import calculate_hsr as cal
+import calculate_hsr
 
 script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
@@ -212,7 +212,7 @@ def scrape(url):
         driver.quit()
 
         # Call the main function from 'calculate_hsr.py'
-        cal.main(output_name, hsr_name)
+        calculate_hsr.main(output_name, hsr_name)
     else:
         driver.quit()
 

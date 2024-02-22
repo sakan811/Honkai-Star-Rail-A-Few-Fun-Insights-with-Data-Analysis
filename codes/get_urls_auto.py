@@ -6,7 +6,8 @@ and prints the list of URLs.
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-import web_scrap as ws
+
+import web_scrap
 
 
 def get_urls_auto():
@@ -16,7 +17,7 @@ def get_urls_auto():
 
     driver.get(url)
 
-    ws.check_cookie(driver)
+    web_scrap.check_cookie(driver)
 
     parent_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[6]'
     parent_element = driver.find_element(By.XPATH, parent_xpath)
