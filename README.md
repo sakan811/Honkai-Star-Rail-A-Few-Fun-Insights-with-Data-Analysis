@@ -5,9 +5,9 @@ I used web scraping scripts written with Python to gather data from https://www.
 
 Latest update: 29 Jan 2024
 
-This repo is only to show the codes and data.
+This repo is only to show the codes and raw data.
 
-To see the details about the insights from this project, check out this link below to my Facebook page's post:
+To see the visualizations, check out this link below to my Facebook page's post:
 https://www.facebook.com/permalink.php?story_fbid=pfbid0C3Vva972MnyiSt1Zi1Q1QFyDb3aCyvQPg3NbMV52J5atYJwB2AGimRPXendp17q9l&id=61553626169836
 
 # Codes
