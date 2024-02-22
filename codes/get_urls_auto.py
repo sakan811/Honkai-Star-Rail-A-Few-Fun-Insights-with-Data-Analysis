@@ -10,7 +10,7 @@ from selenium.webdriver.common.by import By
 import web_scrap
 
 
-def get_urls_auto():
+def get_urls_auto() -> list[str]:
     url_lists = []
     url = 'https://www.prydwen.gg/star-rail/characters'
     driver = webdriver.Chrome()
@@ -25,7 +25,7 @@ def get_urls_auto():
     url_elements = parent_element.find_elements(By.XPATH, urls_xpath)
 
     for url_element in url_elements:
-        href_value = url_element.get_attribute('href')
+        href_value: str = url_element.get_attribute('href')
         url_lists.append(href_value)
 
     driver.quit()

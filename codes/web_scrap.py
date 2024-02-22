@@ -18,7 +18,13 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
 
 
-def click_drop_down(driver, first_dropdown_xpath):
+def click_drop_down(driver, first_dropdown_xpath: str) -> None:
+    """
+
+    :param driver: WebDriver instance
+    :param first_dropdown_xpath: str
+    :return: None
+    """
     try:
         first_dropdown = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, first_dropdown_xpath)))
         first_dropdown_location = first_dropdown.location
@@ -29,7 +35,13 @@ def click_drop_down(driver, first_dropdown_xpath):
         print("The first dropdown was not found within the specified timeout. Moving on.")
 
 
-def click_level(driver, level):
+def click_level(driver, level: str) -> None:
+    """
+
+    :param driver: WebDriver instance
+    :param level: str
+    :return: None
+    """
     level_xpath = f'//*[text()="{level}"]'
     # Attempt to click the element with a maximum number of retries
     max_retries = 3
@@ -50,14 +62,24 @@ def click_level(driver, level):
         print(f"Failed to click the element after {max_retries} retries.")
 
 
-def extract_all_visible_text(driver, store, level, level_result_xpath, first_dropdown_xpath):
+def extract_all_visible_text(driver, store: list, level: str, level_result_xpath: str,
+                             first_dropdown_xpath: str) -> None:
+    """
+
+    :param driver: WebDriver instance
+    :param store: list
+    :param level: str
+    :param level_result_xpath: str
+    :param first_dropdown_xpath: str
+    :return: None
+    """
     # Find and extract all visible text in the specified path
     level_result_element = WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located((By.XPATH, level_result_xpath)))
 
-    level_text = str(level_result_element.text)  # Convert to string
+    level_text: str = str(level_result_element.text)  # Convert to string
 
-    level_is_correct = check_level(level_text, level)
+    level_is_correct: bool = check_level(level_text, level)
 
     if level_is_correct:
         store.append(level_text)
@@ -65,14 +87,14 @@ def extract_all_visible_text(driver, store, level, level_result_xpath, first_dro
         click_drop_down(driver, first_dropdown_xpath)
 
 
-def check_level(level_result_text, level):
+def check_level(level_result_text: str, level: str) -> bool:
     # Use regular expression to find the current level in the lines
     current_level_match = re.search(r'Level \d+', level_result_text)
 
     # Check if a match is found
     if current_level_match:
         # Extract the matched level
-        current_level = current_level_match.group()
+        current_level: str = current_level_match.group()
 
         # Compare the extracted level with the provided level
         if current_level != level:
@@ -83,25 +105,22 @@ def check_level(level_result_text, level):
         return False  # Return False if no match is found
 
 
-def extract_char_name(url):
+def extract_char_name(url: str) -> str:
     # Split the URL using '/'
-    url_parts = url.split('/')
+    url_parts: list[str] = url.split('/')
 
     # Take the last element as the character name
-    char_name = url_parts[-1]
+    char_name: str = url_parts[-1]
 
     return char_name
 
 
-def check_cookie(driver):
+def check_cookie(driver) -> None:
     """
     Check if the cookie consent dialog is present and handle it accordingly.
 
     Args:
         driver: The WebDriver instance.
-
-    Returns:
-        None
     """
     # Check if the cookie consent dialog is present
     cookie_dialog_xpath = '//*[@id="qc-cmp2-ui"]'
@@ -125,18 +144,25 @@ def check_cookie(driver):
         logging.error("Agree button not found. Moving on.")
 
 
-def check_if_path_exist(driver, first_dropdown_xpath, hsr_name):
+def check_if_path_exist(driver, first_dropdown_xpath: str, hsr_name: str) -> bool:
+    """
+
+    :param driver: WebDriver
+    :param first_dropdown_xpath: str
+    :param hsr_name: str
+    :return: bool
+    """
     try:
-        first_dropdown = driver.find_element(By.XPATH, first_dropdown_xpath)
+        driver.find_element(By.XPATH, first_dropdown_xpath)
         return True
     except Exception:
         print(f'{hsr_name}: first_dropdown_xpath not found')
         return False
 
 
-def scrape(url):
+def scrape(url: str) -> None:
     # Extract the character name from the URL
-    hsr_name = extract_char_name(url)
+    hsr_name: str = extract_char_name(url)
     output_name = f"/hsr/{hsr_name}.xlsx"
 
     # Create a new instance of the Chrome driver
@@ -177,7 +203,7 @@ def scrape(url):
         driver.quit()
 
 
-def enter_input():
+def enter_input() -> list[str]:
     """
     Prompts the user to enter URLs and returns a list of valid URLs.
     The user can enter '1' to finish entering URLs.
@@ -185,7 +211,7 @@ def enter_input():
     user_input_list = []
 
     while True:
-        user_input = input('Enter URL (press 1 to finish): ')
+        user_input: str = input('Enter URL (press 1 to finish): ')
 
         if not user_input.strip():  # Check if the input is empty after stripping whitespaces
             print('You entered nothing. Please enter a valid URL or press 1 to finish.')

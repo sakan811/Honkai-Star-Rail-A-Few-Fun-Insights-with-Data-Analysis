@@ -12,7 +12,7 @@ from codes import web_scrap as ws
 from codes import get_urls_auto as get_urls
 
 
-def scrape_paths_elements_rarities(url, data):
+def scrape_paths_elements_rarities(url: str, data: dict[str, list]) -> None:
     try:
         # Send an HTTP GET request to the URL
         response = requests.get(url)
@@ -27,7 +27,7 @@ def scrape_paths_elements_rarities(url, data):
             rarity_elements = soup.find(class_=["rarity-5", "rarity-4"])
             char_elements = soup.find_all(class_=["Lightning", "Wind", "Fire", "Ice", "Quantum", "Imaginary", "Physical"])
 
-            char_name = ws.extract_char_name(url)
+            char_name: str = ws.extract_char_name(url)
 
             # Append data to the dictionary
             data['Character'].append(char_name)
@@ -47,12 +47,12 @@ def scrape_paths_elements_rarities(url, data):
         print("An error occurred:", str(e))
 
 
-def main():
+def main() -> None:
     print('Automatically get urls: press 1')
     print('Manually get urls: press 2')
 
     while True:
-        user_input = input('Enter number: ')
+        user_input: str = input('Enter number: ')
 
         if user_input == '1':
             user_input_list = get_urls.get_urls_auto()

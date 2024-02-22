@@ -7,7 +7,7 @@ import os
 import pandas as pd
 
 
-def process_excel_files(input_directory, output_file, desired_level):
+def process_excel_files(input_directory: str, output_file: str, desired_level: int) -> None:
     # Create an empty DataFrame to store the extracted data
     processed_data = pd.DataFrame()
 
@@ -15,10 +15,10 @@ def process_excel_files(input_directory, output_file, desired_level):
     for filename in os.listdir(input_directory):
         if filename.endswith(".xlsx"):
             # Extract the file name (without extension)
-            char_name = os.path.splitext(filename)[0]
+            char_name: str = os.path.splitext(filename)[0]
 
             # Load the Excel file into a DataFrame
-            file_path = os.path.join(input_directory, filename)
+            file_path: str = os.path.join(input_directory, filename)
             df = pd.read_excel(file_path)
 
             # Use boolean indexing to extract data from the row with the desired level
@@ -45,7 +45,7 @@ def process_excel_files(input_directory, output_file, desired_level):
     processed_data.to_excel(output_file, index=False)
 
 
-def main():
+def main() -> None:
     desired_level = 20
     input_directory = 'hsr/hsr_updated'
     output_file = f'stats_as_lvl_{desired_level}_data.xlsx'

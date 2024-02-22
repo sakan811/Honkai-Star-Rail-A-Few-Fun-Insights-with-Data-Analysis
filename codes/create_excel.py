@@ -5,16 +5,9 @@ For creating Excel files.
 import pandas as pd
 
 
-def create_excel(stats_list, output_name):
+def create_excel(stats_list: list, output_name: str) -> None:
     """
     Create an Excel file from a list of stats.
-
-    Args:
-        stats_list (list): A list of strings representing the stats.
-        output_name (str): The name of the output Excel file.
-
-    Returns:
-        None
     """
 
     # Create a list of dictionaries to store the data
@@ -22,18 +15,18 @@ def create_excel(stats_list, output_name):
 
     # Iterate through the list and populate the list of dictionaries
     for stat_str in stats_list:
-        lines = stat_str.split('\n')
-        current_level = int(lines[0].split()[1])
+        lines: str = stat_str.split('\n')
+        current_level: int = int(lines[0].split()[1])
 
         # Create a dictionary for the current level
         level_dict = {"Level": current_level, "HP": None, "ATK": None, "DEF": None, "Speed": None}
 
         # Store the result of split() in a variable
-        stat_names = lines[1::2]
-        stat_values = lines[2::2]
+        stat_names: str = lines[1::2]
+        stat_values: str = lines[2::2]
 
         for stat_name, stat_value in zip(stat_names, stat_values):
-            level_dict[stat_name] = int(stat_value)
+            level_dict[stat_name]: dict[str, int] = int(stat_value)
 
         # Append the level dictionary to the list of dictionaries
         level_data.append(level_dict)

@@ -10,7 +10,12 @@ The script functionality:
 import pandas as pd
 
 
-def calculate(df):
+def calculate(df) -> None:
+    """
+
+    :param df: DataFrame instance
+    :return: None
+    """
     # Add a new column for Attack (ATK) growth with NaN values
     df["ATK Growth"] = [0] + [(df["ATK"].iloc[i] - df["ATK"].iloc[i - 1]) for i in range(1, len(df))]
 
@@ -36,7 +41,7 @@ def calculate(df):
     df["Speed Growth %"] = [0] + [((df["Speed"].iloc[i] - df["Speed"].iloc[i - 1]) / df["Speed"].iloc[i - 1]) for i in range(1, len(df))]
 
 
-def main(file_path, hsr_name):
+def main(file_path: str, hsr_name: str) -> None:
     df = pd.read_excel(file_path)
 
     calculate(df)
