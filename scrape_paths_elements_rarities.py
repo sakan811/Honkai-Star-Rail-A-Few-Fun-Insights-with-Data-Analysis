@@ -1,8 +1,8 @@
 """
 This script uses Selenium to scrape data related to character paths, rarities, and elements
-from the https://www.prydwen.gg/star-rail/ website. It allows users to input URLs manually or automatically
-and saves the collected data to an Excel file.
+from the https://www.prydwen.gg/star-rail/ website.
 
+It allows users to input URLs manually or automatically and saves the collected data to an Excel file.
 """
 import pandas as pd
 import requests

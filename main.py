@@ -1,10 +1,16 @@
+"""
+Main script for scraping the https://www.prydwen.gg/star-rail/ website.
+
+This script ask users to choose how they want to scrap from the website.
+"""
+
 from codes import web_scrap
 from codes import get_urls_auto
 
 
 def main():
     print('Automatically get urls: press 1')
-    print('Manually get urls: press 2')
+    print('Manually enter urls: press 2')
 
     while True:
         user_input = input('Enter number: ')
