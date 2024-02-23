@@ -1,13 +1,15 @@
 """
-For creating Excel files.
+For creating an Excel file and add data from the stats list into the file.
 """
-
 import pandas as pd
 
 
 def create_excel(stats_list: list, output_name: str) -> None:
     """
-    Create an Excel file from a list of stats.
+    Create an Excel file and add data from the stats list into the file
+    :param stats_list: A list that contains stats of the characters.
+    :param output_name: The desired path to save Excel files.
+    :return: None
     """
 
     # Create a list of dictionaries to store the data
@@ -34,7 +36,6 @@ def create_excel(stats_list: list, output_name: str) -> None:
     # Create a DataFrame
     df = pd.DataFrame(level_data)
 
-    # Save the DataFrame to an Excel file
     df.to_excel(output_name, index=False)
 
 

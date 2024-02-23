@@ -6,7 +6,6 @@ The script functionality:
 2. Calculates growth values for Attack (ATK), Defense (DEF), HP, and Speed columns.
 3. Saves the modified DataFrame to a new Excel file in the 'hsr_updated' directory.
 """
-
 import pandas as pd
 from pandas import DataFrame
 
@@ -14,6 +13,8 @@ from pandas import DataFrame
 def calculate(df: DataFrame) -> None:
     """
     Calculates growth values for Attack (ATK), Defense (DEF), HP, and Speed columns.
+    :param df: The DataFrame containing the data.
+    :return: None
     """
     # Add a new column for Attack (ATK) growth with NaN values
     df["ATK Growth"] = [0] + [(df["ATK"].iloc[i] - df["ATK"].iloc[i - 1]) for i in range(1, len(df))]
@@ -40,16 +41,18 @@ def calculate(df: DataFrame) -> None:
     df["Speed Growth %"] = [0] + [((df["Speed"].iloc[i] - df["Speed"].iloc[i - 1]) / df["Speed"].iloc[i - 1]) for i in range(1, len(df))]
 
 
-def save_to_excel(file_path: str, hsr_name: str) -> None:
+def save_to_excel(file_path: str, output_path: str) -> None:
     """
     Save the file to Excel to the specified directory.
+    :param file_path: The file path of the input Excel file.
+    :param output_path: The file path where the modified Excel data will be saved.
+    :return:
     """
     df = pd.read_excel(file_path)
 
     calculate(df)
 
-    # Save the modified DataFrame to a new Excel file in the 'hsr_updated' directory
-    df.to_excel(f"/hsr/hsr_updated/{hsr_name}.xlsx", index=False)
+    df.to_excel(output_path, index=False)
 
 
 if __name__ == '__main__':

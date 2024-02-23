@@ -1,6 +1,5 @@
 """
-Main script for scraping the https://www.prydwen.gg/star-rail/ website.
-
+The main script to run a web scraping of the https://www.prydwen.gg/star-rail/ website.
 This script ask users to choose how they want to scrap from the website.
 """
 
@@ -25,7 +24,13 @@ def main() -> None:
             print('Invalid input. Please enter 1 or 2.')
 
     for url in user_input_list:
-        web_scrap.scrape(url)
+        # Extract the character name from the URL
+        hsr_name: str = web_scrap.extract_char_name(url)
+
+        first_output_path = f"hsr/{hsr_name}.xlsx"
+        second_output_path = f"hsr/hsr_updated/{hsr_name}.xlsx"
+
+        web_scrap.scrape(url, hsr_name, first_output_path, second_output_path)
 
 
 if __name__ == '__main__':

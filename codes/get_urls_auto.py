@@ -8,15 +8,17 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-import web_scrap
+from . import web_scrap
 
 
 def get_urls_auto() -> list[str]:
     """
     Automatically extracts the character URLs from the website.
+    :return: A list of extracted character URLs.
     """
     url_lists = []
     url = 'https://www.prydwen.gg/star-rail/characters'
+
     driver = webdriver.Chrome()
 
     driver.get(url)
@@ -24,10 +26,14 @@ def get_urls_auto() -> list[str]:
     web_scrap.check_cookie(driver)
 
     parent_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[6]'
+
     parent_element: WebElement = driver.find_element(By.XPATH, parent_xpath)
+
     urls_xpath = './/a[@href]'
+
     url_elements: list[WebElement] = parent_element.find_elements(By.XPATH, urls_xpath)
 
+    # Extract the href attribute value from each URL element and append it to the URL list
     for url_element in url_elements:
         href_value: str = url_element.get_attribute('href')
         url_lists.append(href_value)

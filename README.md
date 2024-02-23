@@ -3,33 +3,43 @@ The project gives insights that delve into the Honkai Star Rail's character's st
 
 I used web scraping scripts written with Python to gather data from https://www.prydwen.gg/star-rail/
 
-Latest update: 29 Jan 2024
+Latest update: Feb 24th, 2024
 
 This repo is only to show the codes and raw data.
 
 To see the visualizations, check out this link below to my Facebook page's post:
-https://www.facebook.com/permalink.php?story_fbid=pfbid0C3Vva972MnyiSt1Zi1Q1QFyDb3aCyvQPg3NbMV52J5atYJwB2AGimRPXendp17q9l&id=61553626169836
+https://www.facebook.com/permalink.php?story_fbid=pfbid0X8Efev9VpPYxZLemxMgAQbHcv5NnooQn3QhYn8wFk8mLxh4fXMTwucRobDz6ehdel&id=61553626169836
 
-# Codes
+# Main Scripts
 
 ```main.py```:
-
 - Ask user to press 1 or 2:
   - 1: Automatically gather all URLs to each character's page.
   - 2: Manually enter URLs of each character's page.
+- Use a function from ```web_scrap.py``` to perform web scraping.
 
+# Scripts in ```codes``` package
 ```web_scrap.py```:
 - Scrape ATK, DEF, HP, SPD, of each Level of the given character from the website.
 - Save the data of each character in an Excel at the specified directory.
-- Call a function from ```calculate_hsr.py``` to add additional columns to each file.
-- Save them to the specified directory.
+- Use a function from ```calculate_hsr.py``` to process each file.
+  - Save them to the specified directory.
 
-```stats_of_desired_lvl.py```:
-- Run through all Excels in the specific directory.
-- Process each Excel.
-  - Extract ATK, DEF, HP, SPD of the given Level.
-- Combined processed Excels into one.       
-   
+```get_urls_auto.py```:
+
+- Automatically gather all URLs to each character page from the website.
+
+```calculate_hsr.py```:
+
+- Process an Excel.
+  - Add growth rate and growth rate % for all stats as columns.
+- Save the processed Excel at the given directory.
+
+```create_excel.py```:
+
+- Create an Excel file and add data from the stats list into the file.
+
+# Other Scripts
 ```scrape_paths_elements_rarities.py```:
 - Ask user to press 1 or 2:
   - 1: Automatically gather all URLs to each character's page.
@@ -37,10 +47,11 @@ https://www.facebook.com/permalink.php?story_fbid=pfbid0C3Vva972MnyiSt1Zi1Q1QFyD
 - Scrape Paths, Elements, Rarities of all character from the website.
 - Combined and save these data into an Excel file.
 
-```get_urls_auto.py```:
-- Automatically gather all URLs to each character page from the website.
+```stats_of_desired_lvl.py```:
 
-```calculate_hsr.py```:
-- Process an Excel.
-  - Add growth rate and growth rate % for all stats as columns.
-- Save the processed Excel at the given directory.
+- Run through all Excels in the specific directory.
+- Process each Excel.
+  - Extract ATK, DEF, HP, SPD of the given Level.
+- Combined processed Excels into one.      
+
+
