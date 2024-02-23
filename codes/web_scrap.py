@@ -5,7 +5,9 @@ import os
 import re
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium import webdriver
+from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
@@ -18,16 +20,14 @@ script_directory = os.path.dirname(os.path.abspath(__file__))
 os.chdir(script_directory)
 
 
-def click_drop_down(driver, first_dropdown_xpath: str) -> None:
+def click_drop_down(driver: WebDriver, first_dropdown_xpath: str) -> None:
     """
-
-    :param driver: WebDriver instance
-    :param first_dropdown_xpath: str
-    :return: None
+    Find and click at the dropdown.
     """
     try:
-        first_dropdown = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, first_dropdown_xpath)))
-        first_dropdown_location = first_dropdown.location
+        first_dropdown: WebElement = WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable((By.XPATH, first_dropdown_xpath)))
+        first_dropdown_location: dict = first_dropdown.location
         script = f"window.scrollTo({first_dropdown_location['x']}, {first_dropdown_location['y'] - 200});"
         driver.execute_script(script)
         first_dropdown.click()
@@ -35,12 +35,9 @@ def click_drop_down(driver, first_dropdown_xpath: str) -> None:
         print("The first dropdown was not found within the specified timeout. Moving on.")
 
 
-def click_level(driver, level: str) -> None:
+def click_level(driver: WebDriver, level: str) -> None:
     """
-
-    :param driver: WebDriver instance
-    :param level: str
-    :return: None
+    Click at the specified Level in the dropdown.
     """
     level_xpath = f'//*[text()="{level}"]'
     # Attempt to click the element with a maximum number of retries
@@ -50,7 +47,8 @@ def click_level(driver, level: str) -> None:
     while retries < max_retries:
         try:
             # Wait for the element to be present
-            level_element = WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.XPATH, level_xpath)))
+            level_element: WebElement = WebDriverWait(driver, 5).until(
+                EC.presence_of_element_located((By.XPATH, level_xpath)))
             level_element.click()
             # Break the loop if click is successful
             break
@@ -62,22 +60,17 @@ def click_level(driver, level: str) -> None:
         print(f"Failed to click the element after {max_retries} retries.")
 
 
-def extract_all_visible_text(driver, store: list, level: str, level_result_xpath: str,
+def extract_all_visible_text(driver: WebDriver, store: list, level: str, level_result_xpath: str,
                              first_dropdown_xpath: str) -> None:
     """
-
-    :param driver: WebDriver instance
-    :param store: list
-    :param level: str
-    :param level_result_xpath: str
-    :param first_dropdown_xpath: str
-    :return: None
+    Extract all visible texts at the specified Xpath.
     """
     # Find and extract all visible text in the specified path
-    level_result_element = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, level_result_xpath)))
+    level_result_element: WebElement = WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located((By.XPATH, level_result_xpath))
+    )
 
-    level_text: str = str(level_result_element.text)  # Convert to string
+    level_text: str = level_result_element.text
 
     level_is_correct: bool = check_level(level_text, level)
 
@@ -88,8 +81,11 @@ def extract_all_visible_text(driver, store: list, level: str, level_result_xpath
 
 
 def check_level(level_result_text: str, level: str) -> bool:
+    """
+    Check whether the script's scraping the right Level.
+    """
     # Use regular expression to find the current level in the lines
-    current_level_match = re.search(r'Level \d+', level_result_text)
+    current_level_match: re.Match[str] = re.search(r'Level \d+', level_result_text)
 
     # Check if a match is found
     if current_level_match:
@@ -106,6 +102,9 @@ def check_level(level_result_text: str, level: str) -> bool:
 
 
 def extract_char_name(url: str) -> str:
+    """
+    Extract the character's name from the URL.
+    """
     # Split the URL using '/'
     url_parts: list[str] = url.split('/')
 
@@ -115,24 +114,23 @@ def extract_char_name(url: str) -> str:
     return char_name
 
 
-def check_cookie(driver) -> None:
+def check_cookie(driver: WebDriver) -> None:
     """
     Check if the cookie consent dialog is present and handle it accordingly.
-
-    Args:
-        driver: The WebDriver instance.
     """
     # Check if the cookie consent dialog is present
     cookie_dialog_xpath = '//*[@id="qc-cmp2-ui"]'
 
     try:
-        cookie_dialog = WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.XPATH, cookie_dialog_xpath)))
+        cookie_dialog: WebElement = WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located((By.XPATH, cookie_dialog_xpath))
+        )
 
         # If the cookie consent dialog is present, click on the specified element
         if cookie_dialog.is_displayed():
             agree_button_xpath = '//*[@id="qc-cmp2-ui"]/div[2]/div/button[2]/span'
-            agree_button = WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, agree_button_xpath)))
+            agree_button: WebElement = WebDriverWait(driver, 5).until(
+                EC.element_to_be_clickable((By.XPATH, agree_button_xpath)))
             agree_button.click()
 
     except TimeoutException:
@@ -144,13 +142,9 @@ def check_cookie(driver) -> None:
         logging.error("Agree button not found. Moving on.")
 
 
-def check_if_path_exist(driver, first_dropdown_xpath: str, hsr_name: str) -> bool:
+def check_if_path_exist(driver: WebDriver, first_dropdown_xpath: str, hsr_name: str) -> bool:
     """
-
-    :param driver: WebDriver
-    :param first_dropdown_xpath: str
-    :param hsr_name: str
-    :return: bool
+    Check if the Xpath exists.
     """
     try:
         driver.find_element(By.XPATH, first_dropdown_xpath)
@@ -161,6 +155,9 @@ def check_if_path_exist(driver, first_dropdown_xpath: str, hsr_name: str) -> boo
 
 
 def scrape(url: str) -> None:
+    """
+    Scrap data from the URL.
+    """
     # Extract the character name from the URL
     hsr_name: str = extract_char_name(url)
     output_name = f"/hsr/{hsr_name}.xlsx"
@@ -178,7 +175,7 @@ def scrape(url: str) -> None:
 
     first_dropdown_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[6]/div[11]/div[1]/div/div[1]/div'
 
-    path_exist = check_if_path_exist(driver, first_dropdown_xpath, hsr_name)
+    path_exist: bool = check_if_path_exist(driver, first_dropdown_xpath, hsr_name)
 
     if path_exist:
 
@@ -198,7 +195,7 @@ def scrape(url: str) -> None:
         driver.quit()
 
         # Call the main function from 'calculate_hsr.py'
-        calculate_hsr.main(output_name, hsr_name)
+        calculate_hsr.save_to_excel(output_name, hsr_name)
     else:
         driver.quit()
 

@@ -6,11 +6,15 @@ and prints the list of URLs.
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.remote.webelement import WebElement
 
 import web_scrap
 
 
 def get_urls_auto() -> list[str]:
+    """
+    Automatically extracts the character URLs from the website.
+    """
     url_lists = []
     url = 'https://www.prydwen.gg/star-rail/characters'
     driver = webdriver.Chrome()
@@ -20,9 +24,9 @@ def get_urls_auto() -> list[str]:
     web_scrap.check_cookie(driver)
 
     parent_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[6]'
-    parent_element = driver.find_element(By.XPATH, parent_xpath)
+    parent_element: WebElement = driver.find_element(By.XPATH, parent_xpath)
     urls_xpath = './/a[@href]'
-    url_elements = parent_element.find_elements(By.XPATH, urls_xpath)
+    url_elements: list[WebElement] = parent_element.find_elements(By.XPATH, urls_xpath)
 
     for url_element in url_elements:
         href_value: str = url_element.get_attribute('href')

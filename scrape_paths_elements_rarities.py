@@ -4,9 +4,11 @@ from the https://www.prydwen.gg/star-rail/ website.
 
 It allows users to input URLs manually or automatically and saves the collected data to an Excel file.
 """
+import bs4
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from requests import Response
 
 from codes import web_scrap as ws
 from codes import get_urls_auto as get_urls
@@ -15,7 +17,7 @@ from codes import get_urls_auto as get_urls
 def scrape_paths_elements_rarities(url: str, data: dict[str, list]) -> None:
     try:
         # Send an HTTP GET request to the URL
-        response = requests.get(url)
+        response: Response = requests.get(url)
 
         # Check if the request was successful (status code 200)
         if response.status_code == 200:
@@ -23,9 +25,12 @@ def scrape_paths_elements_rarities(url: str, data: dict[str, list]) -> None:
             soup = BeautifulSoup(response.text, 'html.parser')
 
             # Find elements based on class names
-            path_elements = soup.find_all(class_=["Nihility", "Hunt", "Abundance", "Destruction", "Erudition", "Harmony", "Preservation"])
-            rarity_elements = soup.find(class_=["rarity-5", "rarity-4"])
-            char_elements = soup.find_all(class_=["Lightning", "Wind", "Fire", "Ice", "Quantum", "Imaginary", "Physical"])
+            path_elements: bs4.ResultSet = soup.find_all(
+                class_=["Nihility", "Hunt", "Abundance", "Destruction", "Erudition", "Harmony", "Preservation"]
+            )
+            rarity_elements: bs4.Tag | bs4.NavigableString = soup.find(class_=["rarity-5", "rarity-4"])
+            char_elements: bs4.ResultSet = soup.find_all(
+                class_=["Lightning", "Wind", "Fire", "Ice", "Quantum", "Imaginary", "Physical"])
 
             char_name: str = ws.extract_char_name(url)
 

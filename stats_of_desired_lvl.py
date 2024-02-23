@@ -5,6 +5,8 @@ and combines the extracted data into a new Excel file.
 
 import os
 import pandas as pd
+from pandas import DataFrame, Series
+from pandas.core.arrays import ExtensionArray
 
 
 def process_excel_files(input_directory: str, output_file: str, desired_level: int) -> None:
@@ -19,16 +21,20 @@ def process_excel_files(input_directory: str, output_file: str, desired_level: i
 
             # Load the Excel file into a DataFrame
             file_path: str = os.path.join(input_directory, filename)
-            df = pd.read_excel(file_path)
+            df: DataFrame = pd.read_excel(file_path)
 
             # Use boolean indexing to extract data from the row with the desired level
-            row_with_desired_level = df[df['Level'] == desired_level]
+            row_with_desired_level: DataFrame | Series = df[df['Level'] == desired_level]
 
             # Extract the data from the specified columns in the found row
-            hp_data = row_with_desired_level['HP'].values[0] if not row_with_desired_level.empty else None
-            def_data = row_with_desired_level['DEF'].values[0] if not row_with_desired_level.empty else None
-            atk_data = row_with_desired_level['ATK'].values[0] if not row_with_desired_level.empty else None
-            spd_data = row_with_desired_level['Speed'].values[0] if not row_with_desired_level.empty else None
+            hp_data: ExtensionArray = row_with_desired_level['HP'].values[
+                0] if not row_with_desired_level.empty else None
+            def_data: ExtensionArray = row_with_desired_level['DEF'].values[
+                0] if not row_with_desired_level.empty else None
+            atk_data: ExtensionArray = row_with_desired_level['ATK'].values[
+                0] if not row_with_desired_level.empty else None
+            spd_data: ExtensionArray = row_with_desired_level['Speed'].values[
+                0] if not row_with_desired_level.empty else None
             # Create a new DataFrame with the extracted data and file name
             file_data = pd.DataFrame({
                 'Character': [char_name],
@@ -39,7 +45,7 @@ def process_excel_files(input_directory: str, output_file: str, desired_level: i
             })
 
             # Append the new DataFrame to the processed_data DataFrame
-            processed_data = pd.concat([processed_data, file_data], ignore_index=True)
+            processed_data: DataFrame = pd.concat([processed_data, file_data], ignore_index=True)
 
     # Save the processed data to a new Excel file
     processed_data.to_excel(output_file, index=False)
