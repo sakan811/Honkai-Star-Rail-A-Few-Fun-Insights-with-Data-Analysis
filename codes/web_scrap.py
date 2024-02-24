@@ -12,8 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import logging
 from validators import url as validate_url
 
-from . import calculate_hsr
-from . import create_excel
+from codes.calculate_hsr import calculate_hsr
+from codes.create_excel import create_excel
 
 
 def click_drop_down(driver: WebDriver, first_dropdown_xpath: str) -> None:
