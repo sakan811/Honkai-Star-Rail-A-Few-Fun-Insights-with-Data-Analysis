@@ -3,7 +3,7 @@ The project gives insights that delve into the Honkai Star Rail's character's st
 
 I used web scraping scripts written with Python to gather data from https://www.prydwen.gg/star-rail/
 
-Latest update: Feb 24th, 2024
+Latest update: Feb 26th, 2024
 
 This repo is only to show the codes and raw data.
 
