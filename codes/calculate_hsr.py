@@ -18,6 +18,8 @@ def calculate(df: DataFrame) -> None:
     :param df: The DataFrame containing the data.
     :return: None
     """
+    logging.info('Calculating additional columns...')
+
     # Add a new column for Attack (ATK) growth with NaN values
     df["ATK Growth"] = [0] + [(df["ATK"].iloc[i] - df["ATK"].iloc[i - 1]) for i in range(1, len(df))]
 
@@ -50,6 +52,8 @@ def save_to_excel(input_excel_file_path: str, output_path: str) -> None:
     :param output_path: The file path where the modified Excel data will be saved.
     :return:
     """
+    logging.info('Saving to Excel...')
+
     logging.info(f'Read the Excel from {input_excel_file_path = }')
     df = pd.read_excel(input_excel_file_path)
 

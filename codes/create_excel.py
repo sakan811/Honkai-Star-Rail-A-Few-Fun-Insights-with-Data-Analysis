@@ -13,6 +13,7 @@ def create_excel(stats_list: list, output_excel_file_path: str) -> None:
     :param output_excel_file_path: The desired path to save Excel files.
     :return: None
     """
+    logging.info('Creating Excel...')
 
     # Create a list of dictionaries to store the data
     level_data = []
@@ -39,7 +40,7 @@ def create_excel(stats_list: list, output_excel_file_path: str) -> None:
             try:
                 for stat_name, stat_value in zip(stat_names, stat_values):
                     level_dict[stat_name]: dict[str, int] = int(stat_value)
-                    logging.debug(f'{level_dict[stat_name] = }: {stat_values = }')
+                    logging.debug(f'{stat_name = }: {stat_value = }')
             except Exception as e:
                 logging.error(f'Error mapping \'stat_names\' and \'stat_values\' to dictionary: {e}')
 

@@ -16,6 +16,8 @@ def get_urls_auto() -> list[str]:
     Automatically extracts the character URLs from the website.
     :return: A list of extracted character URLs.
     """
+    logging.info('Auto-getting URLs...')
+
     url_lists = []
     url = 'https://www.prydwen.gg/star-rail/characters'
 

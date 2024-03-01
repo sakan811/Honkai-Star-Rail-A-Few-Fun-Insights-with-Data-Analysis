@@ -7,6 +7,7 @@ import logging
 from codes import web_scrap
 from codes import get_urls_auto
 
+
 logging.basicConfig(
     filename='main.log',
     level=logging.DEBUG,
@@ -26,8 +27,12 @@ root_logger = logging.getLogger()
 root_logger.addHandler(console_handler)
 
 
-def main() -> None:
-    logging.info('Prompt the user.')
+def prompt_user() -> list[str]:
+    """
+    Prompt the user whether they want to manually enter URLs or want the script to automatically get the URLs.
+    :return: List of URLs
+    """
+    logging.info('Prompting the user...')
     print('Automatically get urls: press 1')
     print('Manually enter urls: press 2')
 
@@ -37,26 +42,25 @@ def main() -> None:
         logging.debug(f'{user_input = }')
 
         if user_input == '1':
-            user_input_list: list[str] = get_urls_auto.get_urls_auto()
-            logging.debug(user_input_list)
-            break
+            return get_urls_auto.get_urls_auto()
+
         elif user_input == '2':
-            user_input_list: list[str] = web_scrap.enter_input()
-            logging.debug(user_input_list)
-            break
+            return web_scrap.enter_input()
         else:
             logging.warning('Invalid input. Please enter 1 or 2.')
 
+
+def main() -> None:
+    user_input_list: list[str] = prompt_user()
+    logging.debug(f'{user_input_list = }')
+
     for url in user_input_list:
-        logging.info(f'Extract the character name from the {url = }')
         character_name: str = web_scrap.extract_char_name(url)
-        logging.debug(character_name)
+        logging.debug(f'{character_name = }')
 
         first_output_path = f"hsr/{character_name}.xlsx"
         second_output_path = f"hsr/hsr_updated/{character_name}.xlsx"
 
-        logging.info(f'Web scraping is starting.'
-                     f'Scrap from {url = } of {character_name = }')
         web_scrap.scrape(url, character_name, first_output_path, second_output_path)
 
 

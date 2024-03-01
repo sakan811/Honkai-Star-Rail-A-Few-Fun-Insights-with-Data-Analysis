@@ -12,8 +12,8 @@ from selenium.webdriver.support import expected_conditions as EC
 import logging
 from validators import url as validate_url
 
-from codes.calculate_hsr import save_to_excel
-from codes.create_excel import create_excel
+from codes import calculate_hsr
+from codes import create_excel
 
 
 def click_drop_down(driver: WebDriver, first_dropdown_xpath: str) -> None:
@@ -23,6 +23,7 @@ def click_drop_down(driver: WebDriver, first_dropdown_xpath: str) -> None:
     :param first_dropdown_xpath: The XPath of the dropdown element to be clicked.
     :return: None
     """
+    logging.info('Clicking drop down...')
     try:
         logging.info('Waiting for the dropdown element to be clickable')
         first_dropdown: WebElement = WebDriverWait(driver, 5).until(
@@ -50,6 +51,8 @@ def click_level(driver: WebDriver, level: str) -> None:
     :param level: The text of the level to be clicked in the dropdown.
     :return: None
     """
+    logging.info('Clicking level...')
+
     level_xpath = f'//*[text()="{level}"]'
     logging.debug(f'{level_xpath = }')
 
@@ -94,6 +97,8 @@ def extract_all_visible_text(
     :param first_dropdown_xpath: The XPath of the dropdown element to click if the level is not correct.
     :return: None
     """
+    logging.info('Extracting all visible text...')
+
     logging.info('Find and extract all visible text in the specified path')
     level_result_element: WebElement = WebDriverWait(driver, 5).until(
         EC.visibility_of_element_located((By.XPATH, level_result_xpath))
@@ -120,17 +125,19 @@ def check_level(level_result_text: str, level: str) -> bool:
     :param level: The expected level text to validate against the extracted level.
     :return: True if the extracted level matches the expected level, False otherwise.
     """
-    logging.info('Use regular expression to find the current level in the lines')
+    logging.info('Checking level...')
+
+    logging.info('Use regular expression to create Match')
     current_level_match: re.Match[str] = re.search(r'Level \d+', level_result_text)
     logging.debug(f'{current_level_match = }')
 
-    logging.info('Check if a match is found')
+    logging.info('Check if the script is scraping data from the expected level')
     if current_level_match:
         # Extract the matched level
         current_level: str = current_level_match.group()
         logging.debug(f'{current_level = }')
 
-        logging.info('Compare the extracted level with the provided level')
+        logging.info('Compare the extracted level with the expected level')
         if current_level != level:
             logging.info('The level not matched. Return False')
             return False
@@ -148,6 +155,8 @@ def extract_char_name(url: str) -> str:
     :param url: The URL containing the character name.
     :return: The name of the character extracted from the URL.
     """
+    logging.info(f'Extracting the character name from the {url = }...')
+
     # Split the URL using '/'
     url_parts: list[str] = url.split('/')
     logging.debug(f'{url_parts = }')
@@ -165,6 +174,8 @@ def check_cookie(driver: WebDriver) -> None:
     :param driver: The WebDriver instance used to interact with the web page.
     :return: None
     """
+    logging.info('Checking cookies...')
+
     cookie_dialog_xpath = '//*[@id="qc-cmp2-ui"]'
     logging.debug(f'{cookie_dialog_xpath = }')
 
@@ -181,7 +192,7 @@ def check_cookie(driver: WebDriver) -> None:
             logging.info('Wait for the Agree button to appear.')
             agree_button: WebElement = WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable((By.XPATH, agree_button_xpath)))
-            logging.info('CLick at the Agree button.')
+            logging.info('Click at the Agree button.')
             agree_button.click()
 
     except TimeoutException:
@@ -199,6 +210,7 @@ def check_if_path_exist(driver: WebDriver, first_dropdown_xpath: str, character_
     :param character_name: A character name.
     :return: True if the XPath exists, False otherwise.
     """
+    logging.info('Checking if path exists...')
     try:
         logging.info(f'Find the Web Element by the {first_dropdown_xpath}')
         driver.find_element(By.XPATH, first_dropdown_xpath)
@@ -207,6 +219,64 @@ def check_if_path_exist(driver: WebDriver, first_dropdown_xpath: str, character_
     except Exception:
         logging.error(f'{character_name}: first_dropdown_xpath not found')
         return False
+
+
+def click_at_each_level(driver: WebDriver,
+                        levels: list[str],
+                        stat_data_at_given_level_xpath: str,
+                        first_dropdown_xpath: str,
+                        stat_list: list[str]) -> None:
+    """
+    Clicking at each Level dropdown
+    :param driver: Selenium Web Driver
+    :param levels: Level list
+    :param stat_data_at_given_level_xpath: Character stats at given Level XPath
+    :param first_dropdown_xpath: Dropdown XPath
+    :param stat_list: Stat list
+    :return: None
+    """
+    logging.info('Clicking at rach Level...')
+    for level in levels:
+        logging.info(f'Click at the dropdown at {stat_data_at_given_level_xpath}')
+        click_drop_down(driver, first_dropdown_xpath)
+        logging.info(f'Click at the {level}')
+        click_level(driver, level)
+        logging.info(f'Extract all visible texts of {level = } '
+                     f'from {stat_data_at_given_level_xpath = } from {first_dropdown_xpath = }')
+        extract_all_visible_text(driver, stat_list, level, stat_data_at_given_level_xpath, first_dropdown_xpath)
+
+
+def scrape_each_level(driver: WebDriver,
+                      first_dropdown_xpath: str,
+                      first_output_path: str,
+                      second_output_path: str) -> None:
+    """
+    Scrape character stats data at each Level.
+    :param driver: Selenium Web Driver
+    :param first_dropdown_xpath: Level Dropdown XPath
+    :param first_output_path: First Excel Output Path
+    :param second_output_path: Second Excel Output Path
+    :return: None
+    """
+    logging.info('Scraping each level...')
+
+    stat_data_at_given_level_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[7]/div[12]/div[1]/div'
+    logging.debug(f'{stat_data_at_given_level_xpath = }')
+
+    stat_list = []
+    levels = ["Level 1", "Level 20", "Level 30", "Level 40", "Level 50", "Level 60", "Level 70", "Level 80"]
+
+    click_at_each_level(driver, levels, stat_data_at_given_level_xpath, first_dropdown_xpath, stat_list)
+
+    logging.info(f'Create an Excel from the \'stat_list\' and save to the {first_output_path = }')
+    create_excel.create_excel(stat_list, first_output_path)
+
+    logging.info('Close the browser')
+    driver.quit()
+
+    logging.info(f'Add additional columns to each Excel from {first_output_path = } '
+                 f'and save them to {second_output_path = }')
+    calculate_hsr.save_to_excel(first_output_path, second_output_path)
 
 
 def scrape(url: str, character_name: str, first_output_path: str, second_output_path: str) -> None:
@@ -218,6 +288,9 @@ def scrape(url: str, character_name: str, first_output_path: str, second_output_
     :param second_output_path: The file path for the second Excel output set.
     :return: None
     """
+    logging.info(f'Web scraping is starting...'
+                 f'Scrap from {url = } of {character_name = }')
+
     logging.info('Open the browser.')
     driver = webdriver.Chrome()
 
@@ -237,31 +310,7 @@ def scrape(url: str, character_name: str, first_output_path: str, second_output_
     logging.debug(f'{path_exist = }')
 
     if path_exist:
-
-        level_result_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[7]/div[12]/div[1]/div'
-        logging.debug(f'{level_result_xpath = }')
-
-        stat_list = []
-        levels = ["Level 1", "Level 20", "Level 30", "Level 40", "Level 50", "Level 60", "Level 70", "Level 80"]
-
-        for level in levels:
-            logging.info(f'Click at the dropdown at {level_result_xpath}')
-            click_drop_down(driver, first_dropdown_xpath)
-            logging.info(f'Click at the {level}')
-            click_level(driver, level)
-            logging.info(f'Extract all visible texts of {level = } '
-                         f'from {level_result_xpath = } from {first_dropdown_xpath = }')
-            extract_all_visible_text(driver, stat_list, level, level_result_xpath, first_dropdown_xpath)
-
-        logging.info(f'Create an Excel from the \'stat_list\' and save to the {first_output_path = }')
-        create_excel(stat_list, first_output_path)
-
-        logging.info('Close the browser')
-        driver.quit()
-
-        logging.info(f'Add additional columns to each Excel from {first_output_path = } '
-                     f'and save them to {second_output_path = }')
-        save_to_excel(first_output_path, second_output_path)
+        scrape_each_level(driver, first_dropdown_xpath, first_output_path, second_output_path)
     else:
         logging.info(f'{path_exist = }. Close the browser')
         driver.quit()
@@ -275,7 +324,7 @@ def enter_input() -> list[str]:
     """
     user_input_list = []
 
-    logging.info('Prompts the user to enter URLs')
+    logging.info('Prompting the user to enter URLs...')
     while True:
         print('Enter URL (press 1 to finish): ')
         user_input: str = input()
