@@ -30,7 +30,7 @@ def check_auto_param(auto: bool) -> list[str]:
     """
     Check if the user has parsed \'auto\' parameter as True.
     :param urls: List of URLs entered by the user.
-    :param auto: If True, the script automatically get URLs, if not, the user need to manually enter URLs.
+    :param auto: If True, the script automatically gets URLs, if not, the user need to manually enter URLs.
                 Default is False.
     :return: List of URLs
     """
