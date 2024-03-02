@@ -7,7 +7,6 @@ import logging
 from codes import web_scrap
 from codes import get_urls_auto
 
-
 logging.basicConfig(
     filename='main.log',
     level=logging.DEBUG,
@@ -27,31 +26,30 @@ root_logger = logging.getLogger()
 root_logger.addHandler(console_handler)
 
 
-def prompt_user() -> list[str]:
+def check_auto_param(auto: bool) -> list[str]:
     """
-    Prompt the user whether they want to manually enter URLs or want the script to automatically get the URLs.
+    Check if the user has parsed \'auto\' parameter as True.
+    :param auto: If True, the script automatically get URLs, if not, the user need to manually enter URLs.
+                Default is False.
     :return: List of URLs
     """
-    logging.info('Prompting the user...')
-    print('Automatically get urls: press 1')
-    print('Manually enter urls: press 2')
-
-    while True:
-        print('Enter number: ')
-        user_input: str = input()
-        logging.debug(f'{user_input = }')
-
-        if user_input == '1':
-            return get_urls_auto.get_urls_auto()
-
-        elif user_input == '2':
-            return web_scrap.enter_input()
-        else:
-            logging.warning('Invalid input. Please enter 1 or 2.')
+    logging.info('Checking if the user has parsed \'auto\' parameter as True...')
+    if auto is True:
+        logging.info(f'{auto = }. Automatically get URLs')
+        return get_urls_auto.get_urls_auto()
+    elif auto is False:
+        logging.info(f'{auto = }. Manually enter URLs')
+        return web_scrap.enter_input()
 
 
-def main() -> None:
-    user_input_list: list[str] = prompt_user()
+def main(auto: bool = False) -> None:
+    """
+    Main function to start all processes related to web scraping of the website.
+    :param auto: If True, the script automatically get URLs, if not, the user need to manually enter URLs.
+                Default is False.
+    :return: None
+    """
+    user_input_list: list[str] = check_auto_param(auto)
     logging.debug(f'{user_input_list = }')
 
     for url in user_input_list:
