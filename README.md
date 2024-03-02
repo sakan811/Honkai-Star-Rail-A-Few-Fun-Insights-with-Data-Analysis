@@ -13,9 +13,14 @@ https://www.facebook.com/permalink.php?story_fbid=pfbid0sMV43J2Dr3TsV7gjKCi7jNgd
 # Main Scripts
 
 ```main.py```:
-- Ask user to press 1 or 2:
-  - 1: Automatically gather all URLs to each character's page.
-  - 2: Manually enter URLs of each character's page.
+
+- To let script automatically get URLs, set 'auto' parameter as follows:
+  - ```main(auto=True)```
+- To manually get URLs, set 'urls' parameter as follows:
+  - ```
+    urls = ['website/url']
+    main(urls)
+    ```
 - Use a function from ```web_scrap.py``` to perform web scraping.
 
 # Scripts in ```codes``` package

@@ -10,7 +10,6 @@ from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
-from validators import url as validate_url
 
 from codes import calculate_hsr
 from codes import create_excel
@@ -316,38 +315,7 @@ def scrape(url: str, character_name: str, first_output_path: str, second_output_
         driver.quit()
 
 
-def enter_input() -> list[str]:
-    """
-    Prompts the user to enter URLs and returns a list of valid URLs.
-    The user can enter '1' to finish entering URLs.
-    :return: A list of valid URLs entered by the user.
-    """
-    user_input_list = []
 
-    logging.info('Prompting the user to enter URLs...')
-    while True:
-        print('Enter URL (press 1 to finish): ')
-        user_input: str = input()
-        logging.debug(f'{user_input = }')
-
-        logging.debug('Check if the input is empty after stripping whitespaces')
-        if not user_input.strip():
-            logging.warning('You entered nothing. Please enter a valid URL or press 1 to finish.')
-            continue
-
-        if user_input == '1':
-            logging.info(f'{user_input = }. Break the loop.')
-            break
-
-        # Additional check to ensure the user enters a valid URL
-        if not validate_url(user_input):
-            logging.warning('Invalid URL. Please enter a valid URL or press 1 to finish.')
-            continue
-
-        logging.info(f'Add {user_input = } into the \'user_input_list\' list.')
-        user_input_list.append(user_input)
-
-    return user_input_list
 
 
 if __name__ == '__main__':
