@@ -566,8 +566,12 @@
                 "value": "Automatic"
               }
             ],
-            "dataType": "int64",
-            "formatString": "0",
+            "changedProperties": [
+              {
+                "property": "DataType"
+              }
+            ],
+            "dataType": "string",
             "lineageTag": "e8cc378b-c9dc-4aa0-920c-f444a80dc0d6",
             "sourceColumn": "Rarity",
             "summarizeBy": "none"
