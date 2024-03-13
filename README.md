@@ -7,9 +7,9 @@ Latest update: Mar 13th, 2024
 
 This repo is only to show the codes and raw data.
 
-To see the visualizations, check out posts below:
-[Instagram]()
-[Facebook]()
+To see the visualizations, check out posts below:  
+[Instagram](https://www.instagram.com/p/C4djIL2SKnl/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0RKSexmY4iRHpbMgBFdvxxL5soApJ22LoiVjZEs3JETUZe19puL3wxmb6ogUjPEskl&id=61553626169836)
 
 # Main Scripts
 
