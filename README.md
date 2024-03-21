@@ -1,15 +1,15 @@
 # Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis
 The project gives insights that delve into the Honkai Star Rail's character's stats of all available characters as of the given date.
 
-I used web scraping scripts written with Python to gather data from https://www.prydwen.gg/star-rail/
+Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.fandom.com/wiki/Character/List
 
-Latest update: Mar 13th, 2024
+Latest update: Mar 21st, 2024
 
 This repo is only to show the codes and raw data.
 
 To see the visualizations, check out posts below:  
-[Instagram](https://www.instagram.com/p/C4djIL2SKnl/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
-[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0RKSexmY4iRHpbMgBFdvxxL5soApJ22LoiVjZEs3JETUZe19puL3wxmb6ogUjPEskl&id=61553626169836)
+[Instagram](https://www.instagram.com/p/C4xvn6GLHs-/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0kSNFkF9jcaGRfF81juiWHaQ4DtUjyPQQEywUdjH63nqbuGQku6zPkkcctUYShCHVl&id=61553626169836)
 
 # Main Scripts
 
