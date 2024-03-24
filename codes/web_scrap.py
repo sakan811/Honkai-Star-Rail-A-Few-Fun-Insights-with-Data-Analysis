@@ -2,6 +2,9 @@
 This script performs web scraping of HSR character stats from the https://www.prydwen.gg/star-rail/ website.
 """
 import re
+import time
+
+from loguru import logger
 from selenium.common import TimeoutException, NoSuchElementException
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
@@ -11,8 +14,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 import logging
 
-from codes import calculate_hsr
-from codes import create_excel
+from . import calculate_hsr
+from . import create_excel
 
 
 def click_drop_down(driver: WebDriver, first_dropdown_xpath: str) -> None:
@@ -84,37 +87,21 @@ def click_level(driver: WebDriver, level: str) -> None:
 def extract_all_visible_text(
         driver: WebDriver,
         stat_list: list,
-        level: str,
-        level_result_xpath: str,
-        first_dropdown_xpath: str) -> None:
+        stat_data_at_given_level_xpath: str, ) -> None:
     """
     Extracts all visible text in the specified path and stores it in a list.
+    :param stat_data_at_given_level_xpath: Character stats at given Level XPath
     :param driver: The WebDriver instance used to interact with the web page.
     :param stat_list: The stat list for storing characters' stats.
-    :param level: The expected level text to validate against the extracted text.
-    :param level_result_xpath: The XPath of the element containing the text to be extracted.
-    :param first_dropdown_xpath: The XPath of the dropdown element to click if the level is not correct.
     :return: None
     """
     logging.info('Extracting all visible text...')
-
-    logging.info('Find and extract all visible text in the specified path')
-    level_result_element: WebElement = WebDriverWait(driver, 5).until(
-        EC.visibility_of_element_located((By.XPATH, level_result_xpath))
+    time.sleep(0.5)
+    # Wait for the stats element to be visible
+    stats = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, stat_data_at_given_level_xpath))
     )
-
-    level_text: str = level_result_element.text
-    logging.debug(f'{level_text = }')
-
-    level_is_correct: bool = check_level(level_text, level)
-    logging.debug(f'{level_is_correct = }')
-
-    if level_is_correct:
-        stat_list.append(level_text)
-        logging.info(f'Add {level_text} to the \'stat_list\' list')
-    else:
-        logging.info(f'Click at the dropdown at {first_dropdown_xpath}')
-        click_drop_down(driver, first_dropdown_xpath)
+    stat_list.append(stats.text)
 
 
 def check_level(level_result_text: str, level: str) -> bool:
@@ -236,13 +223,40 @@ def click_at_each_level(driver: WebDriver,
     """
     logging.info('Clicking at rach Level...')
     for level in levels:
-        logging.info(f'Click at the dropdown at {stat_data_at_given_level_xpath}')
-        click_drop_down(driver, first_dropdown_xpath)
-        logging.info(f'Click at the {level}')
-        click_level(driver, level)
-        logging.info(f'Extract all visible texts of {level = } '
-                     f'from {stat_data_at_given_level_xpath = } from {first_dropdown_xpath = }')
-        extract_all_visible_text(driver, stat_list, level, stat_data_at_given_level_xpath, first_dropdown_xpath)
+        try:
+            # Find the dropdown element
+            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, first_dropdown_xpath)))
+            time.sleep(0.5)
+        except Exception as e:
+            logger.info("Error finding dropdown element:", e)
+            continue
+        try:
+            driver.execute_script("arguments[0].scrollIntoView(true);", element)
+            driver.execute_script("window.scrollBy(0, -200);")
+            # Click on the dropdown element
+            element.click()
+            time.sleep(0.5)
+        except Exception as e:
+            logger.error("Error clicking dropdown element:", e)
+            continue
+        try:
+            # Find the dropdown option corresponding to the current level and click on it
+            option_xpath = f"//*[text()='{level}']"
+            if level == 'Level 60' or level == 'Level 70' or level == 'Level 80':
+                driver.execute_script("window.scrollBy(0, 100);")
+            option_element = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, option_xpath))
+            )
+            option_element.click()
+            time.sleep(0.5)
+            # Wait for the stats element to be visible
+            stats = WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, stat_data_at_given_level_xpath))
+            )
+            stat_list.append(stats.text)
+        except Exception as e:
+            logger.error(f"Error clicking dropdown option for {level}:", e)
+            continue
 
 
 def scrape_each_level(driver: WebDriver,

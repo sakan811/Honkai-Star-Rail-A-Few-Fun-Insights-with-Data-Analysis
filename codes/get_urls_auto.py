@@ -8,7 +8,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
 
-from codes import web_scrap
+from . import web_scrap
 
 
 def get_urls_auto() -> list[str]:
