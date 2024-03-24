@@ -225,7 +225,9 @@ def click_at_each_level(driver: WebDriver,
     for level in levels:
         try:
             # Find the dropdown element
-            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.XPATH, first_dropdown_xpath)))
+            element = WebDriverWait(driver, 10).until(EC.presence_of_element_located((
+                By.XPATH, first_dropdown_xpath))
+            )
             time.sleep(0.5)
         except Exception as e:
             logger.info("Error finding dropdown element:", e)
@@ -248,12 +250,7 @@ def click_at_each_level(driver: WebDriver,
                 EC.presence_of_element_located((By.XPATH, option_xpath))
             )
             option_element.click()
-            time.sleep(0.5)
-            # Wait for the stats element to be visible
-            stats = WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.XPATH, stat_data_at_given_level_xpath))
-            )
-            stat_list.append(stats.text)
+            extract_all_visible_text(driver, stat_list, stat_data_at_given_level_xpath)
         except Exception as e:
             logger.error(f"Error clicking dropdown option for {level}:", e)
             continue
