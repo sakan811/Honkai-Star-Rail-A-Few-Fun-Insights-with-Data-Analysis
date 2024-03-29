@@ -11,7 +11,7 @@ from bs4 import BeautifulSoup
 from requests import Response
 
 from codes import web_scrap as ws
-from codes import get_urls_auto as get_urls
+import main as m
 
 
 def scrape_paths_elements_rarities(url: str, data: dict[str, list]) -> None:
@@ -52,21 +52,22 @@ def scrape_paths_elements_rarities(url: str, data: dict[str, list]) -> None:
         print("An error occurred:", str(e))
 
 
-def main() -> None:
-    print('Automatically get urls: press 1')
-    print('Manually get urls: press 2')
-
-    while True:
-        user_input: str = input('Enter number: ')
-
-        if user_input == '1':
-            user_input_list = get_urls.get_urls_auto()
-            break
-        elif user_input == '2':
-            user_input_list = ws.enter_input()
-            break
-        else:
-            print('Invalid input. Please enter 1 or 2.')
+def main(auto: bool = False, urls: list[str] = None) -> None:
+    """
+    Main function to start all processes related to web scraping of the website.\n
+    Enter the required parameters to run the function.
+    :param urls: List of URLs entered by the user.
+                Required if auto is False.
+                Default is None.
+    :param auto: If True, the script automatically get URLs, if not, the user need to manually enter URLs.
+                Default is False.
+    :return: None
+    """
+    user_input_list = []
+    if auto is True:
+        user_input_list: list[str] = m.check_auto_param(auto)
+    elif auto is False:
+        user_input_list = urls
 
     data = {"Character": [], "Path": [], "Rarity": [], "Element": []}
 
@@ -83,4 +84,4 @@ def main() -> None:
 
 
 if __name__ == '__main__':
-    main()
+    main(auto=True)

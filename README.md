@@ -16,11 +16,15 @@ To see the visualizations, check out posts below:
 ```main.py```:
 
 - To let script automatically get URLs, set 'auto' parameter as follows:
-  - ```main(auto=True)```
+  - ```
+    main = Main(auto=True)
+    main.main()
+    ```
 - To manually get URLs, set 'urls' parameter as follows:
   - ```
     urls = ['website/url']
-    main(urls)
+    main = Main(urls=urls)
+    main.main()
     ```
 - Use a function from ```web_scrap.py``` to perform web scraping.
 
