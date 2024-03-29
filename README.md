@@ -17,14 +17,14 @@ To see the visualizations, check out posts below:
 
 - To let script automatically get URLs, set 'auto' parameter as follows:
   - ```
-    main = Main(auto=True)
-    main.main()
+    main = HonkaiStarRailScrape(auto=True)
+    main.hsr_scrape()
     ```
 - To manually get URLs, set 'urls' parameter as follows:
   - ```
-    urls = ['website/url']
-    main = Main(urls=urls)
-    main.main()
+    urls = ['character/page/url']
+    main = HonkaiStarRailScrape(urls=urls)
+    main.hsr_scrape()
     ```
 - Use a function from ```web_scrap.py``` to perform web scraping.
 
@@ -51,9 +51,18 @@ To see the visualizations, check out posts below:
 
 # Other Scripts
 ```scrape_paths_elements_rarities.py```:
-- Ask user to press 1 or 2:
-  - 1: Automatically gather all URLs to each character's page.
-  - 2: Manually enter URLs of each character's page.
+
+- To let script automatically get URLs, set 'auto' parameter as follows:
+  - ```
+    main = HonkaiStarRailScrapePathAndElement(auto=True)
+    main.hsr_scrape()
+    ```
+- To manually get URLs, set 'urls' parameter as follows:
+  - ```
+    urls = ['character/page/url']
+    main = HonkaiStarRailScrapePathAndElement(urls=url)
+    main.hsr_scrape()
+    ```
 - Scrape Paths, Elements, Rarities of all character from the website.
 - Combined and save these data into an Excel file.
 
