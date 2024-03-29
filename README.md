@@ -11,27 +11,42 @@ To see the visualizations, check out posts below:
 [Instagram](https://www.instagram.com/p/C5Ga0VUrvw6/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
 [Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid021XN18hLpJm7qcaPduZRF55TrkdnCSpvx329UpKyXhAtQ7yiheLPaRVxFwqDXQnrkl&id=61553626169836)
 
-# Main Scripts
+## To Run Web-Scraping Process
 
-```main.py```:
+- Go to ```main.py```
+- To scrape characters' stats
+  - import **hsrws** package
+    - ```from hsrws.scrape_stats import HonkaiStarRailScrapeStats```
+    - To let script automatically get URLs, set 'auto' parameter as follows:
+      - ```
+        main = HonkaiStarRailScrape(auto=True)
+        main.hsr_scrape()
+        ```
+    - To manually get URLs, set 'urls' parameter as follows:
+      - ```
+        urls = ['character/page/url']
+        main = HonkaiStarRailScrape(urls=urls)
+        main.hsr_scrape()
+        ```
+- To scrape characters' element, path, and rarity data
+  - import **hsrws** package
+    - ```from hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement```
+    - To let script automatically get URLs, set 'auto' parameter as follows:
+      - ```
+        main = HonkaiStarRailScrapePathAndElement(auto=True)
+        main.hsr_scrape()
+        ```
+    - To manually get URLs, set 'urls' parameter as follows:
+      - ```
+        urls = ['character/page/url']
+        main = HonkaiStarRailScrapePathAndElement(urls=url)
+        main.hsr_scrape()
+        ```
 
-- To let script automatically get URLs, set 'auto' parameter as follows:
-  - ```
-    main = HonkaiStarRailScrape(auto=True)
-    main.hsr_scrape()
-    ```
-- To manually get URLs, set 'urls' parameter as follows:
-  - ```
-    urls = ['character/page/url']
-    main = HonkaiStarRailScrape(urls=urls)
-    main.hsr_scrape()
-    ```
-- Use a function from ```web_scrap.py``` to perform web scraping.
-
-# Scripts in ```codes``` package
+## Scripts in ```hsrws``` package
 ```web_scrap.py```:
-- Scrape ATK, DEF, HP, SPD, of each Level of the given character from the website.
-- Save the data of each character in an Excel at the specified directory.
+
+- Contain methods related to web-scraping the desired data from the website.
 - Use a function from ```calculate_hsr.py``` to process each file.
   - Save them to the specified directory.
 
@@ -49,23 +64,17 @@ To see the visualizations, check out posts below:
 
 - Create an Excel file and add data from the stats list into the file.
 
-# Other Scripts
+```scrape_stats.py```:
+
+- To scrape characters' stats data from the website.
+- Use a method from ```web_scrap.py``` to perform web scraping.
+
 ```scrape_paths_elements_rarities.py```:
 
-- To let script automatically get URLs, set 'auto' parameter as follows:
-  - ```
-    main = HonkaiStarRailScrapePathAndElement(auto=True)
-    main.hsr_scrape()
-    ```
-- To manually get URLs, set 'urls' parameter as follows:
-  - ```
-    urls = ['character/page/url']
-    main = HonkaiStarRailScrapePathAndElement(urls=url)
-    main.hsr_scrape()
-    ```
 - Scrape Paths, Elements, Rarities of all character from the website.
 - Combined and save these data into an Excel file.
 
+## Other Scripts
 ```stats_of_desired_lvl.py```:
 
 - Run through all Excels in the specific directory.

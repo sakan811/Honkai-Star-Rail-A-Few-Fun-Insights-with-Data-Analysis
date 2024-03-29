@@ -1,13 +1,14 @@
 """
-HonkaiStarRailScrape class takes care of the web scraping process of the https://www.prydwen.gg/star-rail/ website.
+HonkaiStarRailScrapeStats class set up the web-scraping process of the https://www.prydwen.gg/star-rail/ website.
+To scrape characters' stats data from the website.
 """
 from loguru import logger
 
-from . import web_scrap
+from .web_scrap import WebScrape as ws
 from . import get_urls_auto
 
 
-class HonkaiStarRailScrape:
+class HonkaiStarRailScrapeStats:
     def __init__(self, auto: bool = False, urls: list[str] = None):
         """
         :param urls: List of URLs entered by the user. Default is None.
@@ -33,7 +34,7 @@ class HonkaiStarRailScrape:
 
     def hsr_scrape(self) -> None:
         """
-        Main function to start all processes related to web scraping of the website.
+        Function to start all processes related to web-scraping characters' stats from the website.
         :return: None
         """
         logger.info('Starting main function...')
@@ -48,6 +49,10 @@ class HonkaiStarRailScrape:
                 first_output_path = f"hsr/{character_name}.xlsx"
                 second_output_path = f"hsr/hsr_updated/{character_name}.xlsx"
 
-                web_scrap.scrape(url, character_name, first_output_path, second_output_path)
+                ws.scrape(url, character_name, first_output_path, second_output_path)
         except Exception as e:
             logger.error(f'Error: {e}')
+
+
+if __name__ == '__main__':
+    pass

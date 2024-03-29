@@ -1,20 +1,23 @@
 """
-This script uses Selenium to scrape data related to character paths, rarities, and elements
+HonkaiStarRailScrapePathAndElement class uses Selenium to scrape data related to character paths, rarities, and elements
 from the https://www.prydwen.gg/star-rail/ website.
 
 It allows users to input URLs manually or automatically and saves the collected data to an Excel file.
 """
+import os
 import bs4
 import pandas as pd
 import requests
 from bs4 import BeautifulSoup
+from pandas import DataFrame
 from requests import Response
+from loguru import logger
 
-from codes import web_scrap as ws
-from codes.honkai_star_rail_scrape import HonkaiStarRailScrape
+from .web_scrap import WebScrape as ws
+from .scrape_stats import HonkaiStarRailScrapeStats
 
 
-class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrape):
+class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
     def __init__(self, auto=False, urls=None):
         """
         :param urls: List of URLs entered by the user.
@@ -32,6 +35,7 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrape):
         :param url: Character's URL.
         :return: None
         """
+        logger.info('Scraping Path, Element, and Rarity data...')
         try:
             # Send an HTTP GET request to the URL
             response: Response = requests.get(url)
@@ -63,16 +67,38 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrape):
                     if element.text in ['Lightning', 'Wind', 'Physical', 'Fire', 'Ice', 'Quantum', 'Imaginary']:
                         self.data['Element'].append(element.text)
             else:
-                print("Failed to retrieve the webpage. Status code:", response.status_code)
+                logger.error(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
         except Exception as e:
-            print("An error occurred:", str(e))
+            logger.error(f"An error occurred: {e}")
+
+    @staticmethod
+    def _save_to_data_dir(df: DataFrame) -> None:
+        """
+        Save the dataframe to the specified directory.
+        :param df: Pandas DataFrame
+        :return: None
+        """
+        logger.info("Saving dataframe to the given directory...")
+        # Define the output directory
+        output_directory = "data"
+
+        # Ensure the directory exists, create it if it doesn't
+        if not os.path.exists(output_directory):
+            os.makedirs(output_directory)
+
+        # Define the file path
+        output_name = os.path.join(output_directory, "hsr_paths_rarities_elements.xlsx")
+
+        # Save the DataFrame to an Excel file
+        df.to_excel(output_name, index=False)
 
     def hsr_scrape(self) -> None:
         """
-        Main function to start all processes related to web scraping of the website.
+        Function to start all processes related to web-scraping Path, Elements, and Rarity from the website.
         :return: None
         """
+        logger.info("Starting Path, Elements, and Rarity web-scraping process...")
         user_input_list = []
         if self.auto is True:
             user_input_list: list[str] = self._check_auto_param()
@@ -85,13 +111,8 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrape):
         # Create a DataFrame
         df = pd.DataFrame(self.data)
 
-        output_name = f"data/hsr_paths_rarities_elements.xlsx"
-
-        # Save the DataFrame to an Excel file
-        df.to_excel(output_name, index=False)
+        self._save_to_data_dir(df)
 
 
 if __name__ == '__main__':
-    url = ['https://www.prydwen.gg/star-rail/characters/gallagher']
-    main = HonkaiStarRailScrapePathAndElement(urls=url)
-    main.hsr_scrape()
+    pass
