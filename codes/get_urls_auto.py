@@ -3,7 +3,7 @@ This script automatically extracts character URLs from the https://www.prydwen.g
 and prints the list of URLs.
 
 """
-import logging
+from loguru import logger
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -16,40 +16,40 @@ def get_urls_auto() -> list[str]:
     Automatically extracts the character URLs from the website.
     :return: A list of extracted character URLs.
     """
-    logging.info('Auto-getting URLs...')
+    logger.info('Auto-getting URLs...')
 
     url_lists = []
     url = 'https://www.prydwen.gg/star-rail/characters'
 
-    logging.info('Open the web browser.')
+    logger.info('Open the web browser.')
     driver = webdriver.Chrome()
 
-    logging.info(f'Get the {url = }')
+    logger.info(f'Get the {url = }')
     driver.get(url)
 
-    logging.info('Check cookies')
+    logger.info('Check cookies')
     web_scrap.check_cookie(driver)
 
     parent_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[6]'
-    logging.debug(f'{parent_xpath = }')
+    logger.debug(f'{parent_xpath = }')
 
-    logging.info(f'Find the Web element at {parent_xpath = }')
+    logger.info(f'Find the Web element at {parent_xpath = }')
     parent_element: WebElement = driver.find_element(By.XPATH, parent_xpath)
 
     urls_xpath = './/a[@href]'
-    logging.debug(f'{urls_xpath = }')
+    logger.debug(f'{urls_xpath = }')
 
     url_elements: list[WebElement] = parent_element.find_elements(By.XPATH, urls_xpath)
-    logging.debug(f'{url_elements = }')
+    logger.debug(f'{url_elements = }')
 
-    logging.info('Extract the href attribute value from each URL element and append it to the URL list')
+    logger.info('Extract the href attribute value from each URL element and append it to the URL list')
     for url_element in url_elements:
         href_value: str = url_element.get_attribute('href')
-        logging.debug(f'{href_value = }')
-        logging.info(f'Add {href_value = } to the {url_lists = }')
+        logger.debug(f'{href_value = }')
+        logger.info(f'Add {href_value = } to the {url_lists = }')
         url_lists.append(href_value)
 
-    logging.info('Close the browser.')
+    logger.info('Close the browser.')
     driver.quit()
 
     return url_lists
