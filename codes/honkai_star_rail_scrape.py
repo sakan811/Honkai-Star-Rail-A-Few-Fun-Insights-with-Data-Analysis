@@ -8,7 +8,7 @@ from . import get_urls_auto
 
 
 class HonkaiStarRailScrape:
-    def __init__(self, auto=False, urls=None):
+    def __init__(self, auto: bool = False, urls: list[str] = None):
         """
         :param urls: List of URLs entered by the user. Default is None.
         :param auto: If True, the script automatically gets URLs, if not, the user need to manually enter URLs.
