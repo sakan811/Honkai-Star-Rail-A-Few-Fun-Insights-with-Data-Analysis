@@ -5,8 +5,6 @@ Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.
 
 Latest update: Mar 29th, 2024
 
-This repo is only to show the codes and raw data.
-
 To see the visualizations, check out posts below:  
 [Instagram](https://www.instagram.com/p/C5Ga0VUrvw6/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
 [Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid021XN18hLpJm7qcaPduZRF55TrkdnCSpvx329UpKyXhAtQ7yiheLPaRVxFwqDXQnrkl&id=61553626169836)

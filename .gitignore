@@ -168,3 +168,4 @@ cython_debug/
 /data/
 /graphs/
 /hsr/
+/pdf.py
