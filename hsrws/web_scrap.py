@@ -1,6 +1,20 @@
 """
 WebScrape contains methods related to web-scraping the desired data,
 from the https://www.prydwen.gg/star-rail/ website.
+
+#    Copyright 2024 Sakan Nirattisaykul
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 """
 import time
 
@@ -18,8 +32,11 @@ from . import create_excel
 
 
 class WebScrape:
-    @staticmethod
+    def __init__(self):
+        pass
+
     def _extract_all_visible_text(
+            self,
             driver: WebDriver,
             stat_list: list,
             stat_data_at_given_level_xpath: str, ) -> None:
@@ -38,8 +55,7 @@ class WebScrape:
         )
         stat_list.append(stats.text)
 
-    @staticmethod
-    def extract_char_name(url: str) -> str:
+    def _extract_char_name(self, url: str) -> str:
         """
         Extracts the name of the character from the given URL.
         :param url: The URL containing the character name.
@@ -57,8 +73,7 @@ class WebScrape:
 
         return char_name
 
-    @staticmethod
-    def _check_cookie(driver: WebDriver) -> None:
+    def _check_cookie(self, driver: WebDriver) -> None:
         """
         Checks for the presence of a cookie consent dialog and accepts it if found.
         :param driver: The WebDriver instance used to interact with the web page.
@@ -91,8 +106,7 @@ class WebScrape:
         except NoSuchElementException:
             logger.error("NoSuchElementException. Agree button not found. Moving on.")
 
-    @staticmethod
-    def _check_if_path_exist(driver: WebDriver, first_dropdown_xpath: str, character_name: str) -> bool:
+    def _check_if_path_exist(self, driver: WebDriver, first_dropdown_xpath: str, character_name: str) -> bool:
         """
         Checks if the specified XPath exists on the webpage.
         :param driver: The WebDriver instance used to interact with the web page.
@@ -110,8 +124,8 @@ class WebScrape:
             logger.error(f'{character_name}: first_dropdown_xpath not found')
             return False
 
-    @staticmethod
-    def _click_at_each_level(driver: WebDriver,
+    def _click_at_each_level(self,
+                             driver: WebDriver,
                              levels: list[str],
                              stat_data_at_given_level_xpath: str,
                              first_dropdown_xpath: str,
@@ -154,13 +168,13 @@ class WebScrape:
                     EC.presence_of_element_located((By.XPATH, option_xpath))
                 )
                 option_element.click()
-                WebScrape._extract_all_visible_text(driver, stat_list, stat_data_at_given_level_xpath)
+                self._extract_all_visible_text(driver, stat_list, stat_data_at_given_level_xpath)
             except Exception as e:
                 logger.error(f"Error clicking dropdown option for {level}:", e)
                 continue
 
-    @staticmethod
-    def _scrape_each_level(driver: WebDriver,
+    def _scrape_each_level(self,
+                           driver: WebDriver,
                            first_dropdown_xpath: str,
                            first_output_path: str,
                            second_output_path: str) -> None:
@@ -180,7 +194,7 @@ class WebScrape:
         stat_list = []
         levels = ["Level 1", "Level 20", "Level 30", "Level 40", "Level 50", "Level 60", "Level 70", "Level 80"]
 
-        WebScrape._click_at_each_level(driver, levels, stat_data_at_given_level_xpath, first_dropdown_xpath, stat_list)
+        self._click_at_each_level(driver, levels, stat_data_at_given_level_xpath, first_dropdown_xpath, stat_list)
 
         logger.info(f'Create an Excel from the \'stat_list\' and save to the {first_output_path = }')
         create_excel.create_excel(stat_list, first_output_path)
@@ -192,8 +206,7 @@ class WebScrape:
                     f'and save them to {second_output_path = }')
         calculate_hsr.save_to_excel(first_output_path, second_output_path)
 
-    @staticmethod
-    def scrape(url: str, character_name: str, first_output_path: str, second_output_path: str) -> None:
+    def scrape(self, url: str, character_name: str, first_output_path: str, second_output_path: str) -> None:
         """
         Scrapes data from a webpage and performs further processing.
         :param url: The URL of the webpage to scrape.
@@ -214,17 +227,17 @@ class WebScrape:
         driver.get(url)
 
         logger.info('Check cookies')
-        WebScrape._check_cookie(driver)
+        self._check_cookie(driver)
 
         first_dropdown_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[7]/div[11]/div[1]/div/div[1]/div'
         logger.debug(f'{first_dropdown_xpath = }')
 
         logger.info('Check if the path exists')
-        path_exist: bool = WebScrape._check_if_path_exist(driver, first_dropdown_xpath, character_name)
+        path_exist: bool = self._check_if_path_exist(driver, first_dropdown_xpath, character_name)
         logger.debug(f'{path_exist = }')
 
         if path_exist:
-            WebScrape._scrape_each_level(driver, first_dropdown_xpath, first_output_path, second_output_path)
+            self._scrape_each_level(driver, first_dropdown_xpath, first_output_path, second_output_path)
         else:
             logger.info(f'{path_exist = }. Close the browser')
             driver.quit()

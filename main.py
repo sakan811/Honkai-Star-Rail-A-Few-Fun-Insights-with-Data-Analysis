@@ -1,3 +1,17 @@
+#    Copyright 2024 Sakan Nirattisaykul
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
 from loguru import logger
 
 from hsrws.scrape_stats import HonkaiStarRailScrapeStats
@@ -8,10 +22,10 @@ logger.add('main.log',
            mode='w')
 
 if __name__ == '__main__':
-    url = ['https://www.prydwen.gg/star-rail/characters/gallagher']
+    url = ['https://www.prydwen.gg/star-rail/characters/aventurine']
 
-    # main = HonkaiStarRailScrape(urls=url)
-    # main.hsr_scrape()
+    main = HonkaiStarRailScrapeStats(urls=url)
+    main.hsr_scrape()
 
-    # main = HonkaiStarRailScrapePathAndElement(urls=url)
+    # main = HonkaiStarRailScrapePathAndElement(auto=True)
     # main.hsr_scrape()

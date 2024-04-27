@@ -3,6 +3,20 @@ HonkaiStarRailScrapePathAndElement class uses Selenium to scrape data related to
 from the https://www.prydwen.gg/star-rail/ website.
 
 It allows users to input URLs manually or automatically and saves the collected data to an Excel file.
+
+#    Copyright 2024 Sakan Nirattisaykul
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
 """
 import os
 import bs4
@@ -13,9 +27,7 @@ from pandas import DataFrame
 from requests import Response
 from loguru import logger
 
-from .web_scrap import WebScrape as ws
 from .scrape_stats import HonkaiStarRailScrapeStats
-
 
 class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
     def __init__(self, auto=False, urls=None):
@@ -23,7 +35,7 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
         :param urls: List of URLs entered by the user.
                     Required if auto is False.
                     Default is None.
-        :param auto: If True, the script automatically get URLs, if not, the user need to manually enter URLs.
+        :param auto: If True, the script automatically gets URLs, if not, the user needs to manually enter URLs.
                     Default is False.
         """
         super().__init__(auto, urls)
@@ -51,9 +63,10 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
                 )
                 rarity_elements: bs4.Tag | bs4.NavigableString = soup.find(class_=["rarity-5", "rarity-4"])
                 char_elements: bs4.ResultSet = soup.find_all(
-                    class_=["Lightning", "Wind", "Fire", "Ice", "Quantum", "Imaginary", "Physical"])
+                    class_=["Lightning", "Wind", "Fire", "Ice", "Quantum", "Imaginary", "Physical"]
+                )
 
-                char_name: str = ws.extract_char_name(url)
+                char_name: str = self._extract_char_name(url)
 
                 # Append data to the dictionary
                 self.data['Character'].append(char_name)
