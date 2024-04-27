@@ -15,7 +15,7 @@ To see the visualizations, check out posts below:
 - To scrape characters' stats
   - import **hsrws** package
     - ```from hsrws.scrape_stats import HonkaiStarRailScrapeStats```
-    - To let script automatically get URLs, set 'auto' parameter as follows:
+    - To let a script automatically get URLs, set 'auto' parameter as follows:
       - ```
         main = HonkaiStarRailScrape(auto=True)
         main.hsr_scrape()
@@ -29,7 +29,7 @@ To see the visualizations, check out posts below:
 - To scrape characters' element, path, and rarity data
   - import **hsrws** package
     - ```from hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement```
-    - To let script automatically get URLs, set 'auto' parameter as follows:
+    - To let a script automatically get URLs, set 'auto' parameter as follows:
       - ```
         main = HonkaiStarRailScrapePathAndElement(auto=True)
         main.hsr_scrape()
@@ -70,7 +70,7 @@ To see the visualizations, check out posts below:
 ```scrape_paths_elements_rarities.py```:
 
 - Scrape Paths, Elements, Rarities of all character from the website.
-- Combined and save these data into an Excel file.
+- Combine and save these data into an Excel file.
 
 ## Other Scripts
 ```stats_of_desired_lvl.py```:
