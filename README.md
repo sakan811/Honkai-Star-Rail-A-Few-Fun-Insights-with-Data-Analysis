@@ -80,4 +80,6 @@ To see the visualizations, check out posts below:
   - Extract ATK, DEF, HP, SPD of the given Level.
 - Combined processed Excels into one.      
 
+```sqlite_pipeline.py```:
 
+- Migrate Excel data to SQLite database
