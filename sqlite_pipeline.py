@@ -13,6 +13,8 @@
 #    limitations under the License.
 
 import os
+import sqlite3
+
 from loguru import logger
 from pandas import DataFrame
 from sqlalchemy import create_engine, Engine, text, Integer, Float, Text
@@ -23,7 +25,7 @@ logger.add('sqlite_pipeline.log',
            mode='w')
 
 
-def create_sql_engine() -> Engine:
+def create_database_and_sqla_engine() -> Engine:
     """
     Creates SQLAlchemy engine and 'hsr' database.
     :return: SQLAlchemy engine
@@ -62,15 +64,16 @@ def create_characters_table(df: DataFrame) -> None:
     :return: None
     """
     logger.info('Creating Characters table...')
-    engine = create_sql_engine()
+    create_database_and_sqla_engine()
     dtype_dict = {
-        'Character': Text,
-        'Path': Text,
-        'Rarity': Integer,
-        'Element': Text,
-        'Version': Float
+        'Character': 'Text Primary Key',
+        'Path': 'Text',
+        'Rarity': 'Integer',
+        'Element': 'Text',
+        'Version': 'Float'
     }
-    df.to_sql('Characters', engine, if_exists='replace', index=False, dtype=dtype_dict)
+    with sqlite3.connect('hsr.db') as connection:
+        df.to_sql('Characters', connection, if_exists='replace', index=False, dtype=dtype_dict)
 
 
 def create_stats_table() -> None:
@@ -80,7 +83,9 @@ def create_stats_table() -> None:
     """
     logger.info('Creating Stats table...')
     directory = 'hsr/hsr_updated'
-    engine = create_sql_engine()
+    create_database_and_sqla_engine()
+
+    df_list = []
     for i, filename in enumerate(os.listdir(directory)):
         if filename.endswith('.xlsx'):
             filepath: str = os.path.join(directory, filename)
@@ -90,27 +95,31 @@ def create_stats_table() -> None:
             # Add a new column 'Character' with character name extracted from the filename
             character_name: str = os.path.splitext(filename)[0]  # Extract character name from filename
             df['Character'] = character_name
-            dtype_dict = {
-                'Level': Integer,
-                'HP': Integer,
-                'ATK': Integer,
-                'DEF': Integer,
-                'Speed': Integer,
-                'ATK Growth': Float,
-                'ATK Growth %': Float,
-                'DEF Growth': Float,
-                'DEF Growth %': Float,
-                'HP Growth': Float,
-                'HP Growth %': Float,
-                'Speed Growth': Float,
-                'Speed Growth %': Float,
-                'Character': Text
-            }
+            df_list.append(df)
 
-            if i == 0:
-                df.to_sql('Stats', engine, if_exists='replace', index=False, dtype=dtype_dict)
-            else:
-                df.to_sql('Stats', engine, if_exists='append', index=False, dtype=dtype_dict)
+    combined_df = pd.concat(df_list, ignore_index=True)
+
+    combined_df['StatID'] = range(0, combined_df.shape[0])
+    dtype_dict = {
+        'StatID': 'Integer Primary Key',
+        'Level': 'Integer',
+        'HP': 'Integer',
+        'ATK': 'Integer',
+        'DEF': 'Integer',
+        'Speed': 'Integer',
+        'ATK Growth': 'Float',
+        'ATK Growth %': 'Float',
+        'DEF Growth': 'Float',
+        'DEF Growth %': 'Float',
+        'HP Growth': 'Float',
+        'HP Growth %': 'Float',
+        'Speed Growth': 'Float',
+        'Speed Growth %': 'Float',
+        'Character': 'Text'
+    }
+
+    with sqlite3.connect('hsr.db') as connection:
+        combined_df.to_sql('Stats', connection, if_exists='replace', index=False, dtype=dtype_dict)
 
 
 if __name__ == '__main__':
