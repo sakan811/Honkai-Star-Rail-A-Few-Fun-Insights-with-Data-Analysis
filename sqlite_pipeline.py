@@ -14,7 +14,6 @@
 
 import os
 import sqlite3
-
 from loguru import logger
 from pandas import DataFrame
 from sqlalchemy import create_engine, Engine, text, Integer, Float, Text
@@ -31,9 +30,13 @@ def create_database_and_sqla_engine() -> Engine:
     :return: SQLAlchemy engine
     """
     logger.info('Creating SQLAlchemy Engine...')
-    engine = create_engine('sqlite:///hsr.db', echo=True)
-
-    return engine
+    try:
+        engine = create_engine('sqlite:///hsr.db', echo=True)
+        logger.info('Created SQLAlchemy Engine successfully.')
+        return engine
+    except Exception as e:
+        logger.error(e)
+        logger.error('Failed to create SQLAlchemy engine')
 
 
 def add_version(version_dict: dict[float, list[str]]) -> DataFrame:
@@ -48,13 +51,18 @@ def add_version(version_dict: dict[float, list[str]]) -> DataFrame:
 
     df['Version'] = 1.0
 
-    for index, row in df.iterrows():
-        character = row['Character']
-        for key, value in version_dict.items():
-            if character in value:
-                df.at[index, 'Version'] = key
+    try:
+        for index, row in df.iterrows():
+            character = row['Character']
+            for key, value in version_dict.items():
+                if character in value:
+                    df.at[index, 'Version'] = key
 
-    return df
+        logger.info('Added Version columns successfully.')
+        return df
+    except Exception as e:
+        logger.error(e)
+        logger.error('Failed to add Version column')
 
 
 def create_characters_table(df: DataFrame) -> None:
@@ -72,8 +80,14 @@ def create_characters_table(df: DataFrame) -> None:
         'Element': 'Text',
         'Version': 'Float'
     }
-    with sqlite3.connect('hsr.db') as connection:
-        df.to_sql('Characters', connection, if_exists='replace', index=False, dtype=dtype_dict)
+    try:
+        with sqlite3.connect('hsr.db') as connection:
+            df.to_sql('Characters', connection, if_exists='replace', index=False, dtype=dtype_dict)
+        logger.info('Created Characters table successfully.')
+    except Exception as e:
+        logger.error(e)
+        logger.error('Failed to create Characters table')
+        connection.rollback()
 
 
 def create_stats_table() -> None:
@@ -86,18 +100,39 @@ def create_stats_table() -> None:
     create_database_and_sqla_engine()
 
     df_list = []
-    for i, filename in enumerate(os.listdir(directory)):
-        if filename.endswith('.xlsx'):
-            filepath: str = os.path.join(directory, filename)
 
-            df = pd.read_excel(filepath)
+    logger.info('Read Excel file in the given directory')
+    try:
+        for i, filename in enumerate(os.listdir(directory)):
+            logger.debug(f'{filename = }')
+            if filename.endswith('.xlsx'):
+                filepath: str = os.path.join(directory, filename)
+                logger.debug(f'{filepath = }')
 
-            # Add a new column 'Character' with character name extracted from the filename
-            character_name: str = os.path.splitext(filename)[0]  # Extract character name from filename
-            df['Character'] = character_name
-            df_list.append(df)
+                logger.info('Create DataFrame from Excel file')
+                df = pd.read_excel(filepath)
 
-    combined_df = pd.concat(df_list, ignore_index=True)
+                logger.info('Add a new column \'Character\' with character name extracted from the filename')
+                character_name: str = os.path.splitext(filename)[0]  # Extract character name from filename
+                df['Character'] = character_name
+
+                logger.info('Append DataFrame to df_list')
+                df_list.append(df)
+    except pd.errors.ParserError as e:
+        logger.error(f'Error parsing Excel file')
+        logger.error(e)
+    except (FileNotFoundError, PermissionError) as e:
+        logger.error('Error accessing file or directory')
+        logger.error(e)
+
+    combined_df = None
+    logger.info('Combine DataFrame from df_list')
+    try:
+        combined_df = pd.concat(df_list, ignore_index=True)
+        logger.info('Combined DataFrame successfully')
+    except Exception as e:
+        logger.error(e)
+        logger.error('Failed to concatenate DataFrame')
 
     combined_df['StatID'] = range(0, combined_df.shape[0])
     dtype_dict = {
@@ -118,8 +153,235 @@ def create_stats_table() -> None:
         'Character': 'Text'
     }
 
-    with sqlite3.connect('hsr.db') as connection:
-        combined_df.to_sql('Stats', connection, if_exists='replace', index=False, dtype=dtype_dict)
+    logger.info('Write DataFrame to SQL database table')
+    try:
+        with sqlite3.connect('hsr.db') as connection:
+            combined_df.to_sql('Stats', connection, if_exists='replace', index=False, dtype=dtype_dict)
+        logger.info('Created Stats table successfully')
+    except Exception as e:
+        logger.error(e)
+        logger.error('Failed to create Stats table')
+
+
+def create_views() -> None:
+    """
+    Creates Views.
+    :return: None
+    """
+    logger.info('Creating Views...')
+    engine = create_database_and_sqla_engine()
+
+    create_character_stats_view(engine)
+    create_element_character_count_ver(engine)
+    create_path_character_count_ver(engine)
+    create_rarity_character_count_ver(engine)
+
+
+def create_character_stats_view(engine: Engine) -> None:
+    """
+    Creates CharacterStats View.
+    :param engine: SQLAlchemy engine
+    :return: None
+    """
+    logger.info('Executing create_character_stats_view function...')
+    logger.info('Drop CharacterStats View if exist')
+    query = "DROP VIEW IF EXISTS CharacterStats;"
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Dropped CharacterStats View successfully')
+    except Exception as e:
+        logger.error(f'Error dropping CharacterStats View: {e}')
+        connection.rollback()
+
+    logger.info('Create CharacterStats View if not exist')
+    query = """
+    create view CharacterStats as
+    select s.Character,
+           c.Path,
+           c.Rarity,
+           c.Element,
+           c.Version,
+           s.StatID
+    from main.Characters c
+    left join main.Stats s on s.Character = c.Character
+    where StatID is not null;
+    """
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Created CharacterStats View successfully')
+    except Exception as e:
+        logger.error(f'Error creating CharacterStats View: {e}')
+        connection.rollback()
+
+
+def create_element_character_count_ver(engine: Engine) -> None:
+    """
+    Creates ElementCharacterCountByVersion View.
+    :param engine: SQLAlchemy engine
+    :return: None
+    """
+    logger.info('Executing create_element_character_count_ver function...')
+    logger.info('Drop ElementCharacterCountByVersion View if exist')
+    query = "DROP VIEW IF EXISTS ElementCharacterCountByVersion;"
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Dropped ElementCharacterCountByVersion View successfully')
+    except Exception as e:
+        logger.error(f'Error dropping ElementCharacterCountByVersion View: {e}')
+        connection.rollback()
+
+    logger.info('Create ElementCharacterCountByVersion View if not exist')
+    query = """
+    create view ElementCharacterCountByVersion as
+    WITH ElementCounts AS (
+    SELECT Version,
+           COUNT(DISTINCT CASE WHEN Element = 'Ice' THEN Character END)       AS Ice,
+           COUNT(DISTINCT CASE WHEN Element = 'Fire' THEN Character END)      AS Fire,
+           COUNT(DISTINCT CASE WHEN Element = 'Lightning' THEN Character END) AS Lightning,
+           COUNT(DISTINCT CASE WHEN Element = 'Physical' THEN Character END)  AS Physical,
+           COUNT(DISTINCT CASE WHEN Element = 'Wind' THEN Character END)      AS Wind,
+           COUNT(DISTINCT CASE WHEN Element = 'Quantum' THEN Character END)   AS Quantum,
+           COUNT(DISTINCT CASE WHEN Element = 'Imaginary' THEN Character END) AS Imaginary
+    FROM Characters
+    GROUP BY Version
+    )
+    SELECT Version,
+            CAST((SELECT SUM(Ice) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Ice,
+            CAST((SELECT SUM(Fire) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Fire,
+            CAST((SELECT SUM(Lightning) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Lightning,
+            CAST((SELECT SUM(Physical) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Physical,
+            CAST((SELECT SUM(Wind) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Wind,
+            CAST((SELECT SUM(Quantum) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Quantum,
+            CAST((SELECT SUM(Imaginary) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Imaginary
+    FROM ElementCounts ec;
+    """
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Created ElementCharacterCountByVersion View successfully')
+    except Exception as e:
+        logger.error(f'Error creating ElementCharacterCountByVersion View: {e}')
+        connection.rollback()
+
+
+def create_path_character_count_ver(engine: Engine) -> None:
+    """
+    Creates PathCharacterCountByVersion View.
+    :param engine: SQLAlchemy engine
+    :return: None
+    """
+    logger.info('Executing create_path_character_count_ver function...')
+    logger.info('Drop PathCharacterCountByVersion View if exist')
+    query = "DROP VIEW IF EXISTS PathCharacterCountByVersion;"
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Dropped PathCharacterCountByVersion View successfully')
+    except Exception as e:
+        logger.error(f'Error dropping PathCharacterCountByVersion View: {e}')
+        connection.rollback()
+
+    logger.info('Create PathCharacterCountByVersion View if not exist')
+    query = """
+    create view PathCharacterCountByVersion as
+    WITH PathCounts AS (
+    SELECT Version,
+           COUNT(DISTINCT CASE WHEN Path = 'Abundance' THEN Character END)    AS Abundance,
+           COUNT(DISTINCT CASE WHEN Path = 'Erudition' THEN Character END)    AS Erudition,
+           COUNT(DISTINCT CASE WHEN Path = 'Hunt' THEN Character END)         AS Hunt,
+           COUNT(DISTINCT CASE WHEN Path = 'Destruction' THEN Character END)  AS Destruction,
+           COUNT(DISTINCT CASE WHEN Path = 'Preservation' THEN Character END) AS Preservation,
+           COUNT(DISTINCT CASE WHEN Path = 'Nihility' THEN Character END)     AS Nihility,
+           COUNT(DISTINCT CASE WHEN Path = 'Harmony' THEN Character END)      AS Harmony
+           FROM Characters
+           GROUP BY Version
+    ), PathCountVersion AS (
+        SELECT Version,
+               (SELECT SUM(Abundance) FROM PathCounts p WHERE p.Version <= pc.Version)    AS Abundance,
+               (SELECT SUM(Erudition) FROM PathCounts p WHERE p.Version <= pc.Version)    AS Erudition,
+               (SELECT SUM(Hunt) FROM PathCounts p WHERE p.Version <= pc.Version)         AS Hunt,
+               (SELECT SUM(Destruction) FROM PathCounts p WHERE p.Version <= pc.Version)  AS Destruction,
+               (SELECT SUM(Preservation) FROM PathCounts p WHERE p.Version <= pc.Version) AS Preservation,
+               (SELECT SUM(Nihility) FROM PathCounts p WHERE p.Version <= pc.Version)     AS Nihility,
+               (SELECT SUM(Harmony) FROM PathCounts p WHERE p.Version <= pc.Version)      AS Harmony
+        FROM PathCounts pc
+    )
+    select pcv.Version,
+           cast(pcv.Abundance as int)     AS Abundance,
+           cast(pcv.Erudition as int)     AS Erudition,
+           cast(pcv.Hunt as int)          AS Hunt,
+           cast(pcv.Destruction as int)   AS Destruction,
+           cast(pcv.Preservation as int)  AS Preservation,
+           cast(pcv.Nihility as int)      AS Nihility,
+           cast(pcv.Harmony as int)       AS Harmony
+    from PathCountVersion pcv;
+    """
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Created PathCharacterCountByVersion View successfully')
+    except Exception as e:
+        logger.error(f'Error creating PathCharacterCountByVersion View: {e}')
+        connection.rollback()
+
+
+def create_rarity_character_count_ver(engine: Engine) -> None:
+    """
+    Creates RarityCharacterCountByVersion View.
+    :param engine: SQLAlchemy engine.
+    :return: None
+    """
+    logger.info('Executing create_rarity_character_count_ver function...')
+    logger.info('Drop RarityCharacterCountByVersion View if exist')
+    query = "DROP VIEW IF EXISTS RarityCharacterCountByVersion;"
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Dropped RarityCharacterCountByVersion View successfully')
+    except Exception as e:
+        logger.error(f'Error dropping RarityCharacterCountByVersion View: {e}')
+        connection.rollback()
+
+    logger.info('Create RarityCharacterCountByVersion View if not exist')
+    query = """
+    create view RarityCharacterCountByVersion as
+    WITH RarityCounts AS (
+        SELECT
+            Version,
+            COUNT(DISTINCT CASE WHEN Rarity = 5 THEN Character END) AS _5_Star,
+            COUNT(DISTINCT CASE WHEN Rarity = 4 THEN Character END) AS _4_Star
+        FROM Characters
+        GROUP BY Version
+    ), RarityCountsVersion AS (
+        SELECT
+        Version,
+        (SELECT SUM(_5_Star) FROM RarityCounts p WHERE p.Version <= rc.Version) AS _5_Star,
+        (SELECT SUM(_4_Star) FROM RarityCounts p WHERE p.Version <= rc.Version) AS _4_Star
+        FROM RarityCounts rc
+    ) 
+    select rcv.Version,
+           cast(rcv._4_Star as int) AS _4_Star,
+           cast(rcv._5_Star as int) AS _5_Star
+    from RarityCountsVersion rcv;
+    """
+    try:
+        with engine.connect() as connection:
+            connection.execute(text(query))
+            connection.commit()
+            logger.info('Created RarityCharacterCountByVersion View successfully')
+    except Exception as e:
+        logger.error(f'Error creating RarityCharacterCountByVersion View: {e}')
+        connection.rollback()
 
 
 if __name__ == '__main__':
@@ -138,3 +400,4 @@ if __name__ == '__main__':
     df = add_version(version_dict)
     create_characters_table(df)
     create_stats_table()
+    create_views()
