@@ -77,6 +77,7 @@ To see the visualizations, check out posts below:
 ```sqlite_pipeline.py```:
 
 - Migrate Excel data to SQLite database
+- Create Views
 
 ## Other Scripts
 ```stats_of_desired_lvl.py```:
