@@ -50,7 +50,7 @@ To see the visualizations, check out posts below:
 
 ```get_urls_auto.py```:
 
-- Automatically gather all URLs to each character page from the website.
+- Contain method to automatically gather all URLs to each character page from the website.
 
 ```calculate_hsr.py```:
 
@@ -72,6 +72,12 @@ To see the visualizations, check out posts below:
 - Scrape Paths, Elements, Rarities of all character from the website.
 - Combine and save these data into an Excel file.
 
+## SQLite Pipeline Script
+
+```sqlite_pipeline.py```:
+
+- Migrate Excel data to SQLite database
+
 ## Other Scripts
 ```stats_of_desired_lvl.py```:
 
@@ -80,6 +86,4 @@ To see the visualizations, check out posts below:
   - Extract ATK, DEF, HP, SPD of the given Level.
 - Combined processed Excels into one.      
 
-```sqlite_pipeline.py```:
 
-- Migrate Excel data to SQLite database
