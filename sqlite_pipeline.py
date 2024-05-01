@@ -14,10 +14,11 @@
 
 import os
 import sqlite3
+
+import pandas as pd
 from loguru import logger
 from pandas import DataFrame
-from sqlalchemy import create_engine, Engine, text, Integer, Float, Text
-import pandas as pd
+from sqlalchemy import create_engine, Engine, text
 
 logger.add('sqlite_pipeline.log',
            format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
@@ -32,11 +33,12 @@ def create_database_and_sqla_engine() -> Engine:
     logger.info('Creating SQLAlchemy Engine...')
     try:
         engine = create_engine('sqlite:///hsr.db', echo=True)
-        logger.info('Created SQLAlchemy Engine successfully.')
-        return engine
     except Exception as e:
         logger.error(e)
         logger.error('Failed to create SQLAlchemy engine')
+    else:
+        logger.info('Created SQLAlchemy Engine successfully.')
+        return engine
 
 
 def add_version(version_dict: dict[float, list[str]]) -> DataFrame:
@@ -57,12 +59,12 @@ def add_version(version_dict: dict[float, list[str]]) -> DataFrame:
             for key, value in version_dict.items():
                 if character in value:
                     df.at[index, 'Version'] = key
-
-        logger.info('Added Version columns successfully.')
-        return df
     except Exception as e:
         logger.error(e)
         logger.error('Failed to add Version column')
+    else:
+        logger.info('Added Version columns successfully.')
+        return df
 
 
 def create_characters_table(df: DataFrame) -> None:
@@ -83,11 +85,12 @@ def create_characters_table(df: DataFrame) -> None:
     try:
         with sqlite3.connect('hsr.db') as connection:
             df.to_sql('Characters', connection, if_exists='replace', index=False, dtype=dtype_dict)
-        logger.info('Created Characters table successfully.')
     except Exception as e:
         logger.error(e)
         logger.error('Failed to create Characters table')
         connection.rollback()
+    else:
+        logger.info('Created Characters table successfully.')
 
 
 def create_stats_table() -> None:
@@ -119,20 +122,21 @@ def create_stats_table() -> None:
                 logger.info('Append DataFrame to df_list')
                 df_list.append(df)
     except pd.errors.ParserError as e:
+        logger.error(e)
         logger.error(f'Error parsing Excel file')
-        logger.error(e)
     except (FileNotFoundError, PermissionError) as e:
-        logger.error('Error accessing file or directory')
         logger.error(e)
+        logger.error('Error accessing file or directory')
 
     combined_df = None
     logger.info('Combine DataFrame from df_list')
     try:
         combined_df = pd.concat(df_list, ignore_index=True)
-        logger.info('Combined DataFrame successfully')
     except Exception as e:
         logger.error(e)
         logger.error('Failed to concatenate DataFrame')
+    else:
+        logger.info('Combined DataFrame successfully')
 
     combined_df['StatID'] = range(0, combined_df.shape[0])
     dtype_dict = {
@@ -157,10 +161,11 @@ def create_stats_table() -> None:
     try:
         with sqlite3.connect('hsr.db') as connection:
             combined_df.to_sql('Stats', connection, if_exists='replace', index=False, dtype=dtype_dict)
-        logger.info('Created Stats table successfully')
     except Exception as e:
         logger.error(e)
         logger.error('Failed to create Stats table')
+    else:
+        logger.info('Created Stats table successfully')
 
 
 def create_views() -> None:
@@ -190,10 +195,11 @@ def create_character_stats_view(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Dropped CharacterStats View successfully')
     except Exception as e:
         logger.error(f'Error dropping CharacterStats View: {e}')
         connection.rollback()
+    else:
+        logger.info('Dropped CharacterStats View successfully')
 
     logger.info('Create CharacterStats View if not exist')
     query = """
@@ -212,10 +218,11 @@ def create_character_stats_view(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Created CharacterStats View successfully')
     except Exception as e:
         logger.error(f'Error creating CharacterStats View: {e}')
         connection.rollback()
+    else:
+        logger.info('Created CharacterStats View successfully')
 
 
 def create_element_character_count_ver(engine: Engine) -> None:
@@ -231,10 +238,11 @@ def create_element_character_count_ver(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Dropped ElementCharacterCountByVersion View successfully')
     except Exception as e:
         logger.error(f'Error dropping ElementCharacterCountByVersion View: {e}')
         connection.rollback()
+    else:
+        logger.info('Dropped ElementCharacterCountByVersion View successfully')
 
     logger.info('Create ElementCharacterCountByVersion View if not exist')
     query = """
@@ -265,10 +273,11 @@ def create_element_character_count_ver(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Created ElementCharacterCountByVersion View successfully')
     except Exception as e:
         logger.error(f'Error creating ElementCharacterCountByVersion View: {e}')
         connection.rollback()
+    else:
+        logger.info('Created ElementCharacterCountByVersion View successfully')
 
 
 def create_path_character_count_ver(engine: Engine) -> None:
@@ -284,10 +293,11 @@ def create_path_character_count_ver(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Dropped PathCharacterCountByVersion View successfully')
     except Exception as e:
         logger.error(f'Error dropping PathCharacterCountByVersion View: {e}')
         connection.rollback()
+    else:
+        logger.info('Dropped PathCharacterCountByVersion View successfully')
 
     logger.info('Create PathCharacterCountByVersion View if not exist')
     query = """
@@ -328,10 +338,11 @@ def create_path_character_count_ver(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Created PathCharacterCountByVersion View successfully')
     except Exception as e:
         logger.error(f'Error creating PathCharacterCountByVersion View: {e}')
         connection.rollback()
+    else:
+        logger.info('Created PathCharacterCountByVersion View successfully')
 
 
 def create_rarity_character_count_ver(engine: Engine) -> None:
@@ -347,10 +358,11 @@ def create_rarity_character_count_ver(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Dropped RarityCharacterCountByVersion View successfully')
     except Exception as e:
         logger.error(f'Error dropping RarityCharacterCountByVersion View: {e}')
         connection.rollback()
+    else:
+        logger.info('Dropped RarityCharacterCountByVersion View successfully')
 
     logger.info('Create RarityCharacterCountByVersion View if not exist')
     query = """
@@ -378,10 +390,11 @@ def create_rarity_character_count_ver(engine: Engine) -> None:
         with engine.connect() as connection:
             connection.execute(text(query))
             connection.commit()
-            logger.info('Created RarityCharacterCountByVersion View successfully')
     except Exception as e:
         logger.error(f'Error creating RarityCharacterCountByVersion View: {e}')
         connection.rollback()
+    else:
+        logger.info('Created RarityCharacterCountByVersion View successfully')
 
 
 if __name__ == '__main__':
