@@ -1,7 +1,7 @@
 """
-This script automatically extracts character URLs from the https://www.prydwen.gg/star-rail/ website.
-and prints the list of URLs.
-
+This script automatically extracts character URLs from the https://www.prydwen.gg/star-rail/ website,
+And prints the list of URLs.
+"""
 #    Copyright 2024 Sakan Nirattisaykul
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,7 +15,7 @@ and prints the list of URLs.
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-"""
+
 from loguru import logger
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -27,6 +27,9 @@ from .web_scrap import WebScrape
 class GetUrlAuto(WebScrape):
     def __init__(self):
         super().__init__()
+        self.website_url = 'https://www.prydwen.gg/star-rail/characters/'
+        self.character_page_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[7]'
+        self.character_urls_xpath = './/a[@href]'
 
     def get_urls_auto(self) -> list[str]:
         """
@@ -36,33 +39,26 @@ class GetUrlAuto(WebScrape):
         logger.info('Auto-getting URLs...')
 
         url_lists = []
-        url = 'https://www.prydwen.gg/star-rail/characters'
 
         logger.info('Open the web browser.')
         driver = webdriver.Chrome()
 
-        logger.info(f'Get the {url = }')
-        driver.get(url)
+        driver.get(self.website_url)
 
         logger.info('Check cookies')
         self._check_cookie(driver)
 
-        parent_xpath = '//*[@id="gatsby-focus-wrapper"]/div/div[2]/div[2]/div[6]'
-        logger.debug(f'{parent_xpath = }')
+        logger.info(f'Find the Web element at {self.character_page_xpath = }')
+        character_page: WebElement = driver.find_element(By.XPATH, self.character_page_xpath)
 
-        logger.info(f'Find the Web element at {parent_xpath = }')
-        parent_element: WebElement = driver.find_element(By.XPATH, parent_xpath)
-
-        urls_xpath = './/a[@href]'
-        logger.debug(f'{urls_xpath = }')
-
-        url_elements: list[WebElement] = parent_element.find_elements(By.XPATH, urls_xpath)
-        logger.debug(f'{url_elements = }')
+        character_url_elements: list[WebElement] = character_page.find_elements(By.XPATH, self.character_urls_xpath)
+        logger.debug(f'{character_url_elements = }')
 
         logger.info('Extract the href attribute value from each URL element and append it to the URL list')
-        for url_element in url_elements:
-            href_value: str = url_element.get_attribute('href')
+        for character_url in character_url_elements:
+            href_value: str = character_url.get_attribute('href')
             logger.debug(f'{href_value = }')
+
             logger.info(f'Add {href_value = } to the {url_lists = }')
             url_lists.append(href_value)
 

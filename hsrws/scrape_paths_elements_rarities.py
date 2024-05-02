@@ -3,6 +3,7 @@ HonkaiStarRailScrapePathAndElement class uses Selenium to scrape data related to
 from the https://www.prydwen.gg/star-rail/ website.
 
 It allows users to input URLs manually or automatically and saves the collected data to an Excel file.
+"""
 
 #    Copyright 2024 Sakan Nirattisaykul
 #
@@ -17,7 +18,7 @@ It allows users to input URLs manually or automatically and saves the collected 
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-"""
+
 import os
 import bs4
 import pandas as pd

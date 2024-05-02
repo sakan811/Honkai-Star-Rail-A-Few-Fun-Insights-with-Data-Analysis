@@ -2,9 +2,9 @@
 This script adds growth-related stat columns to an Excel file for each HSR character.
 
 The script functionality:
-1. Reads an input Excel file.
-2. Calculates growth values for Attack (ATK), Defense (DEF), HP, and Speed columns.
-3. Saves the modified DataFrame to a new Excel file in the 'hsr_updated' directory.
+1. Read an input Excel file.
+2. Calculate growth values for Attack (ATK), Defense (DEF), HP, and Speed columns.
+3. Save the modified DataFrame to a new Excel file in the 'hsr_updated' directory.
 """
 from loguru import logger
 

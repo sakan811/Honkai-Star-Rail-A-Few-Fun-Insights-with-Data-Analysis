@@ -1,6 +1,7 @@
 """
 HonkaiStarRailScrapeStats class set up the web-scraping process of the https://www.prydwen.gg/star-rail/ website.
 To scrape characters' stats data from the website.
+"""
 
 #    Copyright 2024 Sakan Nirattisaykul
 #
@@ -15,7 +16,7 @@ To scrape characters' stats data from the website.
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-"""
+
 from loguru import logger
 
 from .web_scrap import WebScrape

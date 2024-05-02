@@ -162,7 +162,7 @@ cython_debug/
 
 /HSR.pbix
 /dbo/
-/test.py
+/prototype.py
 /.idea/
 /HSR.pdf
 /data/
@@ -170,3 +170,5 @@ cython_debug/
 /hsr/
 /pdf.py
 /hsr.db
+/*.log
+

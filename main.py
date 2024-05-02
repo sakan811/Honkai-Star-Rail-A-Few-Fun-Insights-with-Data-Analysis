@@ -29,3 +29,5 @@ if __name__ == '__main__':
 
     # main = HonkaiStarRailScrapePathAndElement(auto=True)
     # main.hsr_scrape()
+
+    pass
