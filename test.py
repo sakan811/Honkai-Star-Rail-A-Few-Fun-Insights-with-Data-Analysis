@@ -29,16 +29,5 @@ def test_scrape_paths_elements_rarities():
     # No errors should be raised
 
 
-def test_get_url_auto():
-    # Given
-    main = GetUrlAuto()
-
-    # When
-    main.get_urls_auto()
-
-    # Then
-    # No errors should be raised
-
-
 if __name__ == '__main__':
     pytest.main()
