@@ -67,7 +67,11 @@ def create_excel(stats_list: list, output_excel_file_path: str) -> None:
     df = pd.DataFrame(level_data)
 
     logger.info(f'Save the DataFrame to Excel at the {output_excel_file_path = }')
-    df.to_excel(output_excel_file_path, index=False)
+    try:
+        df.to_excel(output_excel_file_path, index=False)
+    except Exception as e:
+        logger.error(e)
+        logger.error('Unexpected error')
 
 
 if __name__ == '__main__':

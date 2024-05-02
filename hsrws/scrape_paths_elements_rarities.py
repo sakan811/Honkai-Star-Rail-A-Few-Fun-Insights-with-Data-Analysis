@@ -148,7 +148,11 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
         output_name = os.path.join(output_directory, "hsr_paths_rarities_elements.xlsx")
 
         # Save the DataFrame to an Excel file
-        df.to_excel(output_name, index=False)
+        try:
+            df.to_excel(output_name, index=False)
+        except Exception as e:
+            logger.error(e)
+            logger.error('Unexpected error')
 
     def hsr_scrape(self) -> None:
         """
