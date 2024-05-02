@@ -17,6 +17,18 @@ def test_hsr_scrape():
     # No errors should be raised
 
 
+def test_hsr_scrape_auto():
+    # Given
+    auto = True
+
+    # When
+    main = HonkaiStarRailScrapeStats(auto=auto)
+    main.hsr_scrape()
+
+    # Then
+    # No errors should be raised
+
+
 def test_scrape_paths_elements_rarities():
     # Given
     auto = True
