@@ -93,6 +93,53 @@ def create_characters_table(df: DataFrame) -> None:
         logger.info('Created Characters table successfully.')
 
 
+def create_dataframe_from_excel(df_list: list[pd.DataFrame], filepath: str, filename: str) -> None:
+    """
+    Creates DataFrame from Excel file.
+    :param df_list: List to store DataFrame
+    :param filepath: Excel file path
+    :param filename: Excel file name
+    :return: None
+    """
+    logger.info('Creating DataFrame from Excel file...')
+    df = None
+    try:
+        df = pd.read_excel(filepath)
+    except pd.errors.ParserError as e:
+        logger.error(e)
+        logger.error(f'Error parsing Excel file')
+
+    logger.info('Add a new column \'Character\' with character name extracted from the filename')
+    character_name: str = os.path.splitext(filename)[0]  # Extract character name from filename
+    df['Character'] = character_name
+
+    logger.info('Append DataFrame to df_list')
+    df_list.append(df)
+
+
+def read_excel_in_dir(directory: str) -> list[pd.DataFrame]:
+    """
+    Reads Excel files in given directory.
+    :param directory: Directory path to Excel files.
+    :return: List of DataFrames.
+    """
+    logger.info('Reading Excel file in the given directory...')
+    df_list = []
+    try:
+        for i, filename in enumerate(os.listdir(directory)):
+            logger.debug(f'{filename = }')
+            if filename.endswith('.xlsx'):
+                filepath: str = os.path.join(directory, filename)
+                logger.debug(f'{filepath = }')
+                create_dataframe_from_excel(df_list, filepath, filename)
+    except (FileNotFoundError, PermissionError) as e:
+        logger.error(e)
+        logger.error('Error accessing file or directory')
+    else:
+        logger.info('Return df_list')
+        return df_list
+
+
 def create_stats_table() -> None:
     """
     Creates Stats table.
@@ -102,31 +149,7 @@ def create_stats_table() -> None:
     directory = 'hsr/hsr_updated'
     create_database_and_sqla_engine()
 
-    df_list = []
-
-    logger.info('Read Excel file in the given directory')
-    try:
-        for i, filename in enumerate(os.listdir(directory)):
-            logger.debug(f'{filename = }')
-            if filename.endswith('.xlsx'):
-                filepath: str = os.path.join(directory, filename)
-                logger.debug(f'{filepath = }')
-
-                logger.info('Create DataFrame from Excel file')
-                df = pd.read_excel(filepath)
-
-                logger.info('Add a new column \'Character\' with character name extracted from the filename')
-                character_name: str = os.path.splitext(filename)[0]  # Extract character name from filename
-                df['Character'] = character_name
-
-                logger.info('Append DataFrame to df_list')
-                df_list.append(df)
-    except pd.errors.ParserError as e:
-        logger.error(e)
-        logger.error(f'Error parsing Excel file')
-    except (FileNotFoundError, PermissionError) as e:
-        logger.error(e)
-        logger.error('Error accessing file or directory')
+    df_list = read_excel_in_dir(directory)
 
     combined_df = None
     logger.info('Combine DataFrame from df_list')
