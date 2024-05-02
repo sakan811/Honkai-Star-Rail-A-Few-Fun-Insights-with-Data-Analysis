@@ -29,6 +29,7 @@ from loguru import logger
 
 from .scrape_stats import HonkaiStarRailScrapeStats
 
+
 class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
     def __init__(self, auto=False, urls=None):
         """
@@ -40,6 +41,55 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
         """
         super().__init__(auto, urls)
         self.data = {"Character": [], "Path": [], "Rarity": [], "Element": []}
+
+    def _clean_data(
+            self,
+            path_elements: bs4.ResultSet,
+            rarity_elements: bs4.Tag,
+            char_elements: bs4.ResultSet) -> None:
+        """
+        Clean data scrpaed from path_elements, rarity_elements, and char_elements.
+        :param path_elements: Web elements contain Path data.
+        :param rarity_elements: Web elements contain Rarity data.
+        :param char_elements: Web elements contain Character data.
+        :return: None
+        """
+        logger.info('Cleaning data from path_elements, rarity_elements, and char_elements...')
+
+        logger.info('Clean data from path_elements')
+        try:
+            for element in path_elements:
+                self.data['Path'].append(element.text.replace('Path of ', ''))
+        except AttributeError as e:
+            logger.error(e)
+            logger.error('AttributeError')
+        except Exception as e:
+            logger.error(e)
+            logger.error('Unexpected error')
+
+        logger.info('Clean data from rarity_elements')
+        try:
+            for element in rarity_elements:
+                if element.text == '5' or element.text == '4':
+                    self.data['Rarity'].append(element.text)
+        except AttributeError as e:
+            logger.error(e)
+            logger.error('AttributeError')
+        except Exception as e:
+            logger.error(e)
+            logger.error('Unexpected error')
+
+        logger.info('Clean data from char_elements')
+        try:
+            for element in char_elements:
+                if element.text in ['Lightning', 'Wind', 'Physical', 'Fire', 'Ice', 'Quantum', 'Imaginary']:
+                    self.data['Element'].append(element.text)
+        except AttributeError as e:
+            logger.error(e)
+            logger.error('AttributeError')
+        except Exception as e:
+            logger.error(e)
+            logger.error('Unexpected error')
 
     def _scrape_paths_elements_rarities(self, url: str) -> None:
         """
@@ -68,17 +118,10 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
 
                 char_name: str = self._extract_char_name(url)
 
-                # Append data to the dictionary
+                logger.info('Append data to the dictionary')
                 self.data['Character'].append(char_name)
 
-                for element in path_elements:
-                    self.data['Path'].append(element.text.replace('Path of ', ''))
-                for element in rarity_elements:
-                    if element.text == '5' or element.text == '4':
-                        self.data['Rarity'].append(element.text)
-                for element in char_elements:
-                    if element.text in ['Lightning', 'Wind', 'Physical', 'Fire', 'Ice', 'Quantum', 'Imaginary']:
-                        self.data['Element'].append(element.text)
+                self._clean_data(path_elements, rarity_elements, char_elements)
             else:
                 logger.error(f"Failed to retrieve the webpage. Status code: {response.status_code}")
 
@@ -121,8 +164,19 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
         for url in user_input_list:
             self._scrape_paths_elements_rarities(url)
 
-        # Create a DataFrame
-        df = pd.DataFrame(self.data)
+        logger.info('Create a DataFrame from a dictionary, self.data')
+        df = None
+        try:
+            df = pd.DataFrame(self.data)
+        except KeyError as e:
+            logger.error(e)
+            logger.error('KeyError')
+        except ValueError as e:
+            logger.error(e)
+            logger.error('ValueError')
+        except Exception as e:
+            logger.error(e)
+            logger.error('Unexpected error')
 
         self._save_to_data_dir(df)
 

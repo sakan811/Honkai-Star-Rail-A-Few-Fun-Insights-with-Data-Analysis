@@ -40,12 +40,16 @@ class HonkaiStarRailScrapeStats(WebScrape):
         :return: List of URLs
         """
         logger.info('Checking if the user has parsed \'auto\' parameter as True...')
-        if self.auto is True:
-            logger.info(f'{self.auto = }. Automatically get URLs')
-            return GetUrlAuto().get_urls_auto()
-        elif self.auto is False:
-            logger.info(f'{self.auto = }. User manually entered URLs')
-            return self.urls
+        try:
+            if self.auto is True:
+                logger.info(f'{self.auto = }. Automatically get URLs')
+                return GetUrlAuto().get_urls_auto()
+            elif self.auto is False:
+                logger.info(f'{self.auto = }. User manually entered URLs')
+                return self.urls
+        except Exception as e:
+            logger.error(e)
+            logger.error('Unexpected error.')
 
     def hsr_scrape(self) -> None:
         """
