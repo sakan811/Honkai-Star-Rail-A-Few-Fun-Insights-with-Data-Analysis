@@ -14,7 +14,7 @@
 
 from loguru import logger
 
-from src.hsrws import HonkaiStarRailScrapeStats
+from hsrws.scrape_stats import HonkaiStarRailScrapeStats
 
 logger.add('main.log',
            format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",

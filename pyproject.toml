@@ -1,8 +1,9 @@
 [tool.poetry]
-name = "honkai star rail fun insights from data analysis"
+name = "hsrws"
 version = "1.2.0"
 description = ""
-authors = ["Sakan Nirattisaykul"]
+authors = ["Sakan <sakan.nir@gmail.com>"]
+license = "Apache-2.0 license"
 readme = "README.md"
 
 [tool.poetry.dependencies]
