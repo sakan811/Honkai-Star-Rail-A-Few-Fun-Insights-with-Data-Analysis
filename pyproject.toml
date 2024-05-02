@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "honkai star rail fun insights from data analysis"
+version = "1.2.0"
+description = ""
+authors = ["Sakan Nirattisaykul"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
