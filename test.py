@@ -1,8 +1,8 @@
 import pytest
 
-from ..hsrws.scrape_stats import HonkaiStarRailScrapeStats
-from ..hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement
-from ..hsrws.get_urls_auto import (GetUrlAuto)
+from hsrws.scrape_stats import HonkaiStarRailScrapeStats
+from hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement
+from hsrws.get_urls_auto import GetUrlAuto
 
 
 def test_hsr_scrape():
