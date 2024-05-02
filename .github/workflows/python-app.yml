@@ -19,13 +19,15 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Install pyenv using Chocolatey
+    - name: Find pyenv path
       run: |
-        choco install pyenv-win -y
+        where pyenv
     - name: Set Python version with pyenv
-      run: pyenv global ${{ matrix.python }}
+      run: |
+        "C:\path\to\pyenv.exe" global ${{ matrix.python }}
     - name: Verify pyenv installation
-      run: pyenv --version
+      run: |
+        "C:\path\to\pyenv.exe" --version
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
