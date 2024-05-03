@@ -12,5 +12,5 @@
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
-from scrape_stats import HonkaiStarRailScrapeStats
-from scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement
+from .scrape_stats import HonkaiStarRailScrapeStats
+from .scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement
