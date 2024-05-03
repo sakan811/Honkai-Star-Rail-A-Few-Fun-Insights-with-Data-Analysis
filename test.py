@@ -1,10 +1,10 @@
 import pytest
 
 import hsrws
-from sqlite_pipeline import SQLitePipeline
+import sqlite_pipeline
 
 
-def test_hsr_scrape():
+def test_hsr_scrape_manual():
     # Given
     url = ['https://www.prydwen.gg/star-rail/characters/aventurine']
 
@@ -16,39 +16,14 @@ def test_hsr_scrape():
     # No errors should be raised
 
 
-def test_hsr_scrape_auto():
-    # Given
-    auto = True
+def test_full_process():
+    scrape_stat = hsrws.HonkaiStarRailScrapeStats(auto=True)
+    scrape_stat.hsr_scrape()
 
-    # When
-    main = hsrws.HonkaiStarRailScrapeStats(auto=auto)
-    main.hsr_scrape()
+    scrape_others = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
+    scrape_others.hsr_scrape()
 
-    # Then
-    # No errors should be raised
-
-
-def test_scrape_paths_elements_rarities():
-    # Given
-    auto = True
-
-    # When
-    main = hsrws.HonkaiStarRailScrapePathAndElement(auto=auto)
-    main.hsr_scrape()
-
-    # Then
-    # No errors should be raised
-
-
-def test_sqlite_pipeline():
-    database = 'hsr.db'
-    sqlite_pipeline = SQLitePipeline(database)
-    version_dict = sqlite_pipeline.version_dict
-
-    df = sqlite_pipeline.add_version(version_dict)
-    sqlite_pipeline.create_characters_table(df)
-    sqlite_pipeline.create_stats_table()
-    sqlite_pipeline.create_views()
+    sqlite_pipeline.main()
 
 
 if __name__ == '__main__':

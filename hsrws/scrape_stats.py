@@ -2,7 +2,6 @@
 HonkaiStarRailScrapeStats class set up the web-scraping process of the https://www.prydwen.gg/star-rail/ website.
 To scrape characters' stats data from the website.
 """
-
 #    Copyright 2024 Sakan Nirattisaykul
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,10 +16,37 @@ To scrape characters' stats data from the website.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
 
+import os
 from loguru import logger
 
 from .web_scrap import WebScrape
 from .get_urls_auto import GetUrlAuto
+
+
+def create_dir(output_dir: str) -> None:
+    """
+    Create the output directory.
+    :param output_dir: Output directory.
+    :return: None
+    """
+    logger.info(f'Creating {output_dir = } directory if not exist...')
+    try:
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+    except PermissionError as e:
+        logger.error(e)
+        logger.error('Permission denied.')
+    except FileExistsError as e:
+        logger.error(e)
+        logger.error('File already exists.')
+    except OSError as e:
+        logger.error(e)
+        logger.error('Operation failed.')
+    except Exception as e:
+        logger.error(e)
+        logger.error('Unexpected error.')
+    else:
+        logger.info(f'Created {output_dir = } successfully')
 
 
 class HonkaiStarRailScrapeStats(WebScrape):
@@ -66,7 +92,14 @@ class HonkaiStarRailScrapeStats(WebScrape):
                 character_name: str = self._extract_char_name(url)
                 logger.debug(f'{character_name = }')
 
+                first_output_dir = 'hsr'
+                create_dir(first_output_dir)
+
                 first_output_path = f"hsr/{character_name}.xlsx"
+
+                second_output_dir = 'hsr/hsr_updated'
+                create_dir(second_output_dir)
+
                 second_output_path = f"hsr/hsr_updated/{character_name}.xlsx"
 
                 self.scrape(url, character_name, first_output_path, second_output_path)

@@ -28,7 +28,7 @@ from pandas import DataFrame
 from requests import Response
 from loguru import logger
 
-from .scrape_stats import HonkaiStarRailScrapeStats
+from .scrape_stats import HonkaiStarRailScrapeStats, create_dir
 
 
 class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
@@ -139,10 +139,7 @@ class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
         logger.info("Saving dataframe to the given directory...")
         # Define the output directory
         output_directory = "data"
-
-        # Ensure the directory exists, create it if it doesn't
-        if not os.path.exists(output_directory):
-            os.makedirs(output_directory)
+        create_dir(output_directory)
 
         # Define the file path
         output_name = os.path.join(output_directory, "hsr_paths_rarities_elements.xlsx")

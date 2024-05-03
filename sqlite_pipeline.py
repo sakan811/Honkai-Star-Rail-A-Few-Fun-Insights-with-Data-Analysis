@@ -165,6 +165,10 @@ class SQLitePipeline:
         logger.info('Creating Stats table...')
         directory = 'hsr/hsr_updated'
 
+        logger.info(f'Create {directory = } directory if not exist')
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
         df_list = self.read_excel_in_dir(directory)
 
         combined_df = None
@@ -408,7 +412,13 @@ class SQLitePipeline:
             logger.info('Created RarityCharacterCountByVersion View successfully')
 
 
-if __name__ == '__main__':
+def main() -> None:
+    """
+    SQLite Pipeline Main function to start the pipeline process.
+    :return:
+    """
+    logger.info('Starting SQLite pipeline process...')
+
     database = 'hsr.db'
     sqlite_pipeline = SQLitePipeline(database)
     version_dict = sqlite_pipeline.version_dict
@@ -417,3 +427,7 @@ if __name__ == '__main__':
     sqlite_pipeline.create_characters_table(df)
     sqlite_pipeline.create_stats_table()
     sqlite_pipeline.create_views()
+
+
+if __name__ == '__main__':
+    main()
