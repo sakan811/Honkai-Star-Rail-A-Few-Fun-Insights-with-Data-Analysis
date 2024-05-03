@@ -14,7 +14,7 @@
 
 from loguru import logger
 
-from hsrws.scrape_stats import HonkaiStarRailScrapeStats
+import hsrws
 
 logger.add('main.log',
            format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
@@ -23,10 +23,10 @@ logger.add('main.log',
 if __name__ == '__main__':
     url = ['https://www.prydwen.gg/star-rail/characters/aventurine']
 
-    main = HonkaiStarRailScrapeStats(urls=url)
+    main = hsrws.HonkaiStarRailScrapeStats(urls=url)
     main.hsr_scrape()
 
-    # main = HonkaiStarRailScrapePathAndElement(auto=True)
+    # main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
     # main.hsr_scrape()
 
     pass

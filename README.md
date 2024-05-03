@@ -12,36 +12,33 @@ To see the visualizations, check out posts below:
 ## To Run Web-Scraping Process
 
 - Go to ```main.py```
-- To scrape characters' stats
-  - import **hsrws** package
-    - ```from hsrws.scrape_stats import HonkaiStarRailScrapeStats```
-    - To let a script automatically get URLs, set 'auto' parameter as follows:
-      - ```
-        main = HonkaiStarRailScrape(auto=True)
-        main.hsr_scrape()
-        ```
-    - To manually get URLs, set 'urls' parameter as follows:
-      - ```
-        urls = ['character/page/url']
-        main = HonkaiStarRailScrape(urls=urls)
-        main.hsr_scrape()
-        ```
-- To scrape characters' element, path, and rarity data
-  - import **hsrws** package
-    - ```from hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement```
-    - To let a script automatically get URLs, set 'auto' parameter as follows:
-      - ```
-        main = HonkaiStarRailScrapePathAndElement(auto=True)
-        main.hsr_scrape()
-        ```
-    - To manually get URLs, set 'urls' parameter as follows:
-      - ```
-        urls = ['character/page/url']
-        main = HonkaiStarRailScrapePathAndElement(urls=url)
-        main.hsr_scrape()
-        ```
+- **To scrape characters' stats**
+  - To let a script automatically get URLs, set 'auto' parameter as follows:
+    - ```
+      main = hsrws.HonkaiStarRailScrape(auto=True)
+      main.hsr_scrape()
+      ```
+  - To manually get URLs, set 'urls' parameter as follows:
+    - ```
+      urls = ['character/page/url']
+      main = hsrws.HonkaiStarRailScrape(urls=urls)
+      main.hsr_scrape()
+      ```
+- **To scrape characters' element, path, and rarity data**
+  - ```from hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement```
+  - To let a script automatically get URLs, set 'auto' parameter as follows:
+    - ```
+      main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
+      main.hsr_scrape()
+      ```
+  - To manually get URLs, set 'urls' parameter as follows:
+    - ```
+      urls = ['character/page/url']
+      main = hsrws.HonkaiStarRailScrapePathAndElement(urls=url)
+      main.hsr_scrape()
+      ```
 
-## Scripts in ```hsrws``` package
+## ```hsrws``` package
 ```web_scrap.py```:
 
 - Contain methods related to web-scraping the desired data from the website.
@@ -72,7 +69,7 @@ To see the visualizations, check out posts below:
 - Scrape Paths, Elements, Rarities of all character from the website.
 - Combine and save these data into an Excel file.
 
-## SQLite Pipeline Script
+## SQLite Pipeline
 
 ```sqlite_pipeline.py```:
 
