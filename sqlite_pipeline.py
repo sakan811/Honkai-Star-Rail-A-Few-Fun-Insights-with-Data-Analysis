@@ -31,6 +31,18 @@ class SQLitePipeline:
         logger.info('If database exist, then connect to database')
         self.database = sqlite_database
         self.engine = create_engine(f'sqlite:///{sqlite_database}')
+        self.version_dict = {
+            1.1: ['luocha', 'silver-wolf', 'yukong'],
+            1.2: ['blade', 'kafka', 'luka'],
+            1.3: ['imbibitor-lunae', 'fu-xuan', 'lynx'],
+            1.4: ['guinaifen', 'topaz', 'jingliu'],
+            1.5: ['argenti', 'hanya', 'huohuo'],
+            1.6: ['dr-ratio', 'ruan-mei', 'xueyi'],
+            2.0: ['black-swan', 'misha', 'sparkle'],
+            2.1: ['acheron', 'aventurine', 'gallagher'],
+            2.2: ['robin', 'boothill'],
+            2.3: ['jade', 'firefly']
+        }
 
     def add_version(self, version_and_character_dict: dict[float, list[str]]) -> DataFrame:
         """
@@ -397,21 +409,9 @@ class SQLitePipeline:
 
 
 if __name__ == '__main__':
-    version_dict = {
-        1.1: ['luocha', 'silver-wolf', 'yukong'],
-        1.2: ['blade', 'kafka', 'luka'],
-        1.3: ['imbibitor-lunae', 'fu-xuan', 'lynx'],
-        1.4: ['guinaifen', 'topaz', 'jingliu'],
-        1.5: ['argenti', 'hanya', 'huohuo'],
-        1.6: ['dr-ratio', 'ruan-mei', 'xueyi'],
-        2.0: ['black-swan', 'misha', 'sparkle'],
-        2.1: ['acheron', 'aventurine', 'gallagher'],
-        2.2: ['robin', 'boothill'],
-        2.3: ['jade', 'firefly']
-    }
-
     database = 'hsr.db'
     sqlite_pipeline = SQLitePipeline(database)
+    version_dict = sqlite_pipeline.version_dict
 
     df = sqlite_pipeline.add_version(version_dict)
     sqlite_pipeline.create_characters_table(df)
