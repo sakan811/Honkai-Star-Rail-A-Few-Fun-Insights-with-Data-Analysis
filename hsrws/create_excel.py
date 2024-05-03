@@ -1,6 +1,8 @@
 """
 For creating an Excel file and add data from the stats list into the file.
 
+"""
+
 #    Copyright 2024 Sakan Nirattisaykul
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -14,7 +16,8 @@ For creating an Excel file and add data from the stats list into the file.
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-"""
+
+
 from loguru import logger
 import pandas as pd
 

@@ -6,12 +6,6 @@ The script functionality:
 2. Calculate growth values for Attack (ATK), Defense (DEF), HP, and Speed columns.
 3. Save the modified DataFrame to a new Excel file in the 'hsr_updated' directory.
 """
-from loguru import logger
-
-import pandas as pd
-from pandas import DataFrame
-
-
 #    Copyright 2024 Sakan Nirattisaykul
 #
 #    Licensed under the Apache License, Version 2.0 (the "License");
@@ -25,6 +19,12 @@ from pandas import DataFrame
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
+
+from loguru import logger
+
+import pandas as pd
+from pandas import DataFrame
+
 
 def save_to_excel(input_excel_file_path: str, output_path: str) -> None:
     """
