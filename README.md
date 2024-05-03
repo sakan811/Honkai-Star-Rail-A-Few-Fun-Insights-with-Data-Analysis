@@ -12,30 +12,44 @@ To see the visualizations, check out posts below:
 ## To Run Web-Scraping Process
 
 - Go to ```main.py```
+- Import the following packages
+  - ```
+        from loguru import logger # optional
+
+        import hsrws
+      
+        # optional
+        logger.add('main.log',
+                   format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
+                   mode='w')
+    ```
 - **To scrape characters' stats**
-  - To let a script automatically get URLs, set 'auto' parameter as follows:
+  - To let a script automatically get URLs, follow the code snippets below:
     - ```
-      main = hsrws.HonkaiStarRailScrape(auto=True)
-      main.hsr_scrape()
+      if __name__ == '__main__':
+          main = hsrws.HonkaiStarRailScrape(auto=True)
+          main.hsr_scrape()
       ```
-  - To manually get URLs, set 'urls' parameter as follows:
+  - To manually get URLs, follow the code snippets below:
     - ```
-      urls = ['character/page/url']
-      main = hsrws.HonkaiStarRailScrape(urls=urls)
-      main.hsr_scrape()
+      if __name__ == '__main__':
+          urls = ['character/page/url']
+          main = hsrws.HonkaiStarRailScrape(urls=urls)
+          main.hsr_scrape()
       ```
 - **To scrape characters' element, path, and rarity data**
-  - ```from hsrws.scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement```
-  - To let a script automatically get URLs, set 'auto' parameter as follows:
+  - To let a script automatically get URLs, follow the code snippets below:
     - ```
-      main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
-      main.hsr_scrape()
+      if __name__ == '__main__':
+          main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
+          main.hsr_scrape()
       ```
-  - To manually get URLs, set 'urls' parameter as follows:
+  - To manually get URLs, follow the code snippets below:
     - ```
-      urls = ['character/page/url']
-      main = hsrws.HonkaiStarRailScrapePathAndElement(urls=url)
-      main.hsr_scrape()
+      if __name__ == '__main__':
+         urls = ['character/page/url']
+         main = hsrws.HonkaiStarRailScrapePathAndElement(urls=url)
+         main.hsr_scrape()
       ```
 
 ## ```hsrws``` package
@@ -75,6 +89,12 @@ To see the visualizations, check out posts below:
 
 - Migrate Excel data to SQLite database
 - Create Views
+
+To use ```sqlite_pipeline.py```:
+
+- Go to ```sqlite_pipeline.py``` script
+- Run the script
+- The created SQLite database is named 'hsr'
 
 ## Other Scripts
 ```stats_of_desired_lvl.py```:
