@@ -21,6 +21,7 @@ import time
 from loguru import logger
 from selenium.common import TimeoutException, NoSuchElementException, WebDriverException
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webelement import WebElement
@@ -262,8 +263,13 @@ class WebScrape:
         logger.info(f'Web scraping is starting...'
                     f'Scrap from {url = } of {character_name = }')
 
+        logger.info('Set --disable-images and --headless option for Chrome')
+        chrome_options = Options()
+        chrome_options.add_argument('--disable-images')  # Disable loading images for faster page loading
+        chrome_options.add_argument('--headless')  # Run Chrome in headless mode (without GUI) for better performance
+
         logger.info('Open the browser.')
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome(options=chrome_options)
 
         driver.maximize_window()
 
