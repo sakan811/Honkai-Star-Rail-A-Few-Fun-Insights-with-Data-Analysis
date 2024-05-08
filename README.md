@@ -51,6 +51,7 @@ To see the visualizations, check out posts below:
          main = hsrws.HonkaiStarRailScrapePathAndElement(urls=url)
          main.hsr_scrape()
       ```
+- Scraped Stats data is saved at 'hsr' folder, while scraped Element, Path, and Rarity data is saved at 'data' folder.
 
 ## ```hsrws``` package
 ```web_scrap.py```:
