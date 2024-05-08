@@ -14,6 +14,7 @@
 
 import os
 import sqlite3
+from sqlite3 import OperationalError
 
 import pandas as pd
 from loguru import logger
@@ -40,7 +41,7 @@ class SQLitePipeline:
             1.6: ['dr-ratio', 'ruan-mei', 'xueyi'],
             2.0: ['black-swan', 'misha', 'sparkle'],
             2.1: ['acheron', 'aventurine', 'gallagher'],
-            2.2: ['robin', 'boothill'],
+            2.2: ['robin', 'boothill', 'trailblazer-imaginary'],
             2.3: ['jade', 'firefly']
         }
 
@@ -64,9 +65,12 @@ class SQLitePipeline:
                     1.0
                 )
             )
+        except FileNotFoundError as e:
+            logger.error(e)
+            logger.error(f'{file} not found')
         except Exception as e:
             logger.error(e)
-            logger.error('Failed to add Version column')
+            logger.error('Unexpected error')
         else:
             logger.info('Added Version columns successfully.')
             return dataframe
@@ -90,7 +94,7 @@ class SQLitePipeline:
                 dataframe.to_sql('Characters', connection, if_exists='replace', index=False, dtype=dtype_dict)
         except Exception as e:
             logger.error(e)
-            logger.error('Failed to create Characters table')
+            logger.error('Unexpected error')
             connection.rollback()
         else:
             logger.info('Created Characters table successfully.')
@@ -152,7 +156,7 @@ class SQLitePipeline:
                     df_list.append(dataframe)
         except (FileNotFoundError, PermissionError) as e:
             logger.error(e)
-            logger.error('Error accessing file or directory')
+            logger.error(f'Error accessing {directory}')
         else:
             logger.info('Return df_list')
             return df_list
@@ -175,9 +179,12 @@ class SQLitePipeline:
         logger.info('Combine DataFrame from df_list')
         try:
             combined_df = pd.concat(df_list, ignore_index=True)
+        except ValueError as e:
+            logger.error(e)
+            logger.error('No objects to concatenate. df_list is empty')
         except Exception as e:
             logger.error(e)
-            logger.error('Failed to concatenate DataFrame')
+            logger.error('Unexpected error')
         else:
             logger.info('Combined DataFrame successfully')
 
@@ -204,9 +211,12 @@ class SQLitePipeline:
         try:
             with sqlite3.connect(self.database) as connection:
                 combined_df.to_sql('Stats', connection, if_exists='replace', index=False, dtype=dtype_dict)
+        except OperationalError as e:
+            logger.error(e)
+            logger.error(f'{self.database} path is not found.')
         except Exception as e:
             logger.error(e)
-            logger.error('Failed to create Stats table')
+            logger.error('Unexpected error')
         else:
             logger.info('Created Stats table successfully')
 
