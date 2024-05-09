@@ -1,13 +1,14 @@
 # Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis
-The project gives insights that delve into the Honkai Star Rail's character's stats of all available characters as of the given date.
+
+Some insights about Honkai Star Rail's characters' data.
 
 Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.fandom.com/wiki/Character/List
 
-Latest update: Apr 30th, 2024
+Latest update: May 10th, 2024
 
 To see the visualizations, check out posts below:  
-[Instagram](https://www.instagram.com/p/C6Ww0r0BJF5/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
-[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0A5XHXHEEkAeTiPd2LpfzKqYYpFQ9aSqukoZbFZP6cRqpev117f6658QhMrPi8dtml&id=61553626169836)
+[Instagram](https://www.instagram.com/p/C6wadvUR76p/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0kw7jGvSfi8xCVQwKxzoBcTKHMMGNKCjwvN8MYtcfwYUhJjWy9awGuvHYEjsXKNehl&id=61553626169836)
 
 ## To Run Web-Scraping Process
 
