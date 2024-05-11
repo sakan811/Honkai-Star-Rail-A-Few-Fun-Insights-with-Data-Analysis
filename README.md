@@ -4,11 +4,11 @@ Some insights about Honkai Star Rail's characters' data.
 
 Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.fandom.com/wiki/Character/List
 
-Latest update: May 10th, 2024
+Latest update: May 11th, 2024
 
 To see the visualizations, check out posts below:  
-[Instagram](https://www.instagram.com/p/C6wadvUR76p/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
-[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0kw7jGvSfi8xCVQwKxzoBcTKHMMGNKCjwvN8MYtcfwYUhJjWy9awGuvHYEjsXKNehl&id=61553626169836)
+[Instagram]()  
+[Facebook]()
 
 ## To Run Web-Scraping Process
 
