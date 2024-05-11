@@ -17,6 +17,7 @@ import sqlite3
 from sqlite3 import OperationalError
 
 import pandas as pd
+import sqlalchemy
 from loguru import logger
 from pandas import DataFrame
 from sqlalchemy import create_engine, text
@@ -92,11 +93,21 @@ class SQLitePipeline:
         try:
             with sqlite3.connect(self.database) as connection:
                 dataframe.to_sql('Characters', connection, if_exists='replace', index=False, dtype=dtype_dict)
+        except OperationalError as e:
+            logger.error(e)
+            logger.error(f"{self.database} not found.")
+            connection.rollback()
+        except ValueError as e:
+            logger.error(e)
+            logger.error("Data type mismatch.")
+            logger.error(f"Check {dtype_dict = }.")
+            connection.rollback()
         except Exception as e:
             logger.error(e)
             logger.error('Unexpected error')
             connection.rollback()
         else:
+            connection.commit()
             logger.info('Created Characters table successfully.')
 
     @staticmethod
@@ -214,6 +225,7 @@ class SQLitePipeline:
         except OperationalError as e:
             logger.error(e)
             logger.error(f'{self.database} path is not found.')
+            connection.rollback()
         except Exception as e:
             logger.error(e)
             logger.error('Unexpected error')
@@ -243,11 +255,15 @@ class SQLitePipeline:
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(query))
-                connection.commit()
+        except sqlalchemy.exc.OperationalError as e:
+            logger.error(e)
+            logger.error(f'{self.database} path is not found.')
+            connection.rollback()
         except Exception as e:
             logger.error(f'Error dropping {view_name} View: {e}')
             connection.rollback()
         else:
+            connection.commit()
             logger.info(f'Dropped {view_name} View successfully')
 
     def _create_character_stats_view(self) -> None:
@@ -275,11 +291,15 @@ class SQLitePipeline:
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(query))
-                connection.commit()
+        except sqlalchemy.exc.OperationalError as e:
+            logger.error(e)
+            logger.error(f'{self.database} path is not found.')
+            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating CharacterStats View: {e}')
             connection.rollback()
         else:
+            connection.commit()
             logger.info('Created CharacterStats View successfully')
 
     def _create_element_character_count_ver(self) -> None:
@@ -319,11 +339,15 @@ class SQLitePipeline:
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(query))
-                connection.commit()
+        except sqlalchemy.exc.OperationalError as e:
+            logger.error(e)
+            logger.error(f'{self.database} path is not found.')
+            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating ElementCharacterCountByVersion View: {e}')
             connection.rollback()
         else:
+            connection.commit()
             logger.info('Created ElementCharacterCountByVersion View successfully')
 
     def _create_path_character_count_ver(self) -> None:
@@ -373,11 +397,15 @@ class SQLitePipeline:
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(query))
-                connection.commit()
+        except sqlalchemy.exc.OperationalError as e:
+            logger.error(e)
+            logger.error(f'{self.database} path is not found.')
+            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating PathCharacterCountByVersion View: {e}')
             connection.rollback()
         else:
+            connection.commit()
             logger.info('Created PathCharacterCountByVersion View successfully')
 
     def _create_rarity_character_count_ver(self) -> None:
@@ -414,11 +442,15 @@ class SQLitePipeline:
         try:
             with self.engine.connect() as connection:
                 connection.execute(text(query))
-                connection.commit()
+        except sqlalchemy.exc.OperationalError as e:
+            logger.error(e)
+            logger.error(f'{self.database} path is not found.')
+            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating RarityCharacterCountByVersion View: {e}')
             connection.rollback()
         else:
+            connection.commit()
             logger.info('Created RarityCharacterCountByVersion View successfully')
 
 
