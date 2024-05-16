@@ -78,8 +78,13 @@ class GetUrlAuto(WebScrape):
 
         logger.info('Set --disable-images and --headless option for Chrome')
         chrome_options = Options()
-        chrome_options.add_argument('--disable-images')  # Disable loading images for faster page loading
-        chrome_options.add_argument('--headless')  # Run Chrome in headless mode (without GUI) for better performance
+
+        # Disable loading images for faster page loading
+        chrome_prefs = {"profile.managed_default_content_settings.images": 2}
+        chrome_options.add_experimental_option("prefs", chrome_prefs)
+
+        # Run Chrome in headless mode (without GUI) for better performance
+        chrome_options.add_argument('--headless')
 
         logger.info('Open the web browser.')
         driver = webdriver.Chrome(options=chrome_options)
