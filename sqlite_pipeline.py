@@ -238,32 +238,34 @@ class SQLitePipeline:
         :return: None
         """
         with sqlite3.connect(self.database) as connection:
-            with connection.cursor() as cursor:
-                query = """
+            cursor = connection.cursor()
+            query = """
+            SELECT
+                Character,
+                Level
+            FROM (
                 SELECT
                     Character,
-                    Level
-                FROM (
-                    SELECT
-                        Character,
-                        Level,
-                        ROW_NUMBER() OVER (PARTITION BY Character, Level ORDER BY Level) AS RowNum
-                    FROM
-                        Stats
-                ) subquery
-                WHERE
-                    RowNum > 1;
-                """
-                cursor.execute(query)
+                    Level,
+                    ROW_NUMBER() OVER (PARTITION BY Character, Level ORDER BY Level) AS RowNum
+                FROM
+                    Stats
+            ) subquery
+            WHERE
+                RowNum > 1;
+            """
+            cursor.execute(query)
 
-                # Fetch all results
-                result = cursor.fetchall()
+            # Fetch all results
+            result = cursor.fetchall()
 
-                if result:
-                    logger.error(f'Found duplicate Level rows within the same Character.')
-                    logger.error(f'Please re-scrape the data.')
-                else:
-                    logger.info(f'No duplicate Level rows within the same Character.')
+            if result:
+                logger.error(f'Found duplicate Level rows within the same Character.')
+                logger.error(f'Please re-scrape the data.')
+                cursor.close()
+            else:
+                logger.info(f'No duplicate Level rows within the same Character.')
+                cursor.close()
 
     def create_views(self) -> None:
         """
