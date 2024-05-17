@@ -17,6 +17,8 @@ To scrape characters' stats data from the website.
 #    limitations under the License.
 
 import os
+from concurrent.futures import ThreadPoolExecutor
+
 from loguru import logger
 
 from .web_scrap import WebScrape
@@ -81,14 +83,22 @@ class HonkaiStarRailScrapeStats(WebScrape):
     def hsr_scrape(self) -> None:
         """
         Function to start all processes related to web-scraping characters' stats from the website.
+
+        Use ThreadPoolExecutor to parallelize the web-scraping process.
         :return: None
         """
         logger.info('Starting main function...')
-        user_input_list = self._check_auto_param()
-        logger.debug(f'{user_input_list = }')
+        url_lists = self._check_auto_param()
+        logger.debug(f'{url_lists = }')
 
-        try:
-            for url in user_input_list:
+        logger.info('Define the number of threads to use')
+        num_threads = 4
+        logger.debug(f'{num_threads = }')
+
+        logger.info('Create a ThreadPoolExecutor to manage threads')
+        with ThreadPoolExecutor(max_workers=num_threads) as executor:
+            futures = []
+            for url in url_lists:
                 character_name: str = self._extract_char_name(url)
                 logger.debug(f'{character_name = }')
 
@@ -102,9 +112,19 @@ class HonkaiStarRailScrapeStats(WebScrape):
 
                 second_output_path = f"hsr/hsr_updated/{character_name}.xlsx"
 
-                self.scrape(url, character_name, first_output_path, second_output_path)
-        except Exception as e:
-            logger.error(f'Error: {e}')
+                logger.info('Submit the scrape task to the executor')
+                future = executor.submit(self.scrape, url, character_name, first_output_path, second_output_path)
+
+                logger.info('Append task to the \'futures\' list')
+                futures.append(future)
+
+            logger.info('Wait for all futures to complete')
+            for future in futures:
+                try:
+                    # Re-raise any exceptions caught during the execution of the scrape method
+                    future.result()
+                except Exception as e:
+                    logger.error(f'Error during scraping: {e}')
 
 
 if __name__ == '__main__':

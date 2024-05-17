@@ -17,14 +17,14 @@ from loguru import logger
 import hsrws
 
 logger.add('main.log',
-           format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
+           format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {thread} | {name} | {module} | {function} | {line} | {message}",
            mode='w')
 
 if __name__ == '__main__':
     # url = ['https://www.prydwen.gg/star-rail/characters/trailblazer-imaginary', 'https://www.prydwen.gg/star-rail/characters/robin']
     #
-    # main = hsrws.HonkaiStarRailScrapeStats(urls=url)
-    # main.hsr_scrape()
+    main = hsrws.HonkaiStarRailScrapeStats(auto=True)
+    main.hsr_scrape()
 
     # main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
     # main.hsr_scrape()

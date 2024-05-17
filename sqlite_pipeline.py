@@ -232,6 +232,39 @@ class SQLitePipeline:
         else:
             logger.info('Created Stats table successfully')
 
+    def check_level_duplicate(self) -> None:
+        """
+        Checks whether there is duplicate Level within the same Character.
+        :return: None
+        """
+        with sqlite3.connect(self.database) as connection:
+            with connection.cursor() as cursor:
+                query = """
+                SELECT
+                    Character,
+                    Level
+                FROM (
+                    SELECT
+                        Character,
+                        Level,
+                        ROW_NUMBER() OVER (PARTITION BY Character, Level ORDER BY Level) AS RowNum
+                    FROM
+                        Stats
+                ) subquery
+                WHERE
+                    RowNum > 1;
+                """
+                cursor.execute(query)
+
+                # Fetch all results
+                result = cursor.fetchall()
+
+                if result:
+                    logger.error(f'Found duplicate Level rows within the same Character.')
+                    logger.error(f'Please re-scrape the data.')
+                else:
+                    logger.info(f'No duplicate Level rows within the same Character.')
+
     def create_views(self) -> None:
         """
         Creates Views.
@@ -258,12 +291,9 @@ class SQLitePipeline:
         except sqlalchemy.exc.OperationalError as e:
             logger.error(e)
             logger.error(f'{self.database} path is not found.')
-            connection.rollback()
         except Exception as e:
             logger.error(f'Error dropping {view_name} View: {e}')
-            connection.rollback()
         else:
-            connection.commit()
             logger.info(f'Dropped {view_name} View successfully')
 
     def _create_character_stats_view(self) -> None:
@@ -294,12 +324,9 @@ class SQLitePipeline:
         except sqlalchemy.exc.OperationalError as e:
             logger.error(e)
             logger.error(f'{self.database} path is not found.')
-            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating CharacterStats View: {e}')
-            connection.rollback()
         else:
-            connection.commit()
             logger.info('Created CharacterStats View successfully')
 
     def _create_element_character_count_ver(self) -> None:
@@ -342,12 +369,9 @@ class SQLitePipeline:
         except sqlalchemy.exc.OperationalError as e:
             logger.error(e)
             logger.error(f'{self.database} path is not found.')
-            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating ElementCharacterCountByVersion View: {e}')
-            connection.rollback()
         else:
-            connection.commit()
             logger.info('Created ElementCharacterCountByVersion View successfully')
 
     def _create_path_character_count_ver(self) -> None:
@@ -400,12 +424,9 @@ class SQLitePipeline:
         except sqlalchemy.exc.OperationalError as e:
             logger.error(e)
             logger.error(f'{self.database} path is not found.')
-            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating PathCharacterCountByVersion View: {e}')
-            connection.rollback()
         else:
-            connection.commit()
             logger.info('Created PathCharacterCountByVersion View successfully')
 
     def _create_rarity_character_count_ver(self) -> None:
@@ -445,12 +466,9 @@ class SQLitePipeline:
         except sqlalchemy.exc.OperationalError as e:
             logger.error(e)
             logger.error(f'{self.database} path is not found.')
-            connection.rollback()
         except Exception as e:
             logger.error(f'Error creating RarityCharacterCountByVersion View: {e}')
-            connection.rollback()
         else:
-            connection.commit()
             logger.info('Created RarityCharacterCountByVersion View successfully')
 
 
@@ -469,6 +487,7 @@ def main() -> None:
     sqlite_pipeline.create_characters_table(df)
     sqlite_pipeline.create_stats_table()
     sqlite_pipeline.create_views()
+    sqlite_pipeline.check_level_duplicate()
 
 
 if __name__ == '__main__':
