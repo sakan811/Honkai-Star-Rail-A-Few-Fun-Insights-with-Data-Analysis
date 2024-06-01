@@ -4,34 +4,22 @@ Some insights about Honkai Star Rail's characters' data.
 
 Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.fandom.com/wiki/Character/List
 
-Latest update: May 11th, 2024
-
-To see the visualizations, check out posts below:  
-[Instagram](https://www.instagram.com/p/C61XbhjBcaP/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
-[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid02Ex48ttRYbexVxuBqjYKVtzDokXopD8nxsXyeakXj2RMrEv7tXoKcdMkRNicTrV8Sl&id=61553626169836)
+Latest update: June 1st, 2024  
+[Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
+[Instagram](https://www.instagram.com/p/C7rQEQ7AxUW/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0KL6EPLPQmNay31nZw6hfThPq91mfvdNSz9JCCSVTUCyhKMxHRfejJYcMJh2LW5mhl&id=61553626169836)
 
 ## To Run Web-Scraping Process
 
 - Go to ```main.py```
-- Import the following packages
-  - ```
-        from loguru import logger # optional
-
-        import hsrws
-      
-        # optional
-        logger.add('main.log',
-                   format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
-                   mode='w')
-    ```
 - **To scrape characters' stats**
-  - To let a script automatically get URLs, follow the code snippets below:
+  - To let a script automatically get URLs, use the following code snippets:
     - ```
       if __name__ == '__main__':
           main = hsrws.HonkaiStarRailScrape(auto=True)
           main.hsr_scrape()
       ```
-  - To manually get URLs, follow the code snippets below:
+  - To manually get URLs, use the following code snippets:
     - ```
       if __name__ == '__main__':
           urls = ['character/page/url']
@@ -39,13 +27,13 @@ To see the visualizations, check out posts below:
           main.hsr_scrape()
       ```
 - **To scrape characters' element, path, and rarity data**
-  - To let a script automatically get URLs, follow the code snippets below:
+  - To let a script automatically get URLs, use the following code snippets:
     - ```
       if __name__ == '__main__':
           main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
           main.hsr_scrape()
       ```
-  - To manually get URLs, follow the code snippets below:
+  - To manually get URLs, use the following code snippets:
     - ```
       if __name__ == '__main__':
          urls = ['character/page/url']

@@ -21,11 +21,14 @@ logger.add('main.log',
            mode='w')
 
 if __name__ == '__main__':
-    # url = ['https://www.prydwen.gg/star-rail/characters/trailblazer-imaginary', 'https://www.prydwen.gg/star-rail/characters/robin']
+    url = ['https://www.prydwen.gg/star-rail/characters/boothill']
     #
-    main = hsrws.HonkaiStarRailScrapeStats(auto=True)
+    main = hsrws.HonkaiStarRailScrapeStats(urls=url)
+    #
+    # main = hsrws.HonkaiStarRailScrapeStats(auto=True)
+    #
     main.hsr_scrape()
-
+    #
     # main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
     # main.hsr_scrape()
 

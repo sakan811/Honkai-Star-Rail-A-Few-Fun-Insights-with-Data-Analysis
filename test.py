@@ -47,6 +47,25 @@ def test_hsr_scrape_manual():
         assert len(result) == 0
 
 
+def test_manual_path_element_rarity_scraping():
+    url = ['https://www.prydwen.gg/star-rail/characters/aventurine']
+
+    scrape_others = hsrws.HonkaiStarRailScrapePathAndElement(urls=url)
+    scrape_others.hsr_scrape()
+
+    sqlite_pipeline.main()
+
+    database = 'hsr.db'
+
+    with sqlite3.connect(database) as connection:
+        cursor = connection.cursor()
+        cursor.execute(f"SELECT COUNT(*) FROM Characters")
+        result = cursor.fetchall()  # Fetch all results
+
+        # Assert that there should be records
+        assert len(result) > 0
+
+
 def test_full_process():
     scrape_stat = hsrws.HonkaiStarRailScrapeStats(auto=True)
     scrape_stat.hsr_scrape()
