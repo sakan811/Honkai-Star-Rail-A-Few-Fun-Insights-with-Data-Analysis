@@ -15,8 +15,11 @@ If you want to **manually** enter the **URL** of the character page from https:/
 data.
 - Go to ```main.py```
 - Enter the desired URLs into the list.
+  - To find the URL of each character from https://www.prydwen.gg/star-rail/
+    - Go to https://www.prydwen.gg/star-rail/characters
+    - Right-click and copy the link address of the desired character card.
+    - Then put it into the list in ```main.py```
 - For example:
-
 ```
 if __name__ == '__main__':
     url = ['https://www.prydwen.gg/star-rail/characters/boothill', 'https://www.prydwen.gg/star-rail/characters/kafka']
