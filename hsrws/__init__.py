@@ -13,4 +13,4 @@
 #    limitations under the License.
 
 from .scrape_stats import HonkaiStarRailScrapeStats
-from .scrape_paths_elements_rarities import HonkaiStarRailScrapePathAndElement
+from .scrape_paths_elements_rarities import HonkaiStarRailScrapePathElementRarity

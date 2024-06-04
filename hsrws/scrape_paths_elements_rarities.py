@@ -31,7 +31,7 @@ from loguru import logger
 from .scrape_stats import HonkaiStarRailScrapeStats, create_dir
 
 
-class HonkaiStarRailScrapePathAndElement(HonkaiStarRailScrapeStats):
+class HonkaiStarRailScrapePathElementRarity(HonkaiStarRailScrapeStats):
     def __init__(self, auto=False, urls=None):
         """
         :param urls: List of URLs entered by the user.

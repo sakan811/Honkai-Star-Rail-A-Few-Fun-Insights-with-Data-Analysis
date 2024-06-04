@@ -11,36 +11,45 @@ Latest update: June 1st, 2024
 
 ## To Run Web-Scraping Process
 
+If you want to **manually** enter the **URL** of the character page from https://www.prydwen.gg/star-rail/ to scrape its
+data.
 - Go to ```main.py```
-- **To scrape characters' stats**
-  - To let a script automatically get URLs, use the following code snippets:
-    - ```
-      if __name__ == '__main__':
-          main = hsrws.HonkaiStarRailScrape(auto=True)
-          main.hsr_scrape()
-      ```
-  - To manually get URLs, use the following code snippets:
-    - ```
-      if __name__ == '__main__':
-          urls = ['character/page/url']
-          main = hsrws.HonkaiStarRailScrape(urls=urls)
-          main.hsr_scrape()
-      ```
-- **To scrape characters' element, path, and rarity data**
-  - To let a script automatically get URLs, use the following code snippets:
-    - ```
-      if __name__ == '__main__':
-          main = hsrws.HonkaiStarRailScrapePathAndElement(auto=True)
-          main.hsr_scrape()
-      ```
-  - To manually get URLs, use the following code snippets:
-    - ```
-      if __name__ == '__main__':
-         urls = ['character/page/url']
-         main = hsrws.HonkaiStarRailScrapePathAndElement(urls=url)
-         main.hsr_scrape()
-      ```
-- Scraped Stats data is saved at 'hsr' folder, while scraped Element, Path, and Rarity data is saved at 'data' folder.
+- Enter the desired URLs into the list.
+- For example:
+
+```
+if __name__ == '__main__':
+    url = ['https://www.prydwen.gg/star-rail/characters/boothill', 'https://www.prydwen.gg/star-rail/characters/kafka']
+    main(url)
+```
+
+- If you want to scrape the characters' **stats**.
+  - Run the script with the following command line:
+  ```
+  python main.py --stats
+  ```
+- If you want to scrape the characters' **Path, Element, and Rarity**.
+  - Run the script with the following command line:
+  ```
+  python main.py --p_e_r
+  ```
+
+If you want the script to **automatically** get the **URL** of the character page from https://www.prydwen.gg/star-rail/
+to scrape its data.
+
+- If you want to scrape the characters' **stats**.
+  - Run the script with the following command line:
+  ```
+  python main.py --stats --auto
+  ```
+- If you want to scrape the characters' **Path, Element, and Rarity**.
+  - Run the script with the following command line:
+  ```
+  python main.py --p_e_r --auto
+  ```
+
+Scraped **Stats** data is saved at **'hsr'** and **'hsr/hsr_updated'** folder, while scraped **Element, Path, and Rarity
+** data is saved at **'data'** folder.
 
 ## ```hsrws``` package
 ```web_scrap.py```:
@@ -80,7 +89,7 @@ Latest update: June 1st, 2024
 - Migrate Excel data to SQLite database
 - Create Views
 
-To use ```sqlite_pipeline.py```:
+To load data to SQLite database using ```sqlite_pipeline.py```:
 
 - Go to ```sqlite_pipeline.py``` script
 - Run the script
