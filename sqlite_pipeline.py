@@ -43,7 +43,8 @@ class SQLitePipeline:
             2.0: ['black-swan', 'misha', 'sparkle'],
             2.1: ['acheron', 'aventurine', 'gallagher'],
             2.2: ['robin', 'boothill', 'trailblazer-imaginary'],
-            2.3: ['jade', 'firefly']
+            2.3: ['jade', 'firefly'],
+            2.4: ['yunli', 'jiaoqiu', 'march-7th-swordmaster']
         }
 
     def add_version(self, version_and_character_dict: dict[float, list[str]]) -> DataFrame:
@@ -260,11 +261,11 @@ class SQLitePipeline:
             result = cursor.fetchall()
 
             if result:
-                logger.error(f'Found duplicate Level rows within the same Character.')
-                logger.error(f'Please re-scrape the data.')
+                logger.error(f'Found duplicate Level rows within the same Character in Stats table.')
+                logger.error(f'Please re-scrape the Characters\' Stats data.')
                 cursor.close()
             else:
-                logger.info(f'No duplicate Level rows within the same Character.')
+                logger.info(f'No duplicate Level rows within the same Character in Stats table.')
                 cursor.close()
 
     def create_views(self) -> None:
@@ -481,7 +482,9 @@ def main() -> None:
     """
     logger.info('Starting SQLite pipeline process...')
 
+    # Set database name as needed
     database = 'hsr.db'
+
     sqlite_pipeline = SQLitePipeline(database)
     version_dict = sqlite_pipeline.version_dict
 

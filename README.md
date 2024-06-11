@@ -4,10 +4,10 @@ Some insights about Honkai Star Rail's characters' data.
 
 Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.fandom.com/wiki/Character/List
 
-Latest update: June 1st, 2024  
+Latest update: June 11th, 2024  
 [Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
-[Instagram](https://www.instagram.com/p/C7rQEQ7AxUW/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
-[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid0KL6EPLPQmNay31nZw6hfThPq91mfvdNSz9JCCSVTUCyhKMxHRfejJYcMJh2LW5mhl&id=61553626169836)
+[Instagram](https://www.instagram.com/p/C8Ez_WMM-li/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid02iMJFjzC9ViQZsorYxtNqtNic4zJWwX18Qc5eorVVTP64ezfSg5nVuWn2oFadYdK8l&id=61553626169836)
 
 ## To Run Web-Scraping Process
 
@@ -95,8 +95,12 @@ Scraped **Stats** data is saved at **'hsr'** and **'hsr/hsr_updated'** folder, w
 To load data to SQLite database using ```sqlite_pipeline.py```:
 
 - Go to ```sqlite_pipeline.py``` script
-- Run the script
-- The created SQLite database is named 'hsr'
+- Set the SQLite database name
+  ```
+  # Set database name as needed
+  database = 'hsr.db'
+  ```
+- Run the script to load the data to a SQLite database
 
 ## Other Scripts
 ```stats_of_desired_lvl.py```:
