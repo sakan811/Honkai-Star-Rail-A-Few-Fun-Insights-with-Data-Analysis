@@ -59,5 +59,5 @@ def main(urls: list[str]):
 
 
 if __name__ == '__main__':
-    url = ['https://www.prydwen.gg/star-rail/characters/march-7th-swordmaster']
+    url = ['https://www.prydwen.gg/star-rail/characters/firefly']
     main(url)
