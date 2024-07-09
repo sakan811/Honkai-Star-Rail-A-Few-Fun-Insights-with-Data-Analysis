@@ -2,9 +2,16 @@
 
 Some insights about Honkai Star Rail's characters' data.
 
-Data is based on https://www.prydwen.gg/star-rail/ and https://honkai-star-rail.fandom.com/wiki/Character/List
+Data is based on https://wiki.hoyolab.com/pc/hsr/aggregate/character and https://honkai-star-rail.fandom.com/wiki/Character/List
 
-Latest update: June 21, 2024  
+
+## Status
+Project Latest update: June 21, 2024  
+
+
+
+## Visualizations
+Visualizations Latest update: June 21, 2024  
 [Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
 [Instagram](https://www.instagram.com/p/C8d_dyJugPW/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
 [Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid033ShCbrt5Emrb6LGy5DjVs8qCw2UwXAMx45hQUcB26HiRxW21PULCR7s8R1dRfboBl&id=61553626169836)
@@ -13,46 +20,7 @@ Latest update: June 21, 2024
 
 If you want to **manually** enter the **URL** of the character page from https://www.prydwen.gg/star-rail/ to scrape its
 data.
-- Go to ```main.py```
-- Enter the desired URLs into the list.
-  - To find the URL of each character from https://www.prydwen.gg/star-rail/
-    - Go to https://www.prydwen.gg/star-rail/characters
-    - Right-click and copy the link address of the desired character card.
-    - Then put it into the list in ```main.py```
-- For example:
-```
-if __name__ == '__main__':
-    url = ['https://www.prydwen.gg/star-rail/characters/boothill', 'https://www.prydwen.gg/star-rail/characters/kafka']
-    main(url)
-```
-
-- If you want to scrape the characters' **stats**.
-  - Run the script with the following command line:
-  ```
-  python main.py --stats
-  ```
-- If you want to scrape the characters' **Path, Element, and Rarity**.
-  - Run the script with the following command line:
-  ```
-  python main.py --p_e_r
-  ```
-
-If you want the script to **automatically** get the **URL** of the character page from https://www.prydwen.gg/star-rail/
-to scrape its data.
-
-- If you want to scrape the characters' **stats**.
-  - Run the script with the following command line:
-  ```
-  python main.py --stats --auto
-  ```
-- If you want to scrape the characters' **Path, Element, and Rarity**.
-  - Run the script with the following command line:
-  ```
-  python main.py --p_e_r --auto
-  ```
-
-Scraped **Stats** data is saved at **'hsr'** and **'hsr/hsr_updated'** folder, while scraped **Element, Path, and Rarity
-** data is saved at **'data'** folder.
+- Run ```main.py```
 
 ## ```hsrws``` package
 ```web_scrap.py```:

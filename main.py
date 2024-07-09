@@ -11,53 +11,53 @@
 #    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #    See the License for the specific language governing permissions and
 #    limitations under the License.
-import argparse
+import asyncio
+import sys
 
+import pandas as pd
 from loguru import logger
 
-import hsrws
+from hsrws.data_transformer import transform_char_name, add_char_version, clean_path_name
+from hsrws.hsr_scraper import get_headers, scrape_hsr_data
+from hsrws.sqlite_pipeline import load_to_sqlite
 
+logger.configure(handlers=[{"sink": sys.stderr, "level": "INFO"}])
 logger.add('main.log',
            format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
-           mode='w')
-
-parser = argparse.ArgumentParser(description='Argument Parser for main.py')
-parser.add_argument('--stats', action='store_true', help='Scrape Characters\' Stats')
-parser.add_argument('--p_e_r', action='store_true', help='Scrape Characters\' Path, Element, and Rarity')
-parser.add_argument('--auto', action='store_true', help='Automatically get URLs')
-args = parser.parse_args()
+           mode='w', level="INFO")
 
 
-def main(urls: list[str]):
+def main() -> pd.DataFrame:
     """
     Main function to start the web-scraping process.
-    :param urls: List of URLs.
-    :return: None.
+    :return: Pandas Dataframe.
     """
-    if args.stats and args.p_e_r:
-        raise ValueError("Only one of --stats and --p_e_r can be parsed at a time.")
-    elif args.stats:
-        logger.info("Scraping Characters' Stats...")
-        if args.auto:
-            logger.info("Automatically get URLs...")
-            main = hsrws.HonkaiStarRailScrapeStats(auto=True)
-            main.hsr_scrape()
-        else:
-            logger.info("URLs were manually entered.")
-            main = hsrws.HonkaiStarRailScrapeStats(urls=urls)
-            main.hsr_scrape()
-    elif args.p_e_r:
-        logger.info("Scraping Characters' Path, Element, and Rarity...")
-        if args.auto:
-            logger.info("Automatically get URLs...")
-            main = hsrws.HonkaiStarRailScrapePathElementRarity(auto=True)
-            main.hsr_scrape()
-        else:
-            logger.info("URLs were manually entered.")
-            main = hsrws.HonkaiStarRailScrapePathElementRarity(urls=urls)
-            main.hsr_scrape()
+    url = 'https://sg-wiki-api.hoyolab.com/hoyowiki/hsr/wapi/get_entry_page_list'
+    headers = get_headers()
+
+    char_data_dict = {
+        'Character': [],
+        'Path': [],
+        'Element': [],
+        'Rarity': [],
+        'ATK Lvl 80': [],
+        'DEF Lvl 80': [],
+        'HP Lvl 80': [],
+        'SPD Lvl 80': []
+    }
+
+    asyncio.run(scrape_hsr_data(url, headers, char_data_dict))
+
+    char_data_df = pd.DataFrame(char_data_dict)
+
+    char_data_df['Character'] = char_data_df['Character'].apply(transform_char_name)
+    char_data_df['Path'] = char_data_df['Path'].apply(clean_path_name)
+
+    add_char_version(char_data_df)
+
+    return char_data_df
 
 
 if __name__ == '__main__':
-    url = ['https://www.prydwen.gg/star-rail/characters/firefly']
-    main(url)
+    char_data_df = main()
+    load_to_sqlite(char_data_df)
