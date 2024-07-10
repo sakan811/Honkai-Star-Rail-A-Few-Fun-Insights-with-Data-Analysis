@@ -15,9 +15,9 @@ Visualizations Latest update: 10 July 2024
 
 [Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
 
-[Instagram](https://www.instagram.com/p/C8d_dyJugPW/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+[Instagram](https://www.instagram.com/p/C9OrzJXvk8U/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
 
-[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid033ShCbrt5Emrb6LGy5DjVs8qCw2UwXAMx45hQUcB26HiRxW21PULCR7s8R1dRfboBl&id=61553626169836)
+[Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid02yJ7cAGC62UzKtQR9jh4N3fnwM5L5jvsin7LZxeAmBqYtytEs2FLpTzBDWmAvyPjKl&id=61553626169836)
 
 ## To Run Web-Scraping Process
 - Run ```main.py```
