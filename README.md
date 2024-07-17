@@ -6,14 +6,14 @@ Data is based on https://wiki.hoyolab.com/pc/hsr/aggregate/character and https:/
 
 
 ## Status
-Project Latest update: 10 July 2024
+Project Latest update: 17 July 2024
 
 [![CodeQL](https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis/actions/workflows/codeql.yml/badge.svg)](https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis/actions/workflows/codeql.yml)
 
 [![Test Scraper](https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis/actions/workflows/test-scraper.yml/badge.svg)](https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis/actions/workflows/test-scraper.yml)
 
 ## Visualizations
-Visualizations Latest update: 10 July 2024
+Visualizations Latest update: 17 July 2024
 
 [Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
 
@@ -35,5 +35,5 @@ Visualizations Latest update: 10 July 2024
 - Contain functions for loading data to SQLite
 
 [utils.py](hsrws%2Futils.py)
-- Utility functions
+- Contain utility functions
 

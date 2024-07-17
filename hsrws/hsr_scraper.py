@@ -64,7 +64,7 @@ async def scrape_hsr_data(url: str, headers: dict, char_data_dict: dict) -> None
     Scrapes HSR data from JSON response.
     :param url: URL.
     :param headers: Headers.
-    :param char_data_dict: Character data dictionary.
+    :param char_data_dict: Character data dictionary to append scraped data.
     :return: None
     """
     logger.info("Scraping HSR data...")
@@ -72,10 +72,10 @@ async def scrape_hsr_data(url: str, headers: dict, char_data_dict: dict) -> None
         page_num = 0
         while True:
             page_num += 1
-            data = await get_payload(page_num=page_num)
+            payload_data = await get_payload(page_num=page_num)
 
             logger.info(f"Scraping data of page {page_num}")
-            async with session.post(url, headers=headers, json=data) as response:
+            async with session.post(url, headers=headers, json=payload_data) as response:
                 if response.status == 200:
                     hsr_data = await response.json()
 
@@ -88,8 +88,7 @@ async def scrape_hsr_data(url: str, headers: dict, char_data_dict: dict) -> None
                             char_stats = char['display_field']
 
                             char_data_dict['Path'].append(char['filter_values']['character_paths']['values'][0])
-                            char_data_dict['Element'].append(
-                                char['filter_values']['character_combat_type']['values'][0])
+                            char_data_dict['Element'].append(char['filter_values']['character_combat_type']['values'][0])
                             char_data_dict['Rarity'].append(char['filter_values']['character_rarity']['values'][0])
 
                             if char_stats == {}:

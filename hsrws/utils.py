@@ -25,5 +25,6 @@ def get_version_dict() -> dict:
             2.1: ['acheron', 'aventurine', 'gallagher'],
             2.2: ['robin', 'boothill', 'trailblazer-the-harmony'],
             2.3: ['jade', 'firefly'],
-            2.4: ['yunli', 'jiaoqiu', 'march-7th-the-hunt']
+            2.4: ['yunli', 'jiaoqiu', 'march-7th-the-hunt'],
+            2.5: ['feixiao', 'lingsha']
         }
