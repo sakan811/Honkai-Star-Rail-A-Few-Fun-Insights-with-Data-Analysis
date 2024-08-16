@@ -13,10 +13,16 @@ def transform_char_name(char_name: str) -> str:
     :return: Transformed character name.
     """
     logger.debug("Transforming character name...")
+
+    # Define the non-breaking space character
+    nbsp = '\u00A0'
+
     # Remove "(Coming Soon)"
     cleaned_char_name = char_name.replace(" (Coming Soon)", "")
-    # Remove other symbols like '.' and '•'
-    cleaned_char_name = re.sub(r'[.•]', '', cleaned_char_name)
+    # Replace non-breaking spaces with regular spaces
+    cleaned_char_name = cleaned_char_name.replace(nbsp, ' ')
+    # Remove symbols like '.', '•', and ':'
+    cleaned_char_name = re.sub(r'[.•:]', '', cleaned_char_name)
     # Replace spaces with hyphens
     cleaned_char_name = cleaned_char_name.replace(' ', '-').lower()
     # Replace multiple hyphens with a single hyphen

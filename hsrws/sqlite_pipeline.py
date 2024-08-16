@@ -13,6 +13,7 @@
 #    limitations under the License.
 
 import sqlite3
+import traceback
 
 import pandas as pd
 from loguru import logger
@@ -25,10 +26,15 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
     :return: None
     """
     logger.info(f"Loading dataframe to SQLite database...")
-    with sqlite3.connect('hsr.db') as conn:
-        df.to_sql('HsrCharacters', conn, if_exists='replace')
-        drop_views(conn)
-        create_views(conn)
+    try:
+        with sqlite3.connect('hsr.db') as conn:
+            df.to_sql('HsrCharacters', conn, if_exists='replace')
+            drop_views(conn)
+            create_views(conn)
+    except sqlite3.OperationalError as e:
+        logger.error(f'OperationalError: {e}')
+        logger.error(traceback.format_exc())
+        conn.rollback()
 
 
 def create_views(conn: sqlite3.Connection) -> None:

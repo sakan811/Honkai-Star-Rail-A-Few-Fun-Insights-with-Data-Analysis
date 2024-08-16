@@ -18,8 +18,9 @@ import pandas as pd
 from loguru import logger
 
 from hsrws.data_transformer import transform_char_name, add_char_version, clean_path_name
-from hsrws.hsr_scraper import get_headers, scrape_hsr_data
+from hsrws.hsr_scraper import get_headers, Scraper
 from hsrws.sqlite_pipeline import load_to_sqlite
+from hsrws.utils import handle_exception
 
 logger.configure(handlers=[{"sink": sys.stderr, "level": "INFO"}])
 logger.add('main.log',
@@ -27,6 +28,7 @@ logger.add('main.log',
            mode='w', level="INFO")
 
 
+@handle_exception
 def main() -> pd.DataFrame:
     """
     Main function to start the web-scraping process.
@@ -35,20 +37,8 @@ def main() -> pd.DataFrame:
     url = 'https://sg-wiki-api.hoyolab.com/hoyowiki/hsr/wapi/get_entry_page_list'
     headers = get_headers()
 
-    char_data_dict = {
-        'Character': [],
-        'Path': [],
-        'Element': [],
-        'Rarity': [],
-        'ATK Lvl 80': [],
-        'DEF Lvl 80': [],
-        'HP Lvl 80': [],
-        'SPD Lvl 80': []
-    }
-
-    asyncio.run(scrape_hsr_data(url, headers, char_data_dict))
-
-    char_data_df = pd.DataFrame(char_data_dict)
+    scraper = Scraper()
+    char_data_df = asyncio.run(scraper.scrape_hsr_data(url, headers))
 
     char_data_df['Character'] = char_data_df['Character'].apply(transform_char_name)
     char_data_df['Path'] = char_data_df['Path'].apply(clean_path_name)

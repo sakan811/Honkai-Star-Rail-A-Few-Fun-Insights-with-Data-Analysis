@@ -13,9 +13,17 @@
 #    limitations under the License.
 
 import json
+import os
+from dataclasses import dataclass
 
 import aiohttp
+import pandas as pd
+from dotenv import load_dotenv
 from loguru import logger
+
+from hsrws.utils import handle_exception
+
+load_dotenv()
 
 
 async def get_payload(page_num: int) -> dict:
@@ -41,66 +49,129 @@ def get_headers() -> dict:
     """
     logger.info("Getting headers...")
     return {
-        'Content-Type': 'application/json;charset=UTF-8',
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36',
-        'Accept': 'application/json, text/plain, */*',
         'Origin': 'https://wiki.hoyolab.com',
         'Referer': 'https://wiki.hoyolab.com/',
+        'User-Agent': os.getenv('USER_AGENT'),
         'X-Rpc-Language': 'en-us',
         'X-Rpc-Wiki_app': 'hsr'
     }
 
 
-async def scrape_hsr_data(url: str, headers: dict, char_data_dict: dict) -> None:
+@dataclass
+class Scraper:
     """
-    Scrapes HSR data from JSON response.
-    :param url: URL.
-    :param headers: Headers.
-    :param char_data_dict: Character data dictionary to append scraped data.
-    :return: None
-    """
-    logger.info("Scraping HSR data...")
-    async with aiohttp.ClientSession() as session:
-        page_num = 0
-        while True:
-            page_num += 1
-            payload_data = await get_payload(page_num=page_num)
+    Scraper class.
+    Contain functions related to scraping data.
 
-            logger.info(f"Scraping data of page {page_num}")
-            async with session.post(url, headers=headers, json=payload_data) as response:
-                if response.status == 200:
+    Attributes:
+        page_num (int): Page number of the page that contains data.
+        char_data_dict (dict): Dictionary to store character data.
+    """
+
+    page_num: int = 0
+    char_data_dict = {
+        'Character': [],
+        'Path': [],
+        'Element': [],
+        'Rarity': [],
+        'ATK Lvl 80': [],
+        'DEF Lvl 80': [],
+        'HP Lvl 80': [],
+        'SPD Lvl 80': []
+    }
+
+    @handle_exception
+    async def scrape_hsr_data(self, url: str, headers: dict) -> pd.DataFrame:
+        """
+        Scrapes HSR data from JSON response.
+        :param url: URL.
+        :param headers: Headers.
+        :return: Dataframe containing scraped data.
+        """
+        logger.info("Scraping HSR data...")
+
+        while True:
+            self.page_num += 1
+            payload_data = await get_payload(page_num=self.page_num)
+
+            logger.info(f"Scraping data of page {self.page_num}")
+            async with aiohttp.ClientSession() as session:
+                async with session.post(url, headers=headers, json=payload_data) as response:
+                    if not response.status == 200:
+                        logger.error(f"Error: Received status code {response.status}")
+                        return pd.DataFrame(self.char_data_dict)
+
                     hsr_data = await response.json()
 
-                    char_list = hsr_data['data']['list']
+                    char_list: list[dict] = hsr_data['data']['list']
 
-                    if char_list:
-                        for char in char_list:
-                            char_data_dict['Character'].append(char['name'])
+                    if not char_list:
+                        logger.warning(f'Character list from page {self.page_num} is empty. Stop web-scraping process')
+                        return pd.DataFrame(self.char_data_dict)
 
-                            char_stats = char['display_field']
+                    for char in char_list:
+                        await self._scrape_character_data(char)
 
-                            char_data_dict['Path'].append(char['filter_values']['character_paths']['values'][0])
-                            char_data_dict['Element'].append(char['filter_values']['character_combat_type']['values'][0])
-                            char_data_dict['Rarity'].append(char['filter_values']['character_rarity']['values'][0])
+    @handle_exception
+    async def _scrape_character_data(self, character_data: dict) -> None:
+        """
+        Scrapes character data from JSON response.
+        :param character_data: Dictionary that represents each character data.
+        :return: None
+        """
+        try:
+            character_name = character_data['name']
+        except KeyError as e:
+            logger.error(f"Character name {e} is not found.")
+            raise KeyError
+        else:
+            self.char_data_dict['Character'].append(character_name)
 
-                            if char_stats == {}:
-                                char_data_dict['ATK Lvl 80'].append(0)
-                                char_data_dict['DEF Lvl 80'].append(0)
-                                char_data_dict['HP Lvl 80'].append(0)
-                                char_data_dict['SPD Lvl 80'].append(0)
-                            else:
-                                char_stats_lvl_80_json_str = char['display_field']['attr_level_80']
-                                char_stats_lvl_80 = json.loads(char_stats_lvl_80_json_str)
-                                char_data_dict['ATK Lvl 80'].append(int(char_stats_lvl_80['base_atk']))
-                                char_data_dict['DEF Lvl 80'].append(int(char_stats_lvl_80['base_def']))
-                                char_data_dict['HP Lvl 80'].append(int(char_stats_lvl_80['base_hp']))
-                                char_data_dict['SPD Lvl 80'].append(int(char_stats_lvl_80['base_speed']))
-                    else:
-                        logger.warning(f'Character list from page {page_num} is empty. Stop web-scraping process')
-                        break
+            await self._append_char_type_data(character_data)
+
+            try:
+                char_stats = character_data['display_field']
+
+                if char_stats == {}:
+                    self.char_data_dict['ATK Lvl 80'].append(0)
+                    self.char_data_dict['DEF Lvl 80'].append(0)
+                    self.char_data_dict['HP Lvl 80'].append(0)
+                    self.char_data_dict['SPD Lvl 80'].append(0)
                 else:
-                    logger.error(f"Error: Received status code {response.status}")
-                    break
+                    char_stats_lvl_80_json_str = character_data['display_field']['attr_level_80']
+                    char_stats_lvl_80 = json.loads(char_stats_lvl_80_json_str)
+                    self.char_data_dict['ATK Lvl 80'].append(int(char_stats_lvl_80['base_atk']))
+                    self.char_data_dict['DEF Lvl 80'].append(int(char_stats_lvl_80['base_def']))
+                    self.char_data_dict['HP Lvl 80'].append(int(char_stats_lvl_80['base_hp']))
+                    self.char_data_dict['SPD Lvl 80'].append(int(char_stats_lvl_80['base_speed']))
+            except KeyError as e:
+                logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
+                raise KeyError
+
+    @handle_exception
+    async def _append_char_type_data(self, character_data: dict) -> None:
+        """
+        Appends character type data, e.g., Path, Element, and Rarity
+        :param character_data: Dictionary that represents each character data.
+        :return: None
+        """
+        logger.debug('Adding character type data...')
+
+        try:
+            path: list = character_data['filter_values']['character_paths']['values']
+            element: list = character_data['filter_values']['character_elements']['values']
+            rarity: list = character_data['filter_values']['character_rarity']['values']
+        except KeyError:
+            logger.error(f'No character type data found for {character_data["name"]}', exc_info=True)
+            raise KeyError
+
+        try:
+            self.char_data_dict['Path'].append(path[0])
+            self.char_data_dict['Element'].append(element[0])
+            self.char_data_dict['Rarity'].append(rarity[0])
+        except IndexError:
+            logger.error(f'No character type data found for {character_data["name"]}', exc_info=True)
+            raise IndexError
 
 
 if __name__ == '__main__':
