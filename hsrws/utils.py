@@ -36,23 +36,4 @@ def get_version_dict() -> dict:
     }
 
 
-def handle_exception(func: Callable) -> Callable:
-    """
-    Decorate a function for exception handling.
-    :param func: The function to be decorated.
-    :return: The decorated function.
-    """
-    @functools.wraps(func)
-    def wrapper(*args, **kwargs):
-        try:
-            # Call the original function
-            result = func(*args, **kwargs)
-            return result
-        except Exception as e:
-            logger.error(e)
-            logger.error(traceback.format_exc())
-            logger.error('Unexpected exception')
-            raise Exception(e)
-
-    return wrapper
 

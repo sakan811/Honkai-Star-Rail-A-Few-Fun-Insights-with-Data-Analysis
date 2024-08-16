@@ -12,7 +12,7 @@ async def test_append_char_type_data_success():
     character_data = {
         'filter_values': {
             'character_paths': {'values': ['Path1']},
-            'character_elements': {'values': ['Element1']},
+            'character_combat_type': {'values': ['Element1']},
             'character_rarity': {'values': ['Rarity1']}
         }
     }
@@ -38,7 +38,7 @@ async def test_append_char_type_data_key_error():
     character_data = {
         'filter_values': {
             'character_paths': {},  # Missing 'values'
-            'character_elements': {},  # Missing 'values'
+            'character_combat_type': {},  # Missing 'values'
             'character_rarity': {}  # Missing 'values'
         }
     }
@@ -58,7 +58,7 @@ async def test_append_char_type_data_index_error():
     character_data = {
         'filter_values': {
             'character_paths': {'values': []},
-            'character_elements': {'values': []},
+            'character_combat_type': {'values': []},
             'character_rarity': {'values': []}
         }
     }

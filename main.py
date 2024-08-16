@@ -20,7 +20,6 @@ from loguru import logger
 from hsrws.data_transformer import transform_char_name, add_char_version, clean_path_name
 from hsrws.hsr_scraper import get_headers, Scraper
 from hsrws.sqlite_pipeline import load_to_sqlite
-from hsrws.utils import handle_exception
 
 logger.configure(handlers=[{"sink": sys.stderr, "level": "INFO"}])
 logger.add('main.log',
@@ -28,7 +27,6 @@ logger.add('main.log',
            mode='w', level="INFO")
 
 
-@handle_exception
 def main() -> pd.DataFrame:
     """
     Main function to start the web-scraping process.

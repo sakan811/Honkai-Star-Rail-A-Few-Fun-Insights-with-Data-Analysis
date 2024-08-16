@@ -21,8 +21,6 @@ import pandas as pd
 from dotenv import load_dotenv
 from loguru import logger
 
-from hsrws.utils import handle_exception
-
 load_dotenv()
 
 
@@ -80,7 +78,6 @@ class Scraper:
         'SPD Lvl 80': []
     }
 
-    @handle_exception
     async def scrape_hsr_data(self, url: str, headers: dict) -> pd.DataFrame:
         """
         Scrapes HSR data from JSON response.
@@ -112,7 +109,6 @@ class Scraper:
                     for char in char_list:
                         await self._scrape_character_data(char)
 
-    @handle_exception
     async def _scrape_character_data(self, character_data: dict) -> None:
         """
         Scrapes character data from JSON response.
@@ -148,7 +144,6 @@ class Scraper:
                 logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
                 raise KeyError
 
-    @handle_exception
     async def _append_char_type_data(self, character_data: dict) -> None:
         """
         Appends character type data, e.g., Path, Element, and Rarity
@@ -159,7 +154,7 @@ class Scraper:
 
         try:
             path: list = character_data['filter_values']['character_paths']['values']
-            element: list = character_data['filter_values']['character_elements']['values']
+            element: list = character_data['filter_values']['character_combat_type']['values']
             rarity: list = character_data['filter_values']['character_rarity']['values']
         except KeyError:
             logger.error(f'No character type data found for {character_data["name"]}', exc_info=True)
