@@ -15,20 +15,20 @@ def transform_char_name(char_name: str) -> str:
     logger.debug("Transforming character name...")
 
     # Define the non-breaking space character
-    nbsp = '\u00A0'
+    nbsp: str = '\u00A0'
 
     # Remove "(Coming Soon)"
-    cleaned_char_name = char_name.replace(" (Coming Soon)", "")
+    cleaned_char_name: str = char_name.replace(" (Coming Soon)", "")
     # Replace non-breaking spaces with regular spaces
-    cleaned_char_name = cleaned_char_name.replace(nbsp, ' ')
+    cleaned_char_name: str = cleaned_char_name.replace(nbsp, ' ')
     # Remove symbols like '.', '•', and ':'
-    cleaned_char_name = re.sub(r'[.•:]', '', cleaned_char_name)
+    cleaned_char_name: str = re.sub(r'[.•:]', '', cleaned_char_name)
     # Replace spaces with hyphens
-    cleaned_char_name = cleaned_char_name.replace(' ', '-').lower()
+    cleaned_char_name: str = cleaned_char_name.replace(' ', '-').lower()
     # Replace multiple hyphens with a single hyphen
-    cleaned_char_name = re.sub(r'-+', '-', cleaned_char_name)
+    cleaned_char_name: str = re.sub(r'-+', '-', cleaned_char_name)
     # Ensure no name ends with a hyphen
-    cleaned_char_name = cleaned_char_name.rstrip('-')
+    cleaned_char_name: str = cleaned_char_name.rstrip('-')
     return cleaned_char_name
 
 
@@ -49,7 +49,7 @@ def add_char_version(df: pd.DataFrame) -> None:
     :return: None
     """
     logger.debug("Adding character version...")
-    version_and_character_dict = get_version_dict()
+    version_and_character_dict: dict[int, list[str]] = get_version_dict()
     df['Version'] = df['Character'].apply(
         lambda character: next(
             (version for version, characters in version_and_character_dict.items() if character in characters),
