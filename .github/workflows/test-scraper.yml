@@ -40,7 +40,7 @@ jobs:
 
     - name: Lint with Ruff
       run: |
-        ruff . --fix
+        ruff check --fix .
 
     - name: Test with pytest
       env:
