@@ -14,11 +14,11 @@ and https://honkai-star-rail.fandom.com/wiki/Character/List
 ## Visualizations
 [Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
 
-Visualizations As Of 17 July 2024:
+Visualizations As Of 22 September 2024:
 
-* [Instagram](https://www.instagram.com/p/C9OrzJXvk8U/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
+* [Instagram](https://www.instagram.com/p/DAOLOgJuowW/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
 
-* [Facebook](https://www.facebook.com/permalink.php?story_fbid=pfbid02yJ7cAGC62UzKtQR9jh4N3fnwM5L5jvsin7LZxeAmBqYtytEs2FLpTzBDWmAvyPjKl&id=61553626169836)
+* [Facebook](https://www.facebook.com/share/p/XVn86nMPWZFf7WPN/)
 
 ## To Run Web-Scraping Process
 - Clone this repo: https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis.git
