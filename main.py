@@ -13,6 +13,7 @@
 #    limitations under the License.
 import asyncio
 import sys
+from typing import Any
 
 import pandas as pd
 from loguru import logger
@@ -32,18 +33,18 @@ def main() -> pd.DataFrame:
     Main function to start the web-scraping process.
     :return: Pandas Dataframe.
     """
-    url = 'https://sg-wiki-api.hoyolab.com/hoyowiki/hsr/wapi/get_entry_page_list'
-    headers = get_headers()
+    url: str = 'https://sg-wiki-api.hoyolab.com/hoyowiki/hsr/wapi/get_entry_page_list'
+    headers: dict[str, Any] = get_headers()
 
-    scraper = Scraper()
-    char_data_df = asyncio.run(scraper.scrape_hsr_data(url, headers))
+    scraper: Scraper = Scraper()
+    character_data_dataframe: pd.DataFrame = asyncio.run(scraper.scrape_hsr_data(url, headers))
 
-    char_data_df['Character'] = char_data_df['Character'].apply(transform_char_name)
-    char_data_df['Path'] = char_data_df['Path'].apply(clean_path_name)
+    character_data_dataframe['Character'] = character_data_dataframe['Character'].apply(transform_char_name)
+    character_data_dataframe['Path'] = character_data_dataframe['Path'].apply(clean_path_name)
 
-    add_char_version(char_data_df)
+    add_char_version(character_data_dataframe)
 
-    return char_data_df
+    return character_data_dataframe
 
 
 if __name__ == '__main__':
