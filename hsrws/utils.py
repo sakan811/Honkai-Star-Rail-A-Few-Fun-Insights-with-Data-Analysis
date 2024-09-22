@@ -15,5 +15,6 @@ def get_version_dict() -> dict[int, list[str]]:
         2.2: ['robin', 'boothill', 'trailblazer-the-harmony'],
         2.3: ['jade', 'firefly'],
         2.4: ['yunli', 'jiaoqiu', 'march-7th-the-hunt'],
-        2.5: ['feixiao', 'lingsha']
+        2.5: ['feixiao', 'lingsha', 'moze'],
+        2.6: ['rappa']
     }
