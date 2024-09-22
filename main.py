@@ -12,7 +12,7 @@ from hsrws.sqlite_pipeline import load_to_sqlite
 logger.configure(handlers=[{"sink": sys.stderr, "level": "INFO"}])
 logger.add('main.log',
            format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
-           mode='w', level="INFO")
+           mode='w', level="WARNING")
 
 
 def main() -> pd.DataFrame:
