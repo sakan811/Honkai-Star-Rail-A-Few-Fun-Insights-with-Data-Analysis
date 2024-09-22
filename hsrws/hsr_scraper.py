@@ -78,24 +78,44 @@ class Scraper(BaseModel):
             payload_data = await get_payload(page_num=self.page_num)
 
             logger.info(f"Scraping data of page {self.page_num}")
-            async with aiohttp.ClientSession() as session:
-                async with session.post(url, headers=headers, json=payload_data) as response:
-                    if not response.status == 200:
-                        logger.error(f"Error: Received status code {response.status}")
-                        return pd.DataFrame(self.char_data_dict)
+            char_list = await self._fetch_character_list(url, headers, payload_data)
 
-                    hsr_data = await response.json()
+            if not char_list:
+                logger.warning(f'Character list from page {self.page_num} is empty. Stop web-scraping process')
+                break
 
-                    char_list: list[dict] = hsr_data['data']['list']
+            await self._process_character_list(char_list)
 
-                    if not char_list:
-                        logger.warning(f'Character list from page {self.page_num} is empty. Stop web-scraping process')
-                        return pd.DataFrame(self.char_data_dict)
+        return pd.DataFrame(self.char_data_dict)
 
-                    for char in char_list:
-                        await self._scrape_character_data(char)
+    @staticmethod
+    async def _fetch_character_list(url: str, headers: dict, payload_data: dict) -> list[dict]:
+        """
+        Fetches the character list from the API.
+        :param url: URL.
+        :param headers: Headers.
+        :param payload_data: Payload data for the request.
+        :return: List of characters.
+        """
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=payload_data) as response:
+                if response.status != 200:
+                    logger.error(f"Error: Received status code {response.status}")
+                    return []
 
-    async def _scrape_character_data(self, character_data: dict) -> None:
+                hsr_data = await response.json()
+                return hsr_data['data']['list']
+
+    async def _process_character_list(self, char_list: list[dict]) -> None:
+        """
+        Processes the character list.
+        :param char_list: List of characters.
+        :return: None
+        """
+        for char in char_list:
+            await self._scrape_character_data(char)
+
+    async def _scrape_character_data(self, character_data: dict[str, Any]) -> None:
         """
         Scrapes character data from JSON response.
         :param character_data: Dictionary that represents each character data.
@@ -111,7 +131,7 @@ class Scraper(BaseModel):
             await self._append_char_type_data(character_data)
             self._append_char_stats(character_data)
 
-    def _append_char_stats(self, character_data: dict) -> None:
+    def _append_char_stats(self, character_data: dict[str, Any]) -> None:
         """
         Appends character stats to the character data dictionary.
         :param character_data: Dictionary that represents each character data.
@@ -135,23 +155,40 @@ class Scraper(BaseModel):
         :param char_stats_lvl_80: Character stats at level 80.
         :return: None
         """
-        try:
-            if char_stats_lvl_80:
-                self.char_data_dict['ATK Lvl 80'].append(int(char_stats_lvl_80['base_atk']))
-                self.char_data_dict['DEF Lvl 80'].append(int(char_stats_lvl_80['base_def']))
-                self.char_data_dict['HP Lvl 80'].append(int(char_stats_lvl_80['base_hp']))
-                self.char_data_dict['SPD Lvl 80'].append(int(char_stats_lvl_80['base_speed']))
-            else:
+        if char_stats_lvl_80:
+            try:
+                base_atk_lvl_80 = int(char_stats_lvl_80['base_atk'])
+                self.char_data_dict['ATK Lvl 80'].append(base_atk_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_atk_lvl_80' as zero.")
                 self.char_data_dict['ATK Lvl 80'].append(0)
+
+            try:
+                base_def_lvl_80 = int(char_stats_lvl_80['base_def'])
+                self.char_data_dict['DEF Lvl 80'].append(base_def_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_def_lvl_80' as zero.")
                 self.char_data_dict['DEF Lvl 80'].append(0)
+
+            try:
+                base_hp_lvl_80 = int(char_stats_lvl_80['base_hp'])
+                self.char_data_dict['HP Lvl 80'].append(base_hp_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_hp_lvl_80' as zero.")
                 self.char_data_dict['HP Lvl 80'].append(0)
+
+            try:
+                base_speed_lvl_80 = int(char_stats_lvl_80['base_speed'])
+                self.char_data_dict['SPD Lvl 80'].append(base_speed_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_speed_lvl_80' as zero.")
                 self.char_data_dict['SPD Lvl 80'].append(0)
-        except KeyError as e:
-            logger.error(f"KeyError: {e}. Appending stats as zero.")
+        else:
             self.char_data_dict['ATK Lvl 80'].append(0)
             self.char_data_dict['DEF Lvl 80'].append(0)
             self.char_data_dict['HP Lvl 80'].append(0)
             self.char_data_dict['SPD Lvl 80'].append(0)
+
 
     async def _append_char_type_data(self, character_data: dict) -> None:
         """
