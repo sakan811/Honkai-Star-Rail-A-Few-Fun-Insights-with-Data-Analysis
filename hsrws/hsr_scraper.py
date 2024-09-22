@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Any
 
 import aiohttp
 import pandas as pd
@@ -10,7 +11,7 @@ from pydantic import BaseModel, Field
 load_dotenv()
 
 
-async def get_payload(page_num: int) -> dict:
+async def get_payload(page_num: int) -> dict[str, Any]:
     """
     Gets payload with specified page number.
     :param page_num: Page number.
@@ -26,7 +27,7 @@ async def get_payload(page_num: int) -> dict:
     }
 
 
-def get_headers() -> dict:
+def get_headers() -> dict[str, Any]:
     """
     Gets headers.
     :return: Headers as Dictionary.
@@ -107,27 +108,50 @@ class Scraper(BaseModel):
             raise KeyError
         else:
             self.char_data_dict['Character'].append(character_name)
-
             await self._append_char_type_data(character_data)
+            self._append_char_stats(character_data)
 
-            try:
-                char_stats = character_data['display_field']
+    def _append_char_stats(self, character_data: dict) -> None:
+        """
+        Appends character stats to the character data dictionary.
+        :param character_data: Dictionary that represents each character data.
+        :return: None
+        """
+        try:
+            char_stats = character_data['display_field']
+            if not char_stats:
+                self._append_stats()
+            else:
+                char_stats_lvl_80_json_str = char_stats['attr_level_80']
+                char_stats_lvl_80: dict[str, Any] = json.loads(char_stats_lvl_80_json_str)
+                self._append_stats(char_stats_lvl_80)
+        except KeyError as e:
+            logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
+            self._append_stats()
 
-                if char_stats == {}:
-                    self.char_data_dict['ATK Lvl 80'].append(0)
-                    self.char_data_dict['DEF Lvl 80'].append(0)
-                    self.char_data_dict['HP Lvl 80'].append(0)
-                    self.char_data_dict['SPD Lvl 80'].append(0)
-                else:
-                    char_stats_lvl_80_json_str = character_data['display_field']['attr_level_80']
-                    char_stats_lvl_80 = json.loads(char_stats_lvl_80_json_str)
-                    self.char_data_dict['ATK Lvl 80'].append(int(char_stats_lvl_80['base_atk']))
-                    self.char_data_dict['DEF Lvl 80'].append(int(char_stats_lvl_80['base_def']))
-                    self.char_data_dict['HP Lvl 80'].append(int(char_stats_lvl_80['base_hp']))
-                    self.char_data_dict['SPD Lvl 80'].append(int(char_stats_lvl_80['base_speed']))
-            except KeyError as e:
-                logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
-                raise KeyError
+    def _append_stats(self, char_stats_lvl_80: dict[str, Any] = None) -> None:
+        """
+        Appends stats to the character data dictionary.
+        :param char_stats_lvl_80: Character stats at level 80.
+        :return: None
+        """
+        try:
+            if char_stats_lvl_80:
+                self.char_data_dict['ATK Lvl 80'].append(int(char_stats_lvl_80['base_atk']))
+                self.char_data_dict['DEF Lvl 80'].append(int(char_stats_lvl_80['base_def']))
+                self.char_data_dict['HP Lvl 80'].append(int(char_stats_lvl_80['base_hp']))
+                self.char_data_dict['SPD Lvl 80'].append(int(char_stats_lvl_80['base_speed']))
+            else:
+                self.char_data_dict['ATK Lvl 80'].append(0)
+                self.char_data_dict['DEF Lvl 80'].append(0)
+                self.char_data_dict['HP Lvl 80'].append(0)
+                self.char_data_dict['SPD Lvl 80'].append(0)
+        except KeyError as e:
+            logger.error(f"KeyError: {e}. Appending stats as zero.")
+            self.char_data_dict['ATK Lvl 80'].append(0)
+            self.char_data_dict['DEF Lvl 80'].append(0)
+            self.char_data_dict['HP Lvl 80'].append(0)
+            self.char_data_dict['SPD Lvl 80'].append(0)
 
     async def _append_char_type_data(self, character_data: dict) -> None:
         """
