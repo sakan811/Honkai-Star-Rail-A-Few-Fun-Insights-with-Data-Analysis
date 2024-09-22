@@ -5,6 +5,7 @@ import aiohttp
 import pandas as pd
 from dotenv import load_dotenv
 from loguru import logger
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
@@ -40,7 +41,7 @@ def get_headers() -> dict:
     }
 
 
-class Scraper:
+class Scraper(BaseModel):
     """
     Scraper class.
     Contain functions related to scraping data.
@@ -50,8 +51,8 @@ class Scraper:
         char_data_dict (dict): Dictionary to store character data.
     """
 
-    page_num: int = 0
-    char_data_dict = {
+    page_num: int = Field(0, ge=0)
+    char_data_dict: dict[str, list[Any]] = {
         'Character': [],
         'Path': [],
         'Element': [],
