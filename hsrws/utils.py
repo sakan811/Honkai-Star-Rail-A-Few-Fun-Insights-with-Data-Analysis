@@ -1,25 +1,8 @@
-#    Copyright 2024 Sakan Nirattisaykul
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-import functools
-import sqlite3
-import traceback
-from typing import Callable
-
-from loguru import logger
-
-
-def get_version_dict() -> dict:
+def get_version_dict() -> dict[int, list[str]]:
+    """
+    Get a dictionary of characters in each version.
+    :return: Dictionary of characters in each version.
+    """
     return {
         1.1: ['luocha', 'silver-wolf', 'yukong'],
         1.2: ['blade', 'kafka', 'luka'],
@@ -32,8 +15,6 @@ def get_version_dict() -> dict:
         2.2: ['robin', 'boothill', 'trailblazer-the-harmony'],
         2.3: ['jade', 'firefly'],
         2.4: ['yunli', 'jiaoqiu', 'march-7th-the-hunt'],
-        2.5: ['feixiao', 'lingsha']
+        2.5: ['feixiao', 'lingsha', 'moze'],
+        2.6: ['rappa']
     }
-
-
-

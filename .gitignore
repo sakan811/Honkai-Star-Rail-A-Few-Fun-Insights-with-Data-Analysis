@@ -172,3 +172,4 @@ cython_debug/
 /hsr.db
 /*.log
 
+/pdf_converter.py

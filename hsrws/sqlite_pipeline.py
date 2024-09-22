@@ -1,17 +1,3 @@
-#    Copyright 2024 Sakan Nirattisaykul
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-
 import sqlite3
 import traceback
 
@@ -25,7 +11,7 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
     :param df: Dataframe to load.
     :return: None
     """
-    logger.info(f"Loading dataframe to SQLite database...")
+    logger.info("Loading dataframe to SQLite database...")
     try:
         with sqlite3.connect('hsr.db') as conn:
             df.to_sql('HsrCharacters', conn, if_exists='replace')
@@ -39,7 +25,7 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
 
 def create_views(conn: sqlite3.Connection) -> None:
     """
-    Create Views in database.
+    Create Views in a database.
     :param conn: SQLite connection.
     :return: None
     """
@@ -135,13 +121,13 @@ def drop_views(conn: sqlite3.Connection) -> None:
     :return: None
     """
     logger.info("Dropping Views if exist...")
-    query = f"DROP VIEW IF EXISTS ElementCharacterCountByVersion"
+    query = "DROP VIEW IF EXISTS ElementCharacterCountByVersion"
     conn.execute(query)
 
-    query = f"DROP VIEW IF EXISTS PathCharacterCountByVersion"
+    query = "DROP VIEW IF EXISTS PathCharacterCountByVersion"
     conn.execute(query)
 
-    query = f"DROP VIEW IF EXISTS RarityCharacterCountByVersion"
+    query = "DROP VIEW IF EXISTS RarityCharacterCountByVersion"
     conn.execute(query)
 
 

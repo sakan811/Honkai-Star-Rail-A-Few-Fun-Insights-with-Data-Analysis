@@ -1,30 +1,17 @@
-#    Copyright 2024 Sakan Nirattisaykul
-#
-#    Licensed under the Apache License, Version 2.0 (the "License");
-#    you may not use this file except in compliance with the License.
-#    You may obtain a copy of the License at
-#
-#        http://www.apache.org/licenses/LICENSE-2.0
-#
-#    Unless required by applicable law or agreed to in writing, software
-#    distributed under the License is distributed on an "AS IS" BASIS,
-#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-#    See the License for the specific language governing permissions and
-#    limitations under the License.
-
 import json
 import os
-from dataclasses import dataclass
+from typing import Any
 
 import aiohttp
 import pandas as pd
 from dotenv import load_dotenv
 from loguru import logger
+from pydantic import BaseModel, Field
 
 load_dotenv()
 
 
-async def get_payload(page_num: int) -> dict:
+async def get_payload(page_num: int) -> dict[str, Any]:
     """
     Gets payload with specified page number.
     :param page_num: Page number.
@@ -40,7 +27,7 @@ async def get_payload(page_num: int) -> dict:
     }
 
 
-def get_headers() -> dict:
+def get_headers() -> dict[str, Any]:
     """
     Gets headers.
     :return: Headers as Dictionary.
@@ -55,8 +42,7 @@ def get_headers() -> dict:
     }
 
 
-@dataclass
-class Scraper:
+class Scraper(BaseModel):
     """
     Scraper class.
     Contain functions related to scraping data.
@@ -66,8 +52,8 @@ class Scraper:
         char_data_dict (dict): Dictionary to store character data.
     """
 
-    page_num: int = 0
-    char_data_dict = {
+    page_num: int = Field(0, ge=0)
+    char_data_dict: dict[str, list[Any]] = {
         'Character': [],
         'Path': [],
         'Element': [],
@@ -92,24 +78,44 @@ class Scraper:
             payload_data = await get_payload(page_num=self.page_num)
 
             logger.info(f"Scraping data of page {self.page_num}")
-            async with aiohttp.ClientSession() as session:
-                async with session.post(url, headers=headers, json=payload_data) as response:
-                    if not response.status == 200:
-                        logger.error(f"Error: Received status code {response.status}")
-                        return pd.DataFrame(self.char_data_dict)
+            char_list = await self._fetch_character_list(url, headers, payload_data)
 
-                    hsr_data = await response.json()
+            if not char_list:
+                logger.warning(f'Character list from page {self.page_num} is empty. Stop web-scraping process')
+                break
 
-                    char_list: list[dict] = hsr_data['data']['list']
+            await self._process_character_list(char_list)
 
-                    if not char_list:
-                        logger.warning(f'Character list from page {self.page_num} is empty. Stop web-scraping process')
-                        return pd.DataFrame(self.char_data_dict)
+        return pd.DataFrame(self.char_data_dict)
 
-                    for char in char_list:
-                        await self._scrape_character_data(char)
+    @staticmethod
+    async def _fetch_character_list(url: str, headers: dict, payload_data: dict) -> list[dict]:
+        """
+        Fetches the character list from the API.
+        :param url: URL.
+        :param headers: Headers.
+        :param payload_data: Payload data for the request.
+        :return: List of characters.
+        """
+        async with aiohttp.ClientSession() as session:
+            async with session.post(url, headers=headers, json=payload_data) as response:
+                if response.status != 200:
+                    logger.error(f"Error: Received status code {response.status}")
+                    return []
 
-    async def _scrape_character_data(self, character_data: dict) -> None:
+                hsr_data = await response.json()
+                return hsr_data['data']['list']
+
+    async def _process_character_list(self, char_list: list[dict]) -> None:
+        """
+        Processes the character list.
+        :param char_list: List of characters.
+        :return: None
+        """
+        for char in char_list:
+            await self._scrape_character_data(char)
+
+    async def _scrape_character_data(self, character_data: dict[str, Any]) -> None:
         """
         Scrapes character data from JSON response.
         :param character_data: Dictionary that represents each character data.
@@ -122,27 +128,67 @@ class Scraper:
             raise KeyError
         else:
             self.char_data_dict['Character'].append(character_name)
-
             await self._append_char_type_data(character_data)
+            self._append_char_stats(character_data)
+
+    def _append_char_stats(self, character_data: dict[str, Any]) -> None:
+        """
+        Appends character stats to the character data dictionary.
+        :param character_data: Dictionary that represents each character data.
+        :return: None
+        """
+        try:
+            char_stats = character_data['display_field']
+            if not char_stats:
+                self._append_stats()
+            else:
+                char_stats_lvl_80_json_str = char_stats['attr_level_80']
+                char_stats_lvl_80: dict[str, Any] = json.loads(char_stats_lvl_80_json_str)
+                self._append_stats(char_stats_lvl_80)
+        except KeyError as e:
+            logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
+            self._append_stats()
+
+    def _append_stats(self, char_stats_lvl_80: dict[str, Any] = None) -> None:
+        """
+        Appends stats to the character data dictionary.
+        :param char_stats_lvl_80: Character stats at level 80.
+        :return: None
+        """
+        if char_stats_lvl_80:
+            try:
+                base_atk_lvl_80 = int(char_stats_lvl_80['base_atk'])
+                self.char_data_dict['ATK Lvl 80'].append(base_atk_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_atk_lvl_80' as zero.")
+                self.char_data_dict['ATK Lvl 80'].append(0)
 
             try:
-                char_stats = character_data['display_field']
-
-                if char_stats == {}:
-                    self.char_data_dict['ATK Lvl 80'].append(0)
-                    self.char_data_dict['DEF Lvl 80'].append(0)
-                    self.char_data_dict['HP Lvl 80'].append(0)
-                    self.char_data_dict['SPD Lvl 80'].append(0)
-                else:
-                    char_stats_lvl_80_json_str = character_data['display_field']['attr_level_80']
-                    char_stats_lvl_80 = json.loads(char_stats_lvl_80_json_str)
-                    self.char_data_dict['ATK Lvl 80'].append(int(char_stats_lvl_80['base_atk']))
-                    self.char_data_dict['DEF Lvl 80'].append(int(char_stats_lvl_80['base_def']))
-                    self.char_data_dict['HP Lvl 80'].append(int(char_stats_lvl_80['base_hp']))
-                    self.char_data_dict['SPD Lvl 80'].append(int(char_stats_lvl_80['base_speed']))
+                base_def_lvl_80 = int(char_stats_lvl_80['base_def'])
+                self.char_data_dict['DEF Lvl 80'].append(base_def_lvl_80)
             except KeyError as e:
-                logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
-                raise KeyError
+                logger.error(f"KeyError: {e}. Appending 'base_def_lvl_80' as zero.")
+                self.char_data_dict['DEF Lvl 80'].append(0)
+
+            try:
+                base_hp_lvl_80 = int(char_stats_lvl_80['base_hp'])
+                self.char_data_dict['HP Lvl 80'].append(base_hp_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_hp_lvl_80' as zero.")
+                self.char_data_dict['HP Lvl 80'].append(0)
+
+            try:
+                base_speed_lvl_80 = int(char_stats_lvl_80['base_speed'])
+                self.char_data_dict['SPD Lvl 80'].append(base_speed_lvl_80)
+            except KeyError as e:
+                logger.error(f"KeyError: {e}. Appending 'base_speed_lvl_80' as zero.")
+                self.char_data_dict['SPD Lvl 80'].append(0)
+        else:
+            self.char_data_dict['ATK Lvl 80'].append(0)
+            self.char_data_dict['DEF Lvl 80'].append(0)
+            self.char_data_dict['HP Lvl 80'].append(0)
+            self.char_data_dict['SPD Lvl 80'].append(0)
+
 
     async def _append_char_type_data(self, character_data: dict) -> None:
         """
