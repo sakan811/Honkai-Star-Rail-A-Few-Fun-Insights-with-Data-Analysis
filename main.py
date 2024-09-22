@@ -9,7 +9,7 @@ from hsrws.data_transformer import transform_char_name, add_char_version, clean_
 from hsrws.hsr_scraper import get_headers, Scraper
 from hsrws.sqlite_pipeline import load_to_sqlite
 
-logger.configure(handlers=[{"sink": sys.stderr, "level": "INFO"}])
+logger.configure(handlers=[{"sink": sys.stderr, "level": "WARNING"}])
 logger.add('main.log',
            format="{time:YYYY-MM-DD at HH:mm:ss} | {level} | {name} | {module} | {function} | {line} | {message}",
            mode='w', level="WARNING")
