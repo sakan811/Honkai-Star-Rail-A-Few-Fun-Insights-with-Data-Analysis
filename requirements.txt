@@ -7,3 +7,4 @@ python-dotenv~=1.0.1
 SQLAlchemy~=2.0.29
 aioresponses~=0.7.6
 ruff~=0.6.7
+pydantic~=2.9.2
