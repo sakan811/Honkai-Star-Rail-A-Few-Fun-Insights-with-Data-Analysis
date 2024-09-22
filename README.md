@@ -2,7 +2,8 @@
 
 Some insights about **Honkai Star Rail**'s characters' data.
 
-Data is based on https://wiki.hoyolab.com/pc/hsr/aggregate/character and https://honkai-star-rail.fandom.com/wiki/Character/List
+Data is based on https://wiki.hoyolab.com/pc/hsr/aggregate/character 
+and https://honkai-star-rail.fandom.com/wiki/Character/List
 
 
 ## Status
@@ -28,17 +29,3 @@ Visualizations As Of 17 July 2024:
 - Find your **User Agent** with this website: https://www.whatismybrowser.com/detect/what-is-my-user-agent/
 - Enter your **User Agent** into the **USER_AGENT** variable in the **.env** file
 - Run ```main.py```
-
-## ```hsrws``` package
-[data_transformer.py](hsrws%2Fdata_transformer.py)
-- Contain functions for data transformation
-
-[hsr_scraper.py](hsrws%2Fhsr_scraper.py)
-- Contain the web-scraper as a function
-
-[sqlite_pipeline.py](hsrws%2Fsqlite_pipeline.py)
-- Contain functions for loading data to SQLite
-
-[utils.py](hsrws%2Futils.py)
-- Contain utility functions
-

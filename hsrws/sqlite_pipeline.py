@@ -25,7 +25,7 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
     :param df: Dataframe to load.
     :return: None
     """
-    logger.info(f"Loading dataframe to SQLite database...")
+    logger.info("Loading dataframe to SQLite database...")
     try:
         with sqlite3.connect('hsr.db') as conn:
             df.to_sql('HsrCharacters', conn, if_exists='replace')
@@ -135,13 +135,13 @@ def drop_views(conn: sqlite3.Connection) -> None:
     :return: None
     """
     logger.info("Dropping Views if exist...")
-    query = f"DROP VIEW IF EXISTS ElementCharacterCountByVersion"
+    query = "DROP VIEW IF EXISTS ElementCharacterCountByVersion"
     conn.execute(query)
 
-    query = f"DROP VIEW IF EXISTS PathCharacterCountByVersion"
+    query = "DROP VIEW IF EXISTS PathCharacterCountByVersion"
     conn.execute(query)
 
-    query = f"DROP VIEW IF EXISTS RarityCharacterCountByVersion"
+    query = "DROP VIEW IF EXISTS RarityCharacterCountByVersion"
     conn.execute(query)
 
 
