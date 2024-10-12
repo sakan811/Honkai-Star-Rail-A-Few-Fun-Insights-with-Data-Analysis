@@ -20,7 +20,7 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
     except sqlite3.OperationalError as e:
         logger.error(f'OperationalError: {e}')
         logger.error(traceback.format_exc())
-        conn.rollback()
+        raise
 
 
 def create_views(conn: sqlite3.Connection) -> None:
@@ -30,31 +30,48 @@ def create_views(conn: sqlite3.Connection) -> None:
     :return: None
     """
     logger.info("Creating Views...")
-    query = """
-        create view ElementCharacterCountByVersion as
-        WITH ElementCounts AS (
-        SELECT Version,
-               COUNT(DISTINCT CASE WHEN Element = 'Ice' THEN Character END)       AS Ice,
-               COUNT(DISTINCT CASE WHEN Element = 'Fire' THEN Character END)      AS Fire,
-               COUNT(DISTINCT CASE WHEN Element = 'Lightning' THEN Character END) AS Lightning,
-               COUNT(DISTINCT CASE WHEN Element = 'Physical' THEN Character END)  AS Physical,
-               COUNT(DISTINCT CASE WHEN Element = 'Wind' THEN Character END)      AS Wind,
-               COUNT(DISTINCT CASE WHEN Element = 'Quantum' THEN Character END)   AS Quantum,
-               COUNT(DISTINCT CASE WHEN Element = 'Imaginary' THEN Character END) AS Imaginary
-        FROM HsrCharacters
-        GROUP BY Version
-        )
-        SELECT Version,
-                CAST((SELECT SUM(Ice) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Ice,
-                CAST((SELECT SUM(Fire) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Fire,
-                CAST((SELECT SUM(Lightning) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Lightning,
-                CAST((SELECT SUM(Physical) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Physical,
-                CAST((SELECT SUM(Wind) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Wind,
-                CAST((SELECT SUM(Quantum) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Quantum,
-                CAST((SELECT SUM(Imaginary) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Imaginary
-        FROM ElementCounts ec;
-        """
+    query = get_element_char_count_by_ver()
     conn.execute(query)
+    query = get_path_char_count_by_ver()
+    conn.execute(query)
+    query = get_rarity_char_count_by_ver()
+    conn.execute(query)
+
+
+def get_rarity_char_count_by_ver() -> str:
+    """
+    Get 'rarity character count by version' query
+    :return: SQL query
+    """
+    query = """
+        create view RarityCharacterCountByVersion as
+        WITH RarityCounts AS (
+            SELECT
+                Version,
+                COUNT(DISTINCT CASE WHEN Rarity = '5-Star' THEN Character END) AS _5_Star,
+                COUNT(DISTINCT CASE WHEN Rarity = '4-Star' THEN Character END) AS _4_Star
+            FROM HsrCharacters
+            GROUP BY Version
+        ), RarityCountsVersion AS (
+            SELECT
+            Version,
+            (SELECT SUM(_5_Star) FROM RarityCounts p WHERE p.Version <= rc.Version) AS _5_Star,
+            (SELECT SUM(_4_Star) FROM RarityCounts p WHERE p.Version <= rc.Version) AS _4_Star
+            FROM RarityCounts rc
+        ) 
+        select rcv.Version,
+               cast(rcv._4_Star as int) AS _4_Star,
+               cast(rcv._5_Star as int) AS _5_Star
+        from RarityCountsVersion rcv;
+        """
+    return query
+
+
+def get_path_char_count_by_ver() -> str:
+    """
+    Get 'path character count by version' query
+    :return: SQL query
+    """
     query = """
          create view PathCharacterCountByVersion as
          WITH PathCounts AS (
@@ -89,29 +106,39 @@ def create_views(conn: sqlite3.Connection) -> None:
                 cast(pcv.Harmony as int)       AS Harmony
          from PathCountVersion pcv;
          """
-    conn.execute(query)
+    return query
+
+
+def get_element_char_count_by_ver() -> str:
+    """
+    Get 'Element Character Count by Version' query
+    :return: SQL query
+    """
     query = """
-        create view RarityCharacterCountByVersion as
-        WITH RarityCounts AS (
-            SELECT
-                Version,
-                COUNT(DISTINCT CASE WHEN Rarity = '5-Star' THEN Character END) AS _5_Star,
-                COUNT(DISTINCT CASE WHEN Rarity = '4-Star' THEN Character END) AS _4_Star
-            FROM HsrCharacters
-            GROUP BY Version
-        ), RarityCountsVersion AS (
-            SELECT
-            Version,
-            (SELECT SUM(_5_Star) FROM RarityCounts p WHERE p.Version <= rc.Version) AS _5_Star,
-            (SELECT SUM(_4_Star) FROM RarityCounts p WHERE p.Version <= rc.Version) AS _4_Star
-            FROM RarityCounts rc
-        ) 
-        select rcv.Version,
-               cast(rcv._4_Star as int) AS _4_Star,
-               cast(rcv._5_Star as int) AS _5_Star
-        from RarityCountsVersion rcv;
+        create view ElementCharacterCountByVersion as
+        WITH ElementCounts AS (
+        SELECT Version,
+               COUNT(DISTINCT CASE WHEN Element = 'Ice' THEN Character END)       AS Ice,
+               COUNT(DISTINCT CASE WHEN Element = 'Fire' THEN Character END)      AS Fire,
+               COUNT(DISTINCT CASE WHEN Element = 'Lightning' THEN Character END) AS Lightning,
+               COUNT(DISTINCT CASE WHEN Element = 'Physical' THEN Character END)  AS Physical,
+               COUNT(DISTINCT CASE WHEN Element = 'Wind' THEN Character END)      AS Wind,
+               COUNT(DISTINCT CASE WHEN Element = 'Quantum' THEN Character END)   AS Quantum,
+               COUNT(DISTINCT CASE WHEN Element = 'Imaginary' THEN Character END) AS Imaginary
+        FROM HsrCharacters
+        GROUP BY Version
+        )
+        SELECT Version,
+                CAST((SELECT SUM(Ice) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Ice,
+                CAST((SELECT SUM(Fire) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Fire,
+                CAST((SELECT SUM(Lightning) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Lightning,
+                CAST((SELECT SUM(Physical) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Physical,
+                CAST((SELECT SUM(Wind) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Wind,
+                CAST((SELECT SUM(Quantum) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Quantum,
+                CAST((SELECT SUM(Imaginary) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Imaginary
+        FROM ElementCounts ec;
         """
-    conn.execute(query)
+    return query
 
 
 def drop_views(conn: sqlite3.Connection) -> None:
