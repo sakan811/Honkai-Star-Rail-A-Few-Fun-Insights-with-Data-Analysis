@@ -81,7 +81,7 @@ class Scraper(BaseModel):
             char_list = await self._fetch_character_list(url, headers, payload_data)
 
             if not char_list:
-                logger.warning(f'Character list from page {self.page_num} is empty. Stop web-scraping process')
+                logger.info(f'Finished scraping.')
                 break
 
             await self._process_character_list(char_list)
