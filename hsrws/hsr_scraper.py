@@ -64,6 +64,43 @@ class Scraper(BaseModel):
         'SPD Lvl 80': []
     }
 
+
+def get_first_value(data: dict[str, Any], *keys: str, default=None) -> str | int | None:
+    """
+    Retrieves the first value from a nested dictionary structure.
+
+    Searches for the first non-empty value in the 'values' list of the specified
+    keys in the given data dictionary.
+
+    Returns the first found value or the default.
+
+    :param data: The dictionary to search in
+    :param keys: Variable number of keys to search for
+    :param default: Value to return if no value is found, defaults to None
+    :returns: The first non-empty value found, or the default value
+    :raises KeyError: If a specified key exists in data but doesn't have a 'values' key
+    """
+    for key in keys:
+        if key in data:
+            values = data[key]['values']
+            if values:
+                return values[0]
+    return default
+
+
+class Scraper(BaseModel):
+    """
+    Scraper class.
+    Contain functions related to scraping data.
+
+    Attributes:
+        page_num (int): Page number of the page that contains data.
+        char_data_dict (dict): Dictionary to store character data.
+    """
+
+    page_num: int = Field(0, ge=0)
+    char_data_dict: dict[str, list[Any]] = Field(default_factory=default_char_data_dict)
+
     async def scrape_hsr_data(self, url: str, headers: dict) -> pd.DataFrame:
         """
         Scrapes HSR data from JSON response.
