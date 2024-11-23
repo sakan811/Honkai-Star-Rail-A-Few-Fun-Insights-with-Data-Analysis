@@ -42,6 +42,42 @@ def get_headers() -> dict[str, Any]:
     }
 
 
+def default_char_data_dict() -> dict[str, list[Any]]:
+    return {
+        'Character': [],
+        'Path': [],
+        'Element': [],
+        'Rarity': [],
+        'ATK Lvl 80': [],
+        'DEF Lvl 80': [],
+        'HP Lvl 80': [],
+        'SPD Lvl 80': []
+    }
+
+
+def get_first_value(data: dict[str, Any], *keys: str, default=None) -> str | int | None:
+    """
+    Retrieves the first value from a nested dictionary structure.
+
+    Searches for the first non-empty value in the 'values' list of the specified
+    keys in the given data dictionary.
+
+    Returns the first found value or the default.
+
+    :param data: The dictionary to search in
+    :param keys: Variable number of keys to search for
+    :param default: Value to return if no value is found, defaults to None
+    :returns: The first non-empty value found, or the default value
+    :raises KeyError: If a specified key exists in data but doesn't have a 'values' key
+    """
+    for key in keys:
+        if key in data:
+            values = data[key]['values']
+            if values:
+                return values[0]
+    return default
+
+
 class Scraper(BaseModel):
     """
     Scraper class.
@@ -53,16 +89,7 @@ class Scraper(BaseModel):
     """
 
     page_num: int = Field(0, ge=0)
-    char_data_dict: dict[str, list[Any]] = {
-        'Character': [],
-        'Path': [],
-        'Element': [],
-        'Rarity': [],
-        'ATK Lvl 80': [],
-        'DEF Lvl 80': [],
-        'HP Lvl 80': [],
-        'SPD Lvl 80': []
-    }
+    char_data_dict: dict[str, list[Any]] = Field(default_factory=default_char_data_dict)
 
     async def scrape_hsr_data(self, url: str, headers: dict) -> pd.DataFrame:
         """
@@ -189,7 +216,6 @@ class Scraper(BaseModel):
             self.char_data_dict['HP Lvl 80'].append(0)
             self.char_data_dict['SPD Lvl 80'].append(0)
 
-
     async def _append_char_type_data(self, character_data: dict) -> None:
         """
         Appends character type data, e.g., Path, Element, and Rarity
@@ -199,19 +225,19 @@ class Scraper(BaseModel):
         logger.debug('Adding character type data...')
 
         try:
-            path: list = character_data['filter_values']['character_paths']['values']
-            element: list = character_data['filter_values']['character_combat_type']['values']
-            rarity: list = character_data['filter_values']['character_rarity']['values']
-        except KeyError:
-            logger.error(f'No character type data found for {character_data["name"]}', exc_info=True)
-            raise KeyError
+            character_filter_values = character_data.get('filter_values', {})
 
-        try:
-            self.char_data_dict['Path'].append(path[0])
-            self.char_data_dict['Element'].append(element[0])
-            self.char_data_dict['Rarity'].append(rarity[0])
-        except IndexError:
-            logger.error(f'No character type data found for {character_data["name"]}', exc_info=True)
+            path = get_first_value(character_filter_values, 'character_paths')
+            element = get_first_value(character_filter_values, 'character_combat_type')
+            rarity = get_first_value(character_filter_values, 'character_rarity')
+
+            self.char_data_dict['Path'].append(path or 'Unknown')
+            self.char_data_dict['Element'].append(element or 'Unknown')
+            self.char_data_dict['Rarity'].append(rarity or 'Unknown')
+
+        except Exception as e:
+            logger.error(f'Error processing character data for {character_data.get("name", "Unknown")}: {str(e)}',
+                         exc_info=True)
             raise IndexError
 
 
