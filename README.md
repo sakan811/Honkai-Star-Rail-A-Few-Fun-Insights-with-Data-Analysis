@@ -14,7 +14,7 @@ and https://honkai-star-rail.fandom.com/wiki/Character/List
 ## Visualizations
 [Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)    
 
-Visualizations As Of 22 September 2024:
+Visualizations As Of 23 November 2024:
 
 * [Instagram](https://www.instagram.com/p/DAOLOgJuowW/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
 
@@ -28,4 +28,7 @@ Visualizations As Of 22 September 2024:
     ```
 - Find your **User Agent** with this website: https://www.whatismybrowser.com/detect/what-is-my-user-agent/
 - Enter your **User Agent** into the **USER_AGENT** variable in the **.env** file
-- Run ```main.py```
+- Run: 
+  - ```bash
+    python main.py
+    ```
