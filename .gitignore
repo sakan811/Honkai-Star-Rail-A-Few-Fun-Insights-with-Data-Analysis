@@ -173,3 +173,4 @@ cython_debug/
 /*.log
 
 /pdf_converter.py
+/post-template
