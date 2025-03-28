@@ -19,9 +19,17 @@ async def test_scrape_hsr_data_success(scraper):
     mock_char_list = [{"name": "Char1"}, {"name": "Char2"}]
     mock_df = pd.DataFrame({"name": ["Char1", "Char2"]})
 
-    with patch("hsrws.hsr_scraper.get_payload", new_callable=AsyncMock) as mock_get_payload, \
-            patch.object(scraper, "_fetch_character_list", new_callable=AsyncMock) as mock_fetch, \
-            patch.object(scraper, "_process_character_list", new_callable=AsyncMock) as mock_process:
+    with (
+        patch(
+            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+        ) as mock_get_payload,
+        patch.object(
+            scraper, "_fetch_character_list", new_callable=AsyncMock
+        ) as mock_fetch,
+        patch.object(
+            scraper, "_process_character_list", new_callable=AsyncMock
+        ) as mock_process,
+    ):
         mock_get_payload.return_value = {"some": "payload"}
         mock_fetch.side_effect = [mock_char_list, mock_char_list, []]
         scraper.char_data_dict = {"name": ["Char1", "Char2"]}
@@ -40,9 +48,17 @@ async def test_scrape_hsr_data_empty_first_page(scraper):
     url = "http://test.com"
     headers = {"User-Agent": "Test"}
 
-    with patch("hsrws.hsr_scraper.get_payload", new_callable=AsyncMock) as mock_get_payload, \
-            patch.object(scraper, "_fetch_character_list", new_callable=AsyncMock) as mock_fetch, \
-            patch.object(scraper, "_process_character_list", new_callable=AsyncMock) as mock_process:
+    with (
+        patch(
+            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+        ) as mock_get_payload,
+        patch.object(
+            scraper, "_fetch_character_list", new_callable=AsyncMock
+        ) as mock_fetch,
+        patch.object(
+            scraper, "_process_character_list", new_callable=AsyncMock
+        ) as mock_process,
+    ):
         mock_get_payload.return_value = {"some": "payload"}
         mock_fetch.return_value = []
         scraper.char_data_dict = {}
@@ -61,9 +77,17 @@ async def test_scrape_hsr_data_exception(scraper):
     url = "http://test.com"
     headers = {"User-Agent": "Test"}
 
-    with patch("hsrws.hsr_scraper.get_payload", new_callable=AsyncMock) as mock_get_payload, \
-            patch.object(scraper, "_fetch_character_list", new_callable=AsyncMock) as mock_fetch, \
-            patch.object(scraper, "_process_character_list", new_callable=AsyncMock) as mock_process:
+    with (
+        patch(
+            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+        ) as mock_get_payload,
+        patch.object(
+            scraper, "_fetch_character_list", new_callable=AsyncMock
+        ) as mock_fetch,
+        patch.object(
+            scraper, "_process_character_list", new_callable=AsyncMock
+        ) as mock_process,
+    ):
         mock_get_payload.side_effect = Exception("Test error")
 
         with pytest.raises(Exception):
@@ -81,9 +105,15 @@ async def test_scrape_hsr_data_logging(scraper):
 
     mock_char_list = [{"name": "Char1"}]
 
-    with patch("hsrws.hsr_scraper.get_payload", new_callable=AsyncMock) as mock_get_payload, \
-            patch.object(scraper, "_fetch_character_list", new_callable=AsyncMock) as mock_fetch, \
-            patch.object(scraper, "_process_character_list", new_callable=AsyncMock):
+    with (
+        patch(
+            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+        ) as mock_get_payload,
+        patch.object(
+            scraper, "_fetch_character_list", new_callable=AsyncMock
+        ) as mock_fetch,
+        patch.object(scraper, "_process_character_list", new_callable=AsyncMock),
+    ):
         mock_get_payload.return_value = {"some": "payload"}
         mock_fetch.side_effect = [mock_char_list, []]
         scraper.char_data_dict = {"name": ["Char1"]}

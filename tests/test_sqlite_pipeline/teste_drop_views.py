@@ -12,11 +12,13 @@ def test_drop_views_executes_all_queries():
 
     # Assert
     assert mock_conn.execute.call_count == 3
-    mock_conn.execute.assert_has_calls([
-        call("DROP VIEW IF EXISTS ElementCharacterCountByVersion"),
-        call("DROP VIEW IF EXISTS PathCharacterCountByVersion"),
-        call("DROP VIEW IF EXISTS RarityCharacterCountByVersion")
-    ])
+    mock_conn.execute.assert_has_calls(
+        [
+            call("DROP VIEW IF EXISTS ElementCharacterCountByVersion"),
+            call("DROP VIEW IF EXISTS PathCharacterCountByVersion"),
+            call("DROP VIEW IF EXISTS RarityCharacterCountByVersion"),
+        ]
+    )
 
 
 def test_drop_views_handles_execution_error():

@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 from sqlalchemy import create_engine, text
+from dataclasses import dataclass
 
 DB_PATH = "hsr.db"
 
@@ -14,6 +15,38 @@ os.makedirs("visual/visual_img", exist_ok=True)
 
 # Set seaborn style
 sns.set_theme(style="whitegrid")
+
+
+@dataclass
+class ChartConfig:
+    """Configuration for donut charts."""
+    # Chart dimensions
+    figure_size: tuple = (10, 10)
+    dpi: int = 150
+    
+    # Donut properties
+    donut_width: float = 0.5
+    donut_hole_radius: float = 0.4
+    
+    # Text sizes
+    title_fontsize: int = 14
+    title_pad: int = 20
+    center_text_fontsize: int = 20
+    label_fontsize: int = 10
+    pct_fontsize: int = 8
+    count_fontsize: int = 8
+    
+    # Color maps
+    path_cmap: str = "Blues"
+    element_cmap: str = "Spectral"
+    rarity_cmap: str = "Reds"
+    
+    # Positioning
+    pct_distance: float = 0.85
+    
+    # Output configuration
+    tight_layout: bool = True
+    bbox_inches: str = 'tight'
 
 
 def fetch_data(query):
@@ -33,25 +66,25 @@ def get_latest_patch():
     return result.iloc[0]['latest_version']
 
 
-def create_donut_chart(ax, data, title, cmap="viridis"):
-    """Create a donut chart on the given axes."""
+def create_donut_chart(ax, data, title, cmap, config):
+    """Create a donut chart on the given axes using the provided configuration."""
     # Create a pie chart with a hole in the middle (donut chart)
     wedges, texts, autotexts = ax.pie(
         data["count"],
         labels=data["category"],
         autopct="%1.1f%%",
-        textprops={"fontsize": 10},
-        wedgeprops={"width": 0.5, "edgecolor": "w"},
-        pctdistance=0.85,
+        textprops={"fontsize": config.label_fontsize},
+        wedgeprops={"width": config.donut_width, "edgecolor": "w"},
+        pctdistance=config.pct_distance,
         colors=sns.color_palette(cmap, len(data)),
     )
 
     # Style the chart
-    plt.setp(autotexts, size=8, weight="bold")
-    plt.setp(texts, size=10)
+    plt.setp(autotexts, size=config.pct_fontsize, weight="bold")
+    plt.setp(texts, size=config.label_fontsize)
 
     # Add a circle at the center to create the donut hole
-    centre_circle = plt.Circle((0, 0), 0.4, fc="white")
+    centre_circle = plt.Circle((0, 0), config.donut_hole_radius, fc="white")
     ax.add_patch(centre_circle)
 
     # Add total count in the center
@@ -62,7 +95,7 @@ def create_donut_chart(ax, data, title, cmap="viridis"):
         f"Total\n{total}",
         horizontalalignment="center",
         verticalalignment="center",
-        fontsize=20,
+        fontsize=config.center_text_fontsize,
         fontweight="bold",
     )
 
@@ -80,15 +113,34 @@ def create_donut_chart(ax, data, title, cmap="viridis"):
             textcoords="offset points",
             ha="center",
             va="center",
-            fontsize=8,
+            fontsize=config.count_fontsize,
             fontweight="bold",
         )
 
     # Add title
-    ax.set_title(title, fontsize=14, pad=20)
+    ax.set_title(title, fontsize=config.title_fontsize, pad=config.title_pad)
+
+
+def create_chart(data, title, cmap, filename, config):
+    """Create and save a donut chart based on the provided configuration."""
+    fig, ax = plt.subplots(figsize=config.figure_size)
+    create_donut_chart(ax, data, title, cmap, config)
+    
+    if config.tight_layout:
+        plt.tight_layout()
+    
+    plt.savefig(
+        os.path.join("visual", "visual_img", filename), 
+        bbox_inches=config.bbox_inches, 
+        dpi=config.dpi
+    )
+    plt.close()
 
 
 def main():
+    # Initialize chart configuration
+    config = ChartConfig()
+    
     # Get the latest patch version
     latest_patch = get_latest_patch()
     patch_info = f"(Latest Patch: {latest_patch})"
@@ -123,41 +175,29 @@ def main():
     rarity_data = fetch_data(rarity_query)
 
     # Create individual donut charts
-    # Path distribution
-    fig, ax = plt.subplots(figsize=(10, 10))
-    create_donut_chart(
-        ax,
+    create_chart(
         path_data,
         f"Honkai Star Rail: Character Distribution by Path {patch_info}",
-        "Blues",
+        config.path_cmap,
+        "path_distribution.png",
+        config
     )
-    plt.tight_layout()
-    plt.savefig(os.path.join("visual", "visual_img", "path_distribution.png"), bbox_inches='tight', dpi=150)
-    plt.close()
-
-    # Element distribution
-    fig, ax = plt.subplots(figsize=(10, 10))
-    create_donut_chart(
-        ax,
+    
+    create_chart(
         element_data,
         f"Honkai Star Rail: Character Distribution by Element {patch_info}",
-        "Spectral",
+        config.element_cmap,
+        "element_distribution.png",
+        config
     )
-    plt.tight_layout()
-    plt.savefig(os.path.join("visual", "visual_img", "element_distribution.png"), bbox_inches='tight', dpi=150)
-    plt.close()
-
-    # Rarity distribution
-    fig, ax = plt.subplots(figsize=(10, 10))
-    create_donut_chart(
-        ax,
+    
+    create_chart(
         rarity_data,
         f"Honkai Star Rail: Character Distribution by Rarity {patch_info}",
-        "Reds",
+        config.rarity_cmap,
+        "rarity_distribution.png",
+        config
     )
-    plt.tight_layout()
-    plt.savefig(os.path.join("visual", "visual_img", "rarity_distribution.png"), bbox_inches='tight', dpi=150)
-    plt.close()
 
     logger.info(f"Donut charts have been created in the 'visual/visual_img' directory for patch {latest_patch}.")
 
