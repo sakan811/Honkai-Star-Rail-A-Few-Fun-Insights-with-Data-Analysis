@@ -18,5 +18,7 @@ def get_version_dict() -> dict[int, list[str]]:
         2.5: ['feixiao', 'lingsha', 'moze'],
         2.6: ['rappa'],
         2.7: ['sunday', 'fugue'],
-        3.0: ['aglaea', 'the-herta', 'trailblazer-remembrance']
+        3.0: ['aglaea', 'the-herta', 'trailblazer-remembrance'],
+        3.1: ['tribbie', 'mydei'],
+        3.2: ['anaxa', 'castorice'],
     }
