@@ -23,7 +23,7 @@ async def get_payload(page_num: int) -> dict[str, Any]:
         "menu_id": "104",
         "page_num": page_num,
         "page_size": 30,
-        "use_es": True
+        "use_es": True,
     }
 
 
@@ -34,24 +34,24 @@ def get_headers() -> dict[str, Any]:
     """
     logger.info("Getting headers...")
     return {
-        'Origin': 'https://wiki.hoyolab.com',
-        'Referer': 'https://wiki.hoyolab.com/',
-        'User-Agent': os.getenv('USER_AGENT'),
-        'X-Rpc-Language': 'en-us',
-        'X-Rpc-Wiki_app': 'hsr'
+        "Origin": "https://wiki.hoyolab.com",
+        "Referer": "https://wiki.hoyolab.com/",
+        "User-Agent": os.getenv("USER_AGENT"),
+        "X-Rpc-Language": "en-us",
+        "X-Rpc-Wiki_app": "hsr",
     }
 
 
 def default_char_data_dict() -> dict[str, list[Any]]:
     return {
-        'Character': [],
-        'Path': [],
-        'Element': [],
-        'Rarity': [],
-        'ATK Lvl 80': [],
-        'DEF Lvl 80': [],
-        'HP Lvl 80': [],
-        'SPD Lvl 80': []
+        "Character": [],
+        "Path": [],
+        "Element": [],
+        "Rarity": [],
+        "ATK Lvl 80": [],
+        "DEF Lvl 80": [],
+        "HP Lvl 80": [],
+        "SPD Lvl 80": [],
     }
 
 
@@ -72,7 +72,7 @@ def get_first_value(data: dict[str, Any], *keys: str, default=None) -> str | int
     """
     for key in keys:
         if key in data:
-            values = data[key]['values']
+            values = data[key]["values"]
             if values:
                 return values[0]
     return default
@@ -108,7 +108,7 @@ class Scraper(BaseModel):
             char_list = await self._fetch_character_list(url, headers, payload_data)
 
             if not char_list:
-                logger.info(f'Finished scraping.')
+                logger.info("Finished scraping.")
                 break
 
             await self._process_character_list(char_list)
@@ -116,7 +116,9 @@ class Scraper(BaseModel):
         return pd.DataFrame(self.char_data_dict)
 
     @staticmethod
-    async def _fetch_character_list(url: str, headers: dict, payload_data: dict) -> list[dict]:
+    async def _fetch_character_list(
+        url: str, headers: dict, payload_data: dict
+    ) -> list[dict]:
         """
         Fetches the character list from the API.
         :param url: URL.
@@ -125,13 +127,15 @@ class Scraper(BaseModel):
         :return: List of characters.
         """
         async with aiohttp.ClientSession() as session:
-            async with session.post(url, headers=headers, json=payload_data) as response:
+            async with session.post(
+                url, headers=headers, json=payload_data
+            ) as response:
                 if response.status != 200:
                     logger.error(f"Error: Received status code {response.status}")
                     return []
 
                 hsr_data = await response.json()
-                return hsr_data['data']['list']
+                return hsr_data["data"]["list"]
 
     async def _process_character_list(self, char_list: list[dict]) -> None:
         """
@@ -149,12 +153,12 @@ class Scraper(BaseModel):
         :return: None
         """
         try:
-            character_name = character_data['name']
+            character_name = character_data["name"]
         except KeyError as e:
             logger.error(f"Character name {e} is not found.")
             raise KeyError
         else:
-            self.char_data_dict['Character'].append(character_name)
+            self.char_data_dict["Character"].append(character_name)
             await self._append_char_type_data(character_data)
             self._append_char_stats(character_data)
 
@@ -165,15 +169,19 @@ class Scraper(BaseModel):
         :return: None
         """
         try:
-            char_stats = character_data['display_field']
+            char_stats = character_data["display_field"]
             if not char_stats:
                 self._append_stats()
             else:
-                char_stats_lvl_80_json_str = char_stats['attr_level_80']
-                char_stats_lvl_80: dict[str, Any] = json.loads(char_stats_lvl_80_json_str)
+                char_stats_lvl_80_json_str = char_stats["attr_level_80"]
+                char_stats_lvl_80: dict[str, Any] = json.loads(
+                    char_stats_lvl_80_json_str
+                )
                 self._append_stats(char_stats_lvl_80)
         except KeyError as e:
-            logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
+            logger.error(
+                f"Stats of Character name {e} is not found. Append stats as zero."
+            )
             self._append_stats()
 
     def _append_stats(self, char_stats_lvl_80: dict[str, Any] = None) -> None:
@@ -184,37 +192,37 @@ class Scraper(BaseModel):
         """
         if char_stats_lvl_80:
             try:
-                base_atk_lvl_80 = int(char_stats_lvl_80['base_atk'])
-                self.char_data_dict['ATK Lvl 80'].append(base_atk_lvl_80)
+                base_atk_lvl_80 = int(char_stats_lvl_80["base_atk"])
+                self.char_data_dict["ATK Lvl 80"].append(base_atk_lvl_80)
             except KeyError as e:
                 logger.error(f"KeyError: {e}. Appending 'base_atk_lvl_80' as zero.")
-                self.char_data_dict['ATK Lvl 80'].append(0)
+                self.char_data_dict["ATK Lvl 80"].append(0)
 
             try:
-                base_def_lvl_80 = int(char_stats_lvl_80['base_def'])
-                self.char_data_dict['DEF Lvl 80'].append(base_def_lvl_80)
+                base_def_lvl_80 = int(char_stats_lvl_80["base_def"])
+                self.char_data_dict["DEF Lvl 80"].append(base_def_lvl_80)
             except KeyError as e:
                 logger.error(f"KeyError: {e}. Appending 'base_def_lvl_80' as zero.")
-                self.char_data_dict['DEF Lvl 80'].append(0)
+                self.char_data_dict["DEF Lvl 80"].append(0)
 
             try:
-                base_hp_lvl_80 = int(char_stats_lvl_80['base_hp'])
-                self.char_data_dict['HP Lvl 80'].append(base_hp_lvl_80)
+                base_hp_lvl_80 = int(char_stats_lvl_80["base_hp"])
+                self.char_data_dict["HP Lvl 80"].append(base_hp_lvl_80)
             except KeyError as e:
                 logger.error(f"KeyError: {e}. Appending 'base_hp_lvl_80' as zero.")
-                self.char_data_dict['HP Lvl 80'].append(0)
+                self.char_data_dict["HP Lvl 80"].append(0)
 
             try:
-                base_speed_lvl_80 = int(char_stats_lvl_80['base_speed'])
-                self.char_data_dict['SPD Lvl 80'].append(base_speed_lvl_80)
+                base_speed_lvl_80 = int(char_stats_lvl_80["base_speed"])
+                self.char_data_dict["SPD Lvl 80"].append(base_speed_lvl_80)
             except KeyError as e:
                 logger.error(f"KeyError: {e}. Appending 'base_speed_lvl_80' as zero.")
-                self.char_data_dict['SPD Lvl 80'].append(0)
+                self.char_data_dict["SPD Lvl 80"].append(0)
         else:
-            self.char_data_dict['ATK Lvl 80'].append(0)
-            self.char_data_dict['DEF Lvl 80'].append(0)
-            self.char_data_dict['HP Lvl 80'].append(0)
-            self.char_data_dict['SPD Lvl 80'].append(0)
+            self.char_data_dict["ATK Lvl 80"].append(0)
+            self.char_data_dict["DEF Lvl 80"].append(0)
+            self.char_data_dict["HP Lvl 80"].append(0)
+            self.char_data_dict["SPD Lvl 80"].append(0)
 
     async def _append_char_type_data(self, character_data: dict) -> None:
         """
@@ -222,24 +230,26 @@ class Scraper(BaseModel):
         :param character_data: Dictionary that represents each character data.
         :return: None
         """
-        logger.debug('Adding character type data...')
+        logger.debug("Adding character type data...")
 
         try:
-            character_filter_values = character_data.get('filter_values', {})
+            character_filter_values = character_data.get("filter_values", {})
 
-            path = get_first_value(character_filter_values, 'character_paths')
-            element = get_first_value(character_filter_values, 'character_combat_type')
-            rarity = get_first_value(character_filter_values, 'character_rarity')
+            path = get_first_value(character_filter_values, "character_paths")
+            element = get_first_value(character_filter_values, "character_combat_type")
+            rarity = get_first_value(character_filter_values, "character_rarity")
 
-            self.char_data_dict['Path'].append(path or 'Unknown')
-            self.char_data_dict['Element'].append(element or 'Unknown')
-            self.char_data_dict['Rarity'].append(rarity or 'Unknown')
+            self.char_data_dict["Path"].append(path or "Unknown")
+            self.char_data_dict["Element"].append(element or "Unknown")
+            self.char_data_dict["Rarity"].append(rarity or "Unknown")
 
         except Exception as e:
-            logger.error(f'Error processing character data for {character_data.get("name", "Unknown")}: {str(e)}',
-                         exc_info=True)
+            logger.error(
+                f"Error processing character data for {character_data.get('name', 'Unknown')}: {str(e)}",
+                exc_info=True,
+            )
             raise IndexError
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

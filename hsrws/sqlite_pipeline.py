@@ -13,12 +13,12 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
     """
     logger.info("Loading dataframe to SQLite database...")
     try:
-        with sqlite3.connect('hsr.db') as conn:
-            df.to_sql('HsrCharacters', conn, if_exists='replace')
+        with sqlite3.connect("hsr.db") as conn:
+            df.to_sql("HsrCharacters", conn, if_exists="replace")
             drop_views(conn)
             create_views(conn)
     except sqlite3.OperationalError as e:
-        logger.error(f'OperationalError: {e}')
+        logger.error(f"OperationalError: {e}")
         logger.error(traceback.format_exc())
         raise
 
@@ -158,5 +158,5 @@ def drop_views(conn: sqlite3.Connection) -> None:
     conn.execute(query)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pass

@@ -11,7 +11,7 @@ async def test_get_payload():
         "menu_id": "104",
         "page_num": page_num,
         "page_size": 30,
-        "use_es": True
+        "use_es": True,
     }
 
     payload = await get_payload(page_num)
@@ -23,5 +23,6 @@ async def test_get_payload():
     payload = await get_payload(page_num)
     assert payload == expected_payload
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     pytest.main()

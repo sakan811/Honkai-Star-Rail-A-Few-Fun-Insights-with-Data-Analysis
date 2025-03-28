@@ -10,5 +10,5 @@ def test_scraper():
     assert not char_data_df.empty
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     pytest.main()
