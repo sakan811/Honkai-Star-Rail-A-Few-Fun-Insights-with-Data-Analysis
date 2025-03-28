@@ -1,13 +1,15 @@
 import os
 from loguru import logger
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
-from sqlalchemy import create_engine, text
-from dataclasses import dataclass
-
-DB_PATH = "hsr.db"
+from config import ChartConfig
+from data_utils import (
+    get_latest_patch,
+    get_path_distribution,
+    get_element_distribution,
+    get_rarity_distribution
+)
 
 # Create visual directory if it doesn't exist
 os.makedirs("visual", exist_ok=True)
@@ -15,55 +17,6 @@ os.makedirs("visual/visual_img", exist_ok=True)
 
 # Set seaborn style
 sns.set_theme(style="whitegrid")
-
-
-@dataclass
-class ChartConfig:
-    """Configuration for donut charts."""
-    # Chart dimensions
-    figure_size: tuple = (10, 10)
-    dpi: int = 150
-    
-    # Donut properties
-    donut_width: float = 0.5
-    donut_hole_radius: float = 0.4
-    
-    # Text sizes
-    title_fontsize: int = 14
-    title_pad: int = 20
-    center_text_fontsize: int = 20
-    label_fontsize: int = 10
-    pct_fontsize: int = 8
-    count_fontsize: int = 8
-    
-    # Color maps
-    path_cmap: str = "Blues"
-    element_cmap: str = "Spectral"
-    rarity_cmap: str = "Reds"
-    
-    # Positioning
-    pct_distance: float = 0.85
-    
-    # Output configuration
-    tight_layout: bool = True
-    bbox_inches: str = 'tight'
-
-
-def fetch_data(query):
-    """Fetch data from the database using the provided query with SQLAlchemy."""
-    engine = create_engine(f"sqlite:///{DB_PATH}")
-    with engine.connect() as conn:
-        return pd.read_sql_query(text(query), conn)
-
-
-def get_latest_patch():
-    """Get the latest patch version from the database."""
-    query = """
-    SELECT MAX(Version) as latest_version
-    FROM HsrCharacters
-    """
-    result = fetch_data(query)
-    return result.iloc[0]['latest_version']
 
 
 def create_donut_chart(ax, data, title, cmap, config):
@@ -145,34 +98,10 @@ def main():
     latest_patch = get_latest_patch()
     patch_info = f"(Latest Patch: {latest_patch})"
     
-    # Query for Path distribution
-    path_query = """
-    SELECT Path as category, COUNT(*) as count
-    FROM HsrCharacters
-    GROUP BY Path
-    ORDER BY count DESC
-    """
-
-    # Query for Element distribution
-    element_query = """
-    SELECT Element as category, COUNT(*) as count
-    FROM HsrCharacters
-    GROUP BY Element
-    ORDER BY count DESC
-    """
-
-    # Query for Rarity distribution
-    rarity_query = """
-    SELECT Rarity as category, COUNT(*) as count
-    FROM HsrCharacters
-    GROUP BY Rarity
-    ORDER BY count DESC
-    """
-
-    # Fetch all data
-    path_data = fetch_data(path_query)
-    element_data = fetch_data(element_query)
-    rarity_data = fetch_data(rarity_query)
+    # Fetch data using data utility functions
+    path_data = get_path_distribution()
+    element_data = get_element_distribution()
+    rarity_data = get_rarity_distribution()
 
     # Create individual donut charts
     create_chart(
