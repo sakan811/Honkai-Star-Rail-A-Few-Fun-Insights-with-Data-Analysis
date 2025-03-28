@@ -23,14 +23,16 @@ Visualizations As Of 23 November 2024:
 
 ## To Run Web-Scraping Process
 
-- Clone this repo: <https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis.git>
+* Clone this repo: <https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis.git>
+
 * Create **.env** file with the **USER_AGENT** variable.
 
   * ```
     USER_AGENT=
     ```
 
-- Find your **User Agent** with this website: <https://www.whatismybrowser.com/detect/what-is-my-user-agent/>
+* Find your **User Agent** with this website: <https://www.whatismybrowser.com/detect/what-is-my-user-agent/>
+
 * Enter your **User Agent** into the **USER_AGENT** variable in the **.env** file
 * Run:
 
