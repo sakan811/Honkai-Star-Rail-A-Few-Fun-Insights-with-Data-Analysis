@@ -9,3 +9,5 @@ ruff>=0.11.2
 aioresponses>=0.7.8
 pydantic>=2.10.6
 pytest-mock>=3.14.0
+seaborn>=0.13.2
+matplotlib>=3.8.3
