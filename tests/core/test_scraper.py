@@ -16,25 +16,25 @@ async def test_fetch_character_list():
         {"name": "Character1", "icon": "icon1.png"},
         {"name": "Character2", "icon": "icon2.png"},
     ]
-    
+
     # Create a scraper instance
     scraper = Scraper()
-    
+
     # Create our own implementation of _fetch_character_list to replace the real one
     async def mock_fetch_impl(self, url, headers, payload_data):
         assert url == "https://test.url"
         assert headers == {"User-Agent": "test"}
         assert payload_data == {"page_num": 1}
         return test_data
-    
+
     # Patch the _fetch_character_list method with our mock implementation
-    with patch.object(Scraper, '_fetch_character_list', new=mock_fetch_impl):
+    with patch.object(Scraper, "_fetch_character_list", new=mock_fetch_impl):
         # Call the method under test
         url = "https://test.url"
         headers = {"User-Agent": "test"}
         payload = {"page_num": 1}
         result = await scraper._fetch_character_list(url, headers, payload)
-        
+
         # Verify results
         assert result == test_data
         assert len(result) == 2
@@ -55,7 +55,7 @@ async def test_scrape_character_data():
         },
         "display_field": {
             "attr_level_80": '{"base_atk": 100, "base_def": 200, "base_hp": 1000, "base_speed": 100}'
-        }
+        },
     }
 
     # Create a scraper instance with initialized char_data_dict
@@ -110,18 +110,18 @@ async def test_scrape_hsr_data():
 
     # Create a scraper instance
     scraper = Scraper()
-    
+
     # Mock the _fetch_character_list method
     with patch.object(
-        scraper, 
-        '_fetch_character_list', 
-        new_callable=AsyncMock
+        scraper, "_fetch_character_list", new_callable=AsyncMock
     ) as mock_fetch:
         # Set up the mock to return our test data and then empty list to end the loop
         mock_fetch.side_effect = [mock_char_list, []]
-        
+
         # Mock process_character_list to simulate processing characters
-        with patch('hsrws.core.character.process_character_list', new_callable=AsyncMock) as mock_process:
+        with patch(
+            "hsrws.core.character.process_character_list", new_callable=AsyncMock
+        ) as mock_process:
             # Call the method under test
             url = "https://test.url"
             headers = {"User-Agent": "test"}

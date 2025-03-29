@@ -2,7 +2,11 @@
 
 import pandas as pd
 from unittest.mock import patch
-from hsrws.data.transformer import add_char_version, clean_path_name, transform_char_name
+from hsrws.data.transformer import (
+    add_char_version,
+    clean_path_name,
+    transform_char_name,
+)
 
 
 def test_transform_char_name():

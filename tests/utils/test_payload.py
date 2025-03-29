@@ -40,7 +40,7 @@ def test_get_first_value():
     test_data = {
         "character_paths": {"values": ["Path1"]},
         "character_combat_type": {"values": ["Element1"]},
-        "empty_field": {"values": []}
+        "empty_field": {"values": []},
     }
 
     # Test with valid key

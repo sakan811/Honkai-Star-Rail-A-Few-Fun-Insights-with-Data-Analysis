@@ -11,7 +11,7 @@ def scraper():
         "ATK Lvl 80": [],
         "DEF Lvl 80": [],
         "HP Lvl 80": [],
-        "SPD Lvl 80": []
+        "SPD Lvl 80": [],
     }
     return scraper
 
