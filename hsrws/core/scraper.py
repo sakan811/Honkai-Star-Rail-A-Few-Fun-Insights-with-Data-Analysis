@@ -1,7 +1,5 @@
 """Core scraper functionality."""
 
-import json
-import os
 from typing import Any
 
 import aiohttp
@@ -10,7 +8,7 @@ from dotenv import load_dotenv
 from loguru import logger
 from pydantic import BaseModel, Field
 
-from hsrws.utils.payload import get_payload, get_headers, default_char_data_dict
+from hsrws.utils.payload import get_payload, default_char_data_dict
 
 load_dotenv()
 
@@ -18,7 +16,7 @@ load_dotenv()
 class Scraper(BaseModel):
     """
     Scraper class for HSR character data.
-    
+
     Attributes:
         page_num: Page number of the page that contains data.
         char_data_dict: Dictionary to store character data.
@@ -30,11 +28,11 @@ class Scraper(BaseModel):
     async def scrape_hsr_data(self, url: str, headers: dict) -> pd.DataFrame:
         """
         Scrapes HSR character data from JSON response.
-        
+
         Args:
             url: URL for the API.
             headers: Headers for the request.
-        
+
         Returns:
             Dataframe containing scraped character data.
         """
@@ -53,6 +51,7 @@ class Scraper(BaseModel):
 
             # Import here to avoid circular import
             from hsrws.core.character import process_character_list
+
             await process_character_list(self, char_list)
 
         return pd.DataFrame(self.char_data_dict)
@@ -63,12 +62,12 @@ class Scraper(BaseModel):
     ) -> list[dict]:
         """
         Fetches the character list from the API.
-        
+
         Args:
             url: URL for the API.
             headers: Headers for the request.
             payload_data: Payload data for the request.
-        
+
         Returns:
             List of characters.
         """
@@ -81,4 +80,4 @@ class Scraper(BaseModel):
                     return []
 
                 hsr_data = await response.json()
-                return hsr_data["data"]["list"] 
+                return hsr_data["data"]["list"]

@@ -1,7 +1,7 @@
 """Character data processing logic."""
 
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Optional
 
 from loguru import logger
 
@@ -12,7 +12,7 @@ from hsrws.utils.payload import get_first_value
 async def process_character_list(scraper: Scraper, char_list: list[dict]) -> None:
     """
     Processes the character list.
-    
+
     Args:
         scraper: Scraper instance to use for processing.
         char_list: List of characters to process.
@@ -21,14 +21,16 @@ async def process_character_list(scraper: Scraper, char_list: list[dict]) -> Non
         await scrape_character_data(scraper, char)
 
 
-async def scrape_character_data(scraper: Scraper, character_data: dict[str, Any]) -> None:
+async def scrape_character_data(
+    scraper: Scraper, character_data: dict[str, Any]
+) -> None:
     """
     Scrapes character data from JSON response.
-    
+
     Args:
         scraper: Scraper instance to use for processing.
         character_data: Dictionary that represents each character data.
-    
+
     Raises:
         KeyError: If character name is not found.
     """
@@ -46,7 +48,7 @@ async def scrape_character_data(scraper: Scraper, character_data: dict[str, Any]
 def append_char_stats(scraper: Scraper, character_data: dict[str, Any]) -> None:
     """
     Appends character stats to the character data dictionary.
-    
+
     Args:
         scraper: Scraper instance to use for processing.
         character_data: Dictionary that represents each character data.
@@ -57,21 +59,19 @@ def append_char_stats(scraper: Scraper, character_data: dict[str, Any]) -> None:
             append_stats(scraper)
         else:
             char_stats_lvl_80_json_str = char_stats["attr_level_80"]
-            char_stats_lvl_80: dict[str, Any] = json.loads(
-                char_stats_lvl_80_json_str
-            )
+            char_stats_lvl_80: dict[str, Any] = json.loads(char_stats_lvl_80_json_str)
             append_stats(scraper, char_stats_lvl_80)
     except KeyError as e:
-        logger.error(
-            f"Stats of Character name {e} is not found. Append stats as zero."
-        )
+        logger.error(f"Stats of Character name {e} is not found. Append stats as zero.")
         append_stats(scraper)
 
 
-def append_stats(scraper: Scraper, char_stats_lvl_80: Optional[dict[str, Any]] = None) -> None:
+def append_stats(
+    scraper: Scraper, char_stats_lvl_80: Optional[dict[str, Any]] = None
+) -> None:
     """
     Appends stats to the character data dictionary.
-    
+
     Args:
         scraper: Scraper instance to use for processing.
         char_stats_lvl_80: Character stats at level 80.
@@ -114,7 +114,7 @@ def append_stats(scraper: Scraper, char_stats_lvl_80: Optional[dict[str, Any]] =
 async def append_char_type_data(scraper: Scraper, character_data: dict) -> None:
     """
     Appends character type data to the character data dictionary.
-    
+
     Args:
         scraper: Scraper instance to use for processing.
         character_data: Dictionary that represents each character data.
@@ -129,7 +129,9 @@ async def append_char_type_data(scraper: Scraper, character_data: dict) -> None:
         scraper.char_data_dict["Element"].append(element)
         scraper.char_data_dict["Rarity"].append(rarity)
     except KeyError as e:
-        logger.error(f"KeyError: {e}. Appending all path, element, and rarity as 'Unknown'.")
+        logger.error(
+            f"KeyError: {e}. Appending all path, element, and rarity as 'Unknown'."
+        )
         scraper.char_data_dict["Path"].append("Unknown")
         scraper.char_data_dict["Element"].append("Unknown")
-        scraper.char_data_dict["Rarity"].append("Unknown") 
+        scraper.char_data_dict["Rarity"].append("Unknown")
