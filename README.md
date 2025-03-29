@@ -27,7 +27,7 @@ Visualizations As Of 23 November 2024:
 
 * Create **.env** file with the **USER_AGENT** variable.
 
-  * ```
+  * ```text
     USER_AGENT=
     ```
 
@@ -37,5 +37,12 @@ Visualizations As Of 23 November 2024:
 * Run:
 
   * ```bash
+    # Run complete pipeline (scraping and visualization)
     python main.py
+
+    # Run only data scraping
+    python main.py --mode scrape
+
+    # Run only visualization generation
+    python main.py --mode visualize
     ```
