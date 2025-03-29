@@ -2,4 +2,4 @@
 
 from hsrws.db.models.characters import HsrCharacter, Base
 
-__all__ = ["HsrCharacter", "Base"] 
+__all__ = ["HsrCharacter", "Base"]
