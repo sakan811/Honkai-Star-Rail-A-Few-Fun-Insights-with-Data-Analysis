@@ -3,13 +3,12 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
-from loguru import logger
 
 
 def create_donut_chart(ax, data, title, cmap, config):
     """
     Creates a donut chart on the given axes.
-    
+
     Args:
         ax: Matplotlib axes object.
         data: DataFrame with 'category' and 'count' columns.
@@ -67,4 +66,4 @@ def create_donut_chart(ax, data, title, cmap, config):
         )
 
     # Add title
-    ax.set_title(title, fontsize=config.title_fontsize, pad=config.title_pad) 
+    ax.set_title(title, fontsize=config.title_fontsize, pad=config.title_pad)

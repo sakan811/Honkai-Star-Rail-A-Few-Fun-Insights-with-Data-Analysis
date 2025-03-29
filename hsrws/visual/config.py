@@ -7,7 +7,7 @@ from dataclasses import dataclass
 class ChartConfig:
     """
     Configuration for donut charts.
-    
+
     Attributes:
         figure_size: Size of the figure (width, height).
         dpi: Dots per inch for the output image.
@@ -26,14 +26,15 @@ class ChartConfig:
         tight_layout: Whether to use tight layout.
         bbox_inches: Bounding box in inches for saving.
     """
+
     # Chart dimensions
     figure_size: tuple = (10, 10)
     dpi: int = 300
-    
+
     # Donut properties
     donut_width: float = 0.5
     donut_hole_radius: float = 0.4
-    
+
     # Text sizes
     title_fontsize: int = 20
     title_pad: int = 20
@@ -41,15 +42,15 @@ class ChartConfig:
     label_fontsize: int = 20
     pct_fontsize: int = 15
     count_fontsize: int = 15
-    
+
     # Color maps
     path_cmap: str = "Blues"
     element_cmap: str = "Spectral"
     rarity_cmap: str = "Reds"
-    
+
     # Positioning
     pct_distance: float = 0.85
-    
+
     # Output configuration
     tight_layout: bool = True
-    bbox_inches: str = 'tight' 
+    bbox_inches: str = "tight"
