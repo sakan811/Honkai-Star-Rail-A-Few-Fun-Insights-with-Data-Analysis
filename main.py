@@ -1,3 +1,5 @@
+"""Main script for Honkai Star Rail data analysis."""
+
 import asyncio
 import sys
 from typing import Any
@@ -5,13 +7,10 @@ from typing import Any
 import pandas as pd
 from loguru import logger
 
-from hsrws.data_transformer import (
-    transform_char_name,
-    add_char_version,
-    clean_path_name,
-)
-from hsrws.hsr_scraper import get_headers, Scraper
-from hsrws.sqlite_pipeline import load_to_sqlite
+from hsrws.core.scraper import Scraper, get_headers
+from hsrws.data.transformer import transform_char_name, clean_path_name, add_char_version
+from hsrws.db.sqlite import load_to_sqlite
+from hsrws.visual.charts import create_all_charts
 
 logger.configure(handlers=[{"sink": sys.stderr, "level": "WARNING"}])
 logger.add(
@@ -24,8 +23,10 @@ logger.add(
 
 def main() -> pd.DataFrame:
     """
-    Main function to start the web-scraping process.
-    :return: Pandas Dataframe.
+    Main function to start the web-scraping and analysis process.
+    
+    Returns:
+        Pandas DataFrame with character data.
     """
     url: str = "https://sg-wiki-api.hoyolab.com/hoyowiki/hsr/wapi/get_entry_page_list"
     headers: dict[str, Any] = get_headers()
@@ -50,3 +51,4 @@ def main() -> pd.DataFrame:
 if __name__ == "__main__":
     char_data_df = main()
     load_to_sqlite(char_data_df)
+    create_all_charts()
