@@ -15,7 +15,7 @@ from hsrws.data.transformer import (
     add_char_version,
 )
 from hsrws.db.sqlite import load_to_sqlite
-from hsrws.visual.charts import create_all_charts
+from hsrws.visual.charts import create_advanced_charts
 
 logger.configure(handlers=[{"sink": sys.stderr, "level": "WARNING"}])
 logger.add(
@@ -56,4 +56,4 @@ def main() -> pd.DataFrame:
 if __name__ == "__main__":
     char_data_df = main()
     load_to_sqlite(char_data_df)
-    create_all_charts()
+    create_advanced_charts()
