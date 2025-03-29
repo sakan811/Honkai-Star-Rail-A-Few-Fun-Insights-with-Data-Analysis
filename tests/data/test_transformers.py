@@ -1,7 +1,6 @@
 """Test module for the data transformers."""
 
 import pandas as pd
-import pytest
 from unittest.mock import patch
 from hsrws.data.transformer import add_char_version, clean_path_name, transform_char_name
 

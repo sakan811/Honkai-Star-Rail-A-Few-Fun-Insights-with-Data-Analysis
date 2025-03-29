@@ -1,5 +1,4 @@
 import pytest
-import pandas as pd
 from hsrws.core.scraper import Scraper
 from hsrws.core.character import append_char_type_data
 

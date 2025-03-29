@@ -2,7 +2,7 @@ import pytest
 from unittest.mock import AsyncMock, patch
 import json
 from hsrws.core.scraper import Scraper
-from hsrws.core.character import scrape_character_data, append_char_type_data
+from hsrws.core.character import scrape_character_data
 
 
 def setup_test():

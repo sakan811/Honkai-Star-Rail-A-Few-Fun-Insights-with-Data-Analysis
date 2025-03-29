@@ -2,7 +2,7 @@
 
 import pytest
 import pandas as pd
-from unittest.mock import patch, MagicMock, AsyncMock
+from unittest.mock import patch, AsyncMock
 
 from hsrws.core.scraper import Scraper
 from hsrws.core.character import scrape_character_data

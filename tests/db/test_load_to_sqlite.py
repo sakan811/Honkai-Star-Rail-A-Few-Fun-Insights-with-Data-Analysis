@@ -1,7 +1,7 @@
 """Tests for the load_to_sqlite function."""
 
 import sqlite3
-from unittest.mock import patch, call, MagicMock
+from unittest.mock import patch, MagicMock
 
 import pytest
 

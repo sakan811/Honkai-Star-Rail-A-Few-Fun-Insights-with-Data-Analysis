@@ -1,14 +1,9 @@
 """Tests for the scraper main script."""
 
-import os
 import pytest
-import asyncio
-from unittest.mock import patch, MagicMock, AsyncMock, mock_open
+from unittest.mock import patch
 
-import pandas as pd
 
-import hsrws
-from hsrws.core.scraper import Scraper
 
 
 @pytest.mark.asyncio

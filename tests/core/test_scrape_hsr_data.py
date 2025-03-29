@@ -1,7 +1,7 @@
 """Tests for scrape_hsr_data method in Scraper class."""
 
 import unittest
-from unittest.mock import patch, AsyncMock, MagicMock
+from unittest.mock import patch, AsyncMock
 
 import pandas as pd
 import pytest
