@@ -4,7 +4,7 @@
 def get_version_dict() -> dict[int, list[str]]:
     """
     Gets a dictionary of characters released in each version.
-    
+
     Returns:
         Dictionary mapping version numbers to lists of character names.
     """
@@ -27,4 +27,4 @@ def get_version_dict() -> dict[int, list[str]]:
         3.1: ["tribbie", "mydei"],
         3.2: ["anaxa", "castorice"],
         3.3: ["hyacine", "cipher"],
-    } 
+    }

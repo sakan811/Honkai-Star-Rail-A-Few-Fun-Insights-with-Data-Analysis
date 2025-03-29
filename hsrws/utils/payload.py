@@ -9,10 +9,10 @@ from loguru import logger
 async def get_payload(page_num: int) -> dict[str, Any]:
     """
     Gets payload with specified page number.
-    
+
     Args:
         page_num: Page number.
-    
+
     Returns:
         Dictionary with payload data.
     """
@@ -29,7 +29,7 @@ async def get_payload(page_num: int) -> dict[str, Any]:
 def get_headers() -> dict[str, Any]:
     """
     Gets headers for API requests.
-    
+
     Returns:
         Headers as Dictionary.
     """
@@ -46,7 +46,7 @@ def get_headers() -> dict[str, Any]:
 def default_char_data_dict() -> dict[str, list[Any]]:
     """
     Creates a default character data dictionary with empty lists.
-    
+
     Returns:
         Dictionary with empty lists for each character attribute.
     """
@@ -73,10 +73,10 @@ def get_first_value(data: dict[str, Any], *keys: str, default=None) -> str | int
         data: The dictionary to search in
         keys: Variable number of keys to search for
         default: Value to return if no value is found, defaults to None
-    
+
     Returns:
         The first non-empty value found, or the default value
-    
+
     Raises:
         KeyError: If a specified key exists in data but doesn't have a 'values' key
     """
@@ -85,4 +85,4 @@ def get_first_value(data: dict[str, Any], *keys: str, default=None) -> str | int
             values = data[key]["values"]
             if values:
                 return values[0]
-    return default 
+    return default
