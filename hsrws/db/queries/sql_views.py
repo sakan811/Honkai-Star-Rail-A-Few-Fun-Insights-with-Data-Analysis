@@ -4,7 +4,7 @@
 def get_rarity_char_count_by_ver() -> str:
     """
     Gets 'rarity character count by version' query.
-    
+
     Returns:
         SQL query string.
     """
@@ -35,7 +35,7 @@ def get_rarity_char_count_by_ver() -> str:
 def get_path_char_count_by_ver() -> str:
     """
     Gets 'path character count by version' query.
-    
+
     Returns:
         SQL query string.
     """
@@ -79,7 +79,7 @@ def get_path_char_count_by_ver() -> str:
 def get_element_char_count_by_ver() -> str:
     """
     Gets 'Element Character Count by Version' query.
-    
+
     Returns:
         SQL query string.
     """
@@ -107,4 +107,4 @@ def get_element_char_count_by_ver() -> str:
                 CAST((SELECT SUM(Imaginary) FROM ElementCounts p WHERE p.Version <= ec.Version) AS INT) AS Imaginary
         FROM ElementCounts ec;
         """
-    return query 
+    return query
