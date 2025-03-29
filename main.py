@@ -8,7 +8,11 @@ import pandas as pd
 from loguru import logger
 
 from hsrws.core.scraper import Scraper, get_headers
-from hsrws.data.transformer import transform_char_name, clean_path_name, add_char_version
+from hsrws.data.transformer import (
+    transform_char_name,
+    clean_path_name,
+    add_char_version,
+)
 from hsrws.db.sqlite import load_to_sqlite
 from hsrws.visual.charts import create_all_charts
 
@@ -24,7 +28,7 @@ logger.add(
 def main() -> pd.DataFrame:
     """
     Main function to start the web-scraping and analysis process.
-    
+
     Returns:
         Pandas DataFrame with character data.
     """
