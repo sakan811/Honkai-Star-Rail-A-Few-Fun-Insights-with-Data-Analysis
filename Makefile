@@ -3,6 +3,12 @@
 run:
 	python main.py
 
+visualize:
+	python main.py --mode visualize
+
+scrape:
+	python main.py --mode scrape
+
 test:
 	python -m pytest tests
 
