@@ -17,10 +17,10 @@ from hsrws.db.queries import (
 def load_to_sqlite(df: pd.DataFrame) -> None:
     """
     Loads dataframe to SQLite database.
-    
+
     Args:
         df: Dataframe to load.
-    
+
     Raises:
         sqlite3.OperationalError: If there's an issue with the SQLite operation.
     """
@@ -39,7 +39,7 @@ def load_to_sqlite(df: pd.DataFrame) -> None:
 def create_views(conn: sqlite3.Connection) -> None:
     """
     Creates Views in the database.
-    
+
     Args:
         conn: SQLite connection.
     """
@@ -55,7 +55,7 @@ def create_views(conn: sqlite3.Connection) -> None:
 def drop_views(conn: sqlite3.Connection) -> None:
     """
     Drops Views in the database if they exist.
-    
+
     Args:
         conn: SQLite connection
     """
@@ -67,4 +67,4 @@ def drop_views(conn: sqlite3.Connection) -> None:
     conn.execute(query)
 
     query = "DROP VIEW IF EXISTS RarityCharacterCountByVersion"
-    conn.execute(query) 
+    conn.execute(query)
