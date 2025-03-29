@@ -11,10 +11,10 @@ from hsrws.utils.version import get_version_dict
 def transform_char_name(char_name: str) -> str:
     """
     Transforms character name to a standard format.
-    
+
     Args:
         char_name: Character name.
-    
+
     Returns:
         Transformed character name.
     """
@@ -41,10 +41,10 @@ def transform_char_name(char_name: str) -> str:
 def clean_path_name(path_name: str) -> str:
     """
     Cleans Path name by removing 'The ' prefix.
-    
+
     Args:
         path_name: Path name.
-    
+
     Returns:
         Cleaned Path name.
     """
@@ -55,7 +55,7 @@ def clean_path_name(path_name: str) -> str:
 def add_char_version(df: pd.DataFrame) -> None:
     """
     Adds characters' version to dataframe.
-    
+
     Args:
         df: Character Dataframe.
     """
@@ -70,4 +70,4 @@ def add_char_version(df: pd.DataFrame) -> None:
             ),
             1.0,
         )
-    ) 
+    )
