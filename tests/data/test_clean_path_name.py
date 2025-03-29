@@ -1,4 +1,4 @@
-from hsrws.data_transformer import clean_path_name
+from hsrws.data import clean_path_name
 
 
 # Test case for basic cleaning

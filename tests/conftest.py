@@ -56,3 +56,22 @@ def mock_environment_variables(monkeypatch):
     """Set mock environment variables for testing."""
     monkeypatch.setenv("USER_AGENT", "test-agent")
     return {"USER_AGENT": "test-agent"}
+
+
+@pytest.fixture
+def mock_character_list():
+    """Return a mock character list for testing."""
+    return [
+        {
+            "name": "Character1",
+            "element": {"name": "Fire"},
+            "path": {"name": "The Hunt"},
+            "rarity": 5,
+        },
+        {
+            "name": "Character2",
+            "element": {"name": "Ice"},
+            "path": {"name": "The Harmony"},
+            "rarity": 4,
+        },
+    ]

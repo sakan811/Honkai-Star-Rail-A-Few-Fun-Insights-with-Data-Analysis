@@ -1,6 +1,7 @@
 import pytest
-
-from hsrws.hsr_scraper import Scraper
+import pandas as pd
+from hsrws.core.scraper import Scraper
+from hsrws.core.character import append_char_type_data
 
 
 @pytest.mark.asyncio
@@ -11,17 +12,17 @@ async def test_append_char_type_data_success():
     # Mock character_data with valid values
     character_data = {
         "filter_values": {
-            "character_paths": {"values": ["Path1"]},
-            "character_combat_type": {"values": ["Element1"]},
-            "character_rarity": {"values": ["Rarity1"]},
+            "path": {"values": ["Path1"]},
+            "element": {"values": ["Element1"]},
+            "rarity": {"values": ["Rarity1"]},
         }
     }
 
     # Mock the char_data_dict to append values
     scraper.char_data_dict = {"Path": [], "Element": [], "Rarity": []}
 
-    # Call the method
-    await scraper._append_char_type_data(character_data)
+    # Call the function with scraper and character_data
+    await append_char_type_data(scraper, character_data)
 
     # Assert that the data has been correctly appended
     assert scraper.char_data_dict["Path"] == ["Path1"]
@@ -36,17 +37,17 @@ async def test_append_char_type_data_empty_values():
     # Mock character_data with an empty list for 'values'
     character_data = {
         "filter_values": {
-            "character_paths": {"values": []},
-            "character_combat_type": {"values": []},
-            "character_rarity": {"values": []},
+            "path": {"values": []},
+            "element": {"values": []},
+            "rarity": {"values": []},
         }
     }
 
     # Mock the char_data_dict to append values
     scraper.char_data_dict = {"Path": [], "Element": [], "Rarity": []}
 
-    # Call the method
-    await scraper._append_char_type_data(character_data)
+    # Call the function with scraper and character_data
+    await append_char_type_data(scraper, character_data)
 
     # Assert that 'Unknown' values have been appended
     assert scraper.char_data_dict["Path"] == ["Unknown"]
@@ -62,20 +63,19 @@ async def test_append_char_type_data_missing_values_key():
     # Mock character_data missing the 'values' key
     character_data = {
         "filter_values": {
-            "character_paths": {},
-            "character_combat_type": {},
-            "character_rarity": {},
+            "path": {},
+            "element": {},
+            "rarity": {},
         }
     }
 
     # Mock the char_data_dict to append values
     scraper.char_data_dict = {"Path": [], "Element": [], "Rarity": []}
 
-    # Call the method and expect an IndexError
-    with pytest.raises(IndexError):
-        await scraper._append_char_type_data(character_data)
+    # Call the method and expect KeyError to be handled internally
+    await append_char_type_data(scraper, character_data)
 
-    # Assert that no values have been appended due to the error
-    assert scraper.char_data_dict["Path"] == []
-    assert scraper.char_data_dict["Element"] == []
-    assert scraper.char_data_dict["Rarity"] == []
+    # Assert that 'Unknown' values have been appended
+    assert scraper.char_data_dict["Path"] == ["Unknown"]
+    assert scraper.char_data_dict["Element"] == ["Unknown"]
+    assert scraper.char_data_dict["Rarity"] == ["Unknown"]

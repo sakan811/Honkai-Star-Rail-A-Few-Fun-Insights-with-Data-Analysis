@@ -1,7 +1,8 @@
 import pytest
 from unittest.mock import AsyncMock, patch
 import json
-from hsrws.hsr_scraper import Scraper
+from hsrws.core.scraper import Scraper
+from hsrws.core.character import scrape_character_data, append_char_type_data
 
 
 def setup_test():
@@ -19,9 +20,9 @@ def setup_test():
 @pytest.mark.asyncio
 async def test_scrape_character_data():
     scraper = setup_test()
-    # Mock the _append_char_type_data method
-    with patch.object(
-        Scraper, "_append_char_type_data", new_callable=AsyncMock
+    # Mock the append_char_type_data function
+    with patch(
+        "hsrws.core.character.append_char_type_data", new_callable=AsyncMock
     ) as mock_append:
         # Test case 1: Character with stats
         character_data_with_stats = {
@@ -38,22 +39,22 @@ async def test_scrape_character_data():
             },
         }
 
-        await scraper._scrape_character_data(character_data_with_stats)
+        await scrape_character_data(scraper, character_data_with_stats)
 
         assert scraper.char_data_dict["Character"] == ["Test Character"]
         assert scraper.char_data_dict["ATK Lvl 80"] == [100]
         assert scraper.char_data_dict["DEF Lvl 80"] == [200]
         assert scraper.char_data_dict["HP Lvl 80"] == [300]
         assert scraper.char_data_dict["SPD Lvl 80"] == [400]
-        mock_append.assert_called_once_with(character_data_with_stats)
+        mock_append.assert_called_once_with(scraper, character_data_with_stats)
 
 
 @pytest.mark.asyncio
 async def test_scrape_char_with_no_stat():
     scraper = setup_test()
-    # Mock the _append_char_type_data method
-    with patch.object(
-        Scraper, "_append_char_type_data", new_callable=AsyncMock
+    # Mock the append_char_type_data function
+    with patch(
+        "hsrws.core.character.append_char_type_data", new_callable=AsyncMock
     ) as mock_append:
         # Test case 2: Character without stats
         character_data_without_stats = {
@@ -61,14 +62,14 @@ async def test_scrape_char_with_no_stat():
             "display_field": {},
         }
 
-        await scraper._scrape_character_data(character_data_without_stats)
+        await scrape_character_data(scraper, character_data_without_stats)
 
         assert scraper.char_data_dict["Character"] == ["No Stats Character"]
         assert scraper.char_data_dict["ATK Lvl 80"] == [0]
         assert scraper.char_data_dict["DEF Lvl 80"] == [0]
         assert scraper.char_data_dict["HP Lvl 80"] == [0]
         assert scraper.char_data_dict["SPD Lvl 80"] == [0]
-        mock_append.assert_called_once_with(character_data_without_stats)
+        mock_append.assert_called_once_with(scraper, character_data_without_stats)
 
 
 @pytest.mark.asyncio
@@ -77,4 +78,4 @@ async def test_key_error_handling():
     # Test case 3: Check if KeyError is handled
     invalid_character_data = {}
     with pytest.raises(KeyError):
-        await scraper._scrape_character_data(invalid_character_data)
+        await scrape_character_data(scraper, invalid_character_data)

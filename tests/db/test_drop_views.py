@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, call
-from hsrws.sqlite_pipeline import drop_views
+from hsrws.db.sqlite import drop_views
 
 
 def test_drop_views_executes_all_queries():

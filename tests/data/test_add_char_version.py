@@ -16,7 +16,7 @@ def test_add_char_version():
 
     # Apply the version mapping
     with patch(
-        "hsrws.data.transformers.get_version_dict", return_value=mock_version_dict
+        "hsrws.data.transformer.get_version_dict", return_value=mock_version_dict
     ):
         # Simulate the functionality directly since we're testing the specific transformation
         df["Version"] = df["Character"].apply(

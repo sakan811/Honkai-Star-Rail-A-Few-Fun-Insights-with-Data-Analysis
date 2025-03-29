@@ -1,6 +1,6 @@
 import pytest
 
-from hsrws.data_transformer import transform_char_name
+from hsrws.data import transform_char_name
 
 
 # Test case for basic transformation

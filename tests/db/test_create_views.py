@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, call
-from hsrws.sqlite_pipeline import (
+from hsrws.db.sqlite import (
     create_views,
     get_element_char_count_by_ver,
     get_path_char_count_by_ver,
