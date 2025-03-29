@@ -1,5 +1,8 @@
 .PHONY: test format lint clean
 
+run:
+	python main.py
+
 test:
 	python -m pytest tests
 
