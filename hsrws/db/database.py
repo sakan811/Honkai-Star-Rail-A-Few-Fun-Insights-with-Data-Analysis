@@ -9,7 +9,7 @@ DB_PATH = "hsr.db"
 def get_engine():
     """
     Gets SQLAlchemy engine for the database.
-    
+
     Returns:
         SQLAlchemy engine object.
     """
@@ -19,10 +19,10 @@ def get_engine():
 def get_session():
     """
     Gets a SQLAlchemy session.
-    
+
     Returns:
         SQLAlchemy session object.
     """
     engine = get_engine()
     Session = sessionmaker(bind=engine)
-    return Session() 
+    return Session()
