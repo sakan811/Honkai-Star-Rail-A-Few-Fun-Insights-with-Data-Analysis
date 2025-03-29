@@ -1,12 +1,12 @@
+"""Tests for the get_headers utility function."""
+
 import pytest
 
-from hsrws.hsr_scraper import get_headers
+from hsrws.utils.payload import get_headers
 
 
-def test_get_headers(monkeypatch):
-    # Set environment variable for testing
-    monkeypatch.setenv("USER_AGENT", "test-agent")
-
+def test_get_headers(mock_environment_variables):
+    """Test that get_headers returns the correct headers with environment variables."""
     expected_headers = {
         "Origin": "https://wiki.hoyolab.com",
         "Referer": "https://wiki.hoyolab.com/",

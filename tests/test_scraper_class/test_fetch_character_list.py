@@ -1,6 +1,7 @@
 import pytest
 
-from hsrws.hsr_scraper import Scraper, get_headers, get_payload
+from hsrws.core.scraper import Scraper
+from hsrws.utils.payload import get_headers, get_payload
 
 
 class MockAsyncContextManager:

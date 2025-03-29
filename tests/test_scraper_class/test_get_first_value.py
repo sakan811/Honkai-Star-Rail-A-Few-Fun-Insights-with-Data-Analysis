@@ -1,5 +1,5 @@
 import pytest
-from hsrws.hsr_scraper import get_first_value
+from hsrws.utils.payload import get_first_value
 
 
 @pytest.fixture

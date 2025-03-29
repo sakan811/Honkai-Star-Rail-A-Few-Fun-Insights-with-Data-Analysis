@@ -1,6 +1,6 @@
 import pytest
 
-from hsrws.hsr_scraper import get_payload
+from hsrws.utils.payload import get_payload
 
 
 @pytest.mark.asyncio

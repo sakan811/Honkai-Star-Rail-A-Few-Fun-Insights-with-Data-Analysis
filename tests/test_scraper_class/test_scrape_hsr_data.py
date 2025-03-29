@@ -3,7 +3,7 @@ from unittest.mock import patch, AsyncMock
 import pandas as pd
 import pytest
 
-from hsrws.hsr_scraper import Scraper
+from hsrws.core.scraper import Scraper
 
 
 @pytest.fixture
@@ -21,13 +21,13 @@ async def test_scrape_hsr_data_success(scraper):
 
     with (
         patch(
-            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+            "hsrws.utils.payload.get_payload", new_callable=AsyncMock
         ) as mock_get_payload,
         patch.object(
             scraper, "_fetch_character_list", new_callable=AsyncMock
         ) as mock_fetch,
-        patch.object(
-            scraper, "_process_character_list", new_callable=AsyncMock
+        patch(
+            "hsrws.core.character.process_character_list", new_callable=AsyncMock
         ) as mock_process,
     ):
         mock_get_payload.return_value = {"some": "payload"}
@@ -50,13 +50,13 @@ async def test_scrape_hsr_data_empty_first_page(scraper):
 
     with (
         patch(
-            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+            "hsrws.utils.payload.get_payload", new_callable=AsyncMock
         ) as mock_get_payload,
         patch.object(
             scraper, "_fetch_character_list", new_callable=AsyncMock
         ) as mock_fetch,
-        patch.object(
-            scraper, "_process_character_list", new_callable=AsyncMock
+        patch(
+            "hsrws.core.character.process_character_list", new_callable=AsyncMock
         ) as mock_process,
     ):
         mock_get_payload.return_value = {"some": "payload"}
@@ -79,13 +79,13 @@ async def test_scrape_hsr_data_exception(scraper):
 
     with (
         patch(
-            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+            "hsrws.utils.payload.get_payload", new_callable=AsyncMock
         ) as mock_get_payload,
         patch.object(
             scraper, "_fetch_character_list", new_callable=AsyncMock
         ) as mock_fetch,
-        patch.object(
-            scraper, "_process_character_list", new_callable=AsyncMock
+        patch(
+            "hsrws.core.character.process_character_list", new_callable=AsyncMock
         ) as mock_process,
     ):
         mock_get_payload.side_effect = Exception("Test error")
@@ -107,12 +107,12 @@ async def test_scrape_hsr_data_logging(scraper):
 
     with (
         patch(
-            "hsrws.hsr_scraper.get_payload", new_callable=AsyncMock
+            "hsrws.utils.payload.get_payload", new_callable=AsyncMock
         ) as mock_get_payload,
         patch.object(
             scraper, "_fetch_character_list", new_callable=AsyncMock
         ) as mock_fetch,
-        patch.object(scraper, "_process_character_list", new_callable=AsyncMock),
+        patch("hsrws.core.character.process_character_list", new_callable=AsyncMock),
     ):
         mock_get_payload.return_value = {"some": "payload"}
         mock_fetch.side_effect = [mock_char_list, []]
