@@ -7,7 +7,8 @@ from typing import Any
 import pandas as pd
 from loguru import logger
 
-from hsrws.core.scraper import Scraper, get_headers
+from hsrws.core.scraper import Scraper
+from hsrws.utils.payload import get_headers
 from hsrws.data.transformer import (
     transform_char_name,
     clean_path_name,
