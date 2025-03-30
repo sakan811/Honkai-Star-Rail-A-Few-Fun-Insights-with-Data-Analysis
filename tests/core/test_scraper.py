@@ -49,9 +49,9 @@ async def test_scrape_character_data():
     mock_char = {
         "name": "Test Character",
         "filter_values": {
-            "path": {"values": ["The Hunt"]},
-            "element": {"values": ["Fire"]},
-            "rarity": {"values": [5]},
+            "character_paths": {"values": ["The Hunt"]},
+            "character_combat_type": {"values": ["Fire"]},
+            "character_rarity": {"values": ["5-Star"]},
         },
         "display_field": {
             "attr_level_80": '{"base_atk": 100, "base_def": 200, "base_hp": 1000, "base_speed": 100}'
@@ -76,9 +76,9 @@ async def test_scrape_character_data():
 
     # Verify results
     assert scraper.char_data_dict["Character"] == ["Test Character"]
-    assert scraper.char_data_dict["Path"] == ["The Hunt"]
+    assert scraper.char_data_dict["Path"] == ["Hunt"]
     assert scraper.char_data_dict["Element"] == ["Fire"]
-    assert scraper.char_data_dict["Rarity"] == [5]
+    assert scraper.char_data_dict["Rarity"] == ["5"]
     assert scraper.char_data_dict["ATK Lvl 80"] == [100]
     assert scraper.char_data_dict["DEF Lvl 80"] == [200]
     assert scraper.char_data_dict["HP Lvl 80"] == [1000]
@@ -93,17 +93,17 @@ async def test_scrape_hsr_data():
         {
             "name": "Character1",
             "filter_values": {
-                "path": {"values": ["The Hunt"]},
-                "element": {"values": ["Fire"]},
-                "rarity": {"values": [5]},
+                "character_paths": {"values": ["The Hunt"]},
+                "character_combat_type": {"values": ["Fire"]},
+                "character_rarity": {"values": ["5-Star"]},
             },
         },
         {
             "name": "Character2",
             "filter_values": {
-                "path": {"values": ["The Harmony"]},
-                "element": {"values": ["Ice"]},
-                "rarity": {"values": [4]},
+                "character_paths": {"values": ["The Harmony"]},
+                "character_combat_type": {"values": ["Ice"]},
+                "character_rarity": {"values": ["4-Star"]},
             },
         },
     ]

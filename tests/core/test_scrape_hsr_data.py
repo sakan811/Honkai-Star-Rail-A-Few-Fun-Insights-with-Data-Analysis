@@ -31,17 +31,17 @@ class TestScrapeHsrData(unittest.TestCase):
             {
                 "name": "Character1",
                 "filter_values": {
-                    "path": {"values": ["The Hunt"]},
-                    "element": {"values": ["Fire"]},
-                    "rarity": {"values": [5]},
+                    "character_paths": {"values": ["The Hunt"]},
+                    "character_combat_type": {"values": ["Fire"]},
+                    "character_rarity": {"values": ["5-Star"]},
                 },
             },
             {
                 "name": "Character2",
                 "filter_values": {
-                    "path": {"values": ["The Harmony"]},
-                    "element": {"values": ["Ice"]},
-                    "rarity": {"values": [4]},
+                    "character_paths": {"values": ["The Harmony"]},
+                    "character_combat_type": {"values": ["Ice"]},
+                    "character_rarity": {"values": ["4-Star"]},
                 },
             },
         ]
@@ -66,15 +66,15 @@ class TestScrapeHsrData(unittest.TestCase):
                             char["name"]
                         )
                         scraper_instance.char_data_dict["Path"].append(
-                            "The Hunt"
+                            "Hunt"
                             if char["name"] == "Character1"
-                            else "The Harmony"
+                            else "Harmony"
                         )
                         scraper_instance.char_data_dict["Element"].append(
                             "Fire" if char["name"] == "Character1" else "Ice"
                         )
                         scraper_instance.char_data_dict["Rarity"].append(
-                            5 if char["name"] == "Character1" else 4
+                            "5" if char["name"] == "Character1" else "4"
                         )
                         scraper_instance.char_data_dict["ATK Lvl 80"].append(100)
                         scraper_instance.char_data_dict["DEF Lvl 80"].append(200)
@@ -93,9 +93,9 @@ class TestScrapeHsrData(unittest.TestCase):
                 self.assertEqual(
                     list(result_df["Character"]), ["Character1", "Character2"]
                 )
-                self.assertEqual(list(result_df["Path"]), ["The Hunt", "The Harmony"])
+                self.assertEqual(list(result_df["Path"]), ["Hunt", "Harmony"])
                 self.assertEqual(list(result_df["Element"]), ["Fire", "Ice"])
-                self.assertEqual(list(result_df["Rarity"]), [5, 4])
+                self.assertEqual(list(result_df["Rarity"]), ["5", "4"])
 
     @pytest.mark.asyncio
     async def test_scrape_hsr_data_no_results(self):

@@ -11,9 +11,9 @@ async def test_append_char_type_data_success():
     # Mock character_data with valid values
     character_data = {
         "filter_values": {
-            "path": {"values": ["Path1"]},
-            "element": {"values": ["Element1"]},
-            "rarity": {"values": ["Rarity1"]},
+            "character_paths": {"values": ["Path1"]},
+            "character_combat_type": {"values": ["Element1"]},
+            "character_rarity": {"values": ["4-Star"]},
         }
     }
 
@@ -26,7 +26,7 @@ async def test_append_char_type_data_success():
     # Assert that the data has been correctly appended
     assert scraper.char_data_dict["Path"] == ["Path1"]
     assert scraper.char_data_dict["Element"] == ["Element1"]
-    assert scraper.char_data_dict["Rarity"] == ["Rarity1"]
+    assert scraper.char_data_dict["Rarity"] == ["4"]
 
 
 @pytest.mark.asyncio
@@ -36,9 +36,9 @@ async def test_append_char_type_data_empty_values():
     # Mock character_data with an empty list for 'values'
     character_data = {
         "filter_values": {
-            "path": {"values": []},
-            "element": {"values": []},
-            "rarity": {"values": []},
+            "character_paths": {"values": []},
+            "character_combat_type": {"values": []},
+            "character_rarity": {"values": []},
         }
     }
 
@@ -62,9 +62,9 @@ async def test_append_char_type_data_missing_values_key():
     # Mock character_data missing the 'values' key
     character_data = {
         "filter_values": {
-            "path": {},
-            "element": {},
-            "rarity": {},
+            "character_paths": {},
+            "character_combat_type": {},
+            "character_rarity": {},
         }
     }
 
