@@ -13,13 +13,7 @@ and <https://honkai-star-rail.fandom.com/wiki/Character/List>
 
 ## Visualizations
 
-[Power BI](https://app.powerbi.com/view?r=eyJrIjoiNThhMWE5ODEtN2NkMy00NjEyLTgyMTItYWNmZTUwNTQ0YTZmIiwidCI6ImZlMzViMTA3LTdjMmYtNGNjMy1hZDYzLTA2NTY0MzcyMDg3OCIsImMiOjEwfQ%3D%3D)
-
-Visualizations As Of 23 November 2024:
-
-* [Instagram](https://www.instagram.com/p/DCs_tQQvywn/?utm_source=ig_web_copy_link&igsh=MzRlODBiNWFlZA==)  
-
-* [Facebook](https://www.facebook.com/share/p/15YxPhN3m3/)
+Click [here](./docs/VISUAL.md) to view the visualizations.
 
 ## To Run Web-Scraping Process
 
