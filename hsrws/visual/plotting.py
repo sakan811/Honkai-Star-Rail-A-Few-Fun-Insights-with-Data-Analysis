@@ -3,15 +3,64 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
-import numpy as np
 from loguru import logger
 
 from hsrws.visual.config import ChartConfig
 
 
+def _setup_chart_basics(fig, ax, config, chart_type, title, patch_version=None, x_label=None, y_label=None):
+    """
+    Set up basic chart properties with appropriate aspect ratio based on chart type.
+    
+    Args:
+        fig: Matplotlib figure object
+        ax: Matplotlib axis object
+        config: ChartConfig object
+        chart_type: Type of chart for retrieving specific settings
+        title: Chart title
+        patch_version: Optional patch version to append to title
+        x_label: Label for x-axis
+        y_label: Label for y-axis
+        
+    Returns:
+        None (modifies the axis object in-place)
+    """
+    # Get chart size to calculate aspect ratio
+    chart_size = config.get_size(chart_type)
+    aspect_ratio = chart_size[0] / chart_size[1] if chart_size[1] != 0 else 1
+    
+    # Set aspect ratio based on chart type
+    # For square charts (1:1 ratio), force box_aspect
+    if abs(aspect_ratio - 1) < 0.1:  # If the ratio is approximately 1:1
+        ax.set_box_aspect(1)
+    
+    # Set title with optional patch version
+    if patch_version:
+        title = f"{title} - {patch_version}"
+    
+    # Apply title wrapping if enabled
+    if hasattr(config, 'wrap_text'):
+        title = config.wrap_text(title)
+    
+    ax.set_title(title, fontsize=config.get_font_size('title', chart_type), pad=15)
+    
+    # Set axis labels if provided
+    if x_label:
+        ax.set_xlabel(x_label, fontsize=config.get_font_size('label', chart_type), labelpad=10)
+    if y_label:
+        ax.set_ylabel(y_label, fontsize=config.get_font_size('label', chart_type), labelpad=10)
+    
+    # Set tick label font sizes
+    ax.tick_params(axis='both', which='major', labelsize=config.get_font_size('tick', chart_type))
+    
+    # Rotate x-axis labels to prevent overlap if auto_rotate_labels is enabled
+    if config.auto_rotate_labels:
+        plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
+
+
 def plot_element_path_heatmap(df: pd.DataFrame, config: ChartConfig = None, patch_version: str = None) -> plt.Figure:
     """
-    Plot character distribution by element and path as a heatmap.
+    Plot a heatmap of element vs path distribution.
 
     Args:
         df: DataFrame containing element, path, and count columns.
@@ -27,56 +76,45 @@ def plot_element_path_heatmap(df: pd.DataFrame, config: ChartConfig = None, patc
     if config is None:
         config = ChartConfig()
     
-    # Pivot the dataframe for heatmap format
-    pivot_df = df.pivot_table(index="Element", columns="Path", values="count", fill_value=0)
-    
-    # Create figure and axis with square aspect ratio
+    # Create figure and axis with square ratio for symmetric heatmap cells
     fig, ax = plt.subplots(figsize=config.get_size("heatmap"))
     
-    # Force square aspect ratio
-    ax.set_aspect('equal')
+    # Pivot the dataframe to create heatmap format
+    pivot_df = df.pivot(index="Element", columns="Path", values="count")
+    
+    # Fill NaN values with 0 instead of leaving blank
+    pivot_df = pivot_df.fillna(0)
     
     # Get annotation settings
     annotation_settings = config.get_annotation_settings("heatmap")
     
-    # Create heatmap
+    # Create heatmap with cell annotations
     sns.heatmap(
         pivot_df, 
         annot=True, 
-        fmt=annotation_settings.get("fmt", ".0f"),
-        cmap=config.get_colormap("heatmap"), 
-        linewidths=0.5, 
+        fmt=annotation_settings.get("fmt", ".0f"), 
+        cmap=config.get_colormap("heatmap"),
+        linewidths=0.5,
         ax=ax,
-        cbar_kws={
-            "label": "Character Count", 
-            "pad": 0.02  # Add some padding between the colorbar and the plot
-        },
-        annot_kws={"fontsize": config.annotation_fontsize}
+        annot_kws={
+            "size": config.get_font_size('annotation', 'heatmap'),
+            "fontweight": annotation_settings.get("fontweight", "normal")
+        }
     )
     
-    # Adjust colorbar label font size
-    cbar = ax.collections[0].colorbar
-    cbar.ax.set_ylabel("Character Count", fontsize=config.label_fontsize)
-    
-    # Set title and labels
+    # Set up chart basics for square display
     title = config.get_title("heatmap")
-    if patch_version:
-        title = f"{title} - {patch_version}"
-    ax.set_title(title, fontsize=config.title_fontsize, pad=20)  # Add padding to title
-    ax.set_xlabel("Path", fontsize=config.label_fontsize, labelpad=15)  # Add padding to x-label
-    ax.set_ylabel("Element", fontsize=config.label_fontsize, labelpad=15)  # Add padding to y-label
+    _setup_chart_basics(
+        fig, ax, config, "heatmap", title, patch_version,
+        x_label="Path", y_label="Element"
+    )
     
-    # Set tick label font sizes and rotation
-    ax.tick_params(axis='both', which='major', labelsize=config.tick_fontsize, pad=8)  # Add padding to tick labels
-    # Rotate y-axis labels to horizontal for better readability and prevent overlapping
+    # Horizontal y-axis labels for better readability
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-    # Rotate x-axis labels for better fit if needed
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
     
     if config.tight_layout:
         plt.tight_layout()
     else:
-        # Only use subplot adjustments if tight_layout is disabled
         plt.subplots_adjust(left=0.15, right=0.9, bottom=0.15, top=0.9)
     
     return fig
@@ -103,36 +141,28 @@ def plot_rarity_element_distribution(df: pd.DataFrame, config: ChartConfig = Non
     # Pivot the dataframe for stacked bar format
     pivot_df = df.pivot_table(index="Rarity", columns="Element", values="count", fill_value=0)
     
-    # Create figure and axis with 1:1 ratio
+    # Create figure and axis with landscape ratio
     fig, ax = plt.subplots(figsize=config.get_size("bar"))
     
     # Create stacked bar chart
     pivot_df.plot(kind="bar", stacked=True, ax=ax, colormap=config.get_colormap("bar"))
     
-    # Set title and labels
+    # Set up chart basics
     title = config.get_title("bar")
-    if patch_version:
-        title = f"{title} - {patch_version}"
-    ax.set_title(title, fontsize=config.title_fontsize)
-    ax.set_xlabel("Rarity", fontsize=config.label_fontsize)
-    ax.set_ylabel("Character Count", fontsize=config.label_fontsize)
-    
-    # Set tick label font sizes
-    ax.tick_params(axis='both', which='major', labelsize=config.tick_fontsize)
+    _setup_chart_basics(
+        fig, ax, config, "bar", title, patch_version,
+        x_label="Rarity", y_label="Character Count"
+    )
     
     # Configure legend
-    legend_settings = config.get_legend_settings("bar")
-    legend = ax.legend(
-        title=legend_settings.get("title", "Element"),
-        bbox_to_anchor=legend_settings.get("bbox_to_anchor", (1.05, 1)),
-        loc=legend_settings.get("loc", "upper left")
-    )
-    legend.get_title().set_fontsize(config.legend_fontsize)
-    for text in legend.get_texts():
-        text.set_fontsize(config.legend_fontsize)
+    config.configure_legend(ax, "bar")
     
     if config.tight_layout:
         plt.tight_layout()
+    else:
+        # Adjust for landscape ratio
+        plt.subplots_adjust(bottom=0.15, left=0.1, right=0.9)
+        
     return fig
 
 
@@ -154,7 +184,7 @@ def plot_version_release_timeline(df: pd.DataFrame, config: ChartConfig = None, 
     if config is None:
         config = ChartConfig()
     
-    # Create figure and axis with wider width for better label spacing
+    # Create figure and axis with landscape aspect ratio
     fig, ax = plt.subplots(figsize=config.get_size("timeline"))
     
     # Get marker settings
@@ -166,20 +196,25 @@ def plot_version_release_timeline(df: pd.DataFrame, config: ChartConfig = None, 
         df["Version"], 
         df["character_count"], 
         marker=primary_marker.get("marker", "o"),
-        markersize=primary_marker.get("markersize", 10),
+        markersize=primary_marker.get("markersize", 8),
         linewidth=primary_marker.get("linewidth", 2)
     )
     
     # Add data points annotation
     annotation_settings = config.get_annotation_settings("timeline")
     for x, y in zip(df["Version"], df["character_count"]):
+        fontsize = config.get_font_size('annotation', 'timeline')
+        if annotation_settings.get("fontsize_offset", 0) > 0:
+            fontsize += annotation_settings.get("fontsize_offset")
+        
         ax.annotate(
-            f"{y:.0f}",  # Use .0f format to handle potential float values
+            f"{y:.0f}",
             (x, y), 
             textcoords=annotation_settings.get("textcoords", "offset points"),
-            xytext=annotation_settings.get("xytext", (0, 10)), 
+            xytext=annotation_settings.get("xytext", (0, 15)), 
             ha=annotation_settings.get("ha", "center"),
-            fontsize=config.annotation_fontsize
+            fontsize=fontsize,
+            fontweight=annotation_settings.get("fontweight", "bold")
         )
     
     # Calculate cumulative sum for additional information
@@ -192,40 +227,32 @@ def plot_version_release_timeline(df: pd.DataFrame, config: ChartConfig = None, 
         linestyle=secondary_marker.get("linestyle", "--"),
         color=secondary_marker.get("color", "darkred"),
         alpha=secondary_marker.get("alpha", 0.7),
-        markersize=secondary_marker.get("markersize", 8)
+        markersize=secondary_marker.get("markersize", 6)
     )
-    ax2.set_ylabel("Cumulative Character Count", fontsize=config.label_fontsize, color=secondary_marker.get("color", "darkred"))
+    ax2.set_ylabel("Cumulative Character Count", 
+                  fontsize=config.get_font_size('label', 'timeline'), 
+                  color=secondary_marker.get("color", "darkred"))
     
-    # Set title and labels
+    # Set up chart basics - landscape ratio is optimal for timelines
     title = config.get_title("timeline")
-    if patch_version:
-        title = f"{title} - {patch_version}"
-    ax.set_title(title, fontsize=config.title_fontsize)
-    ax.set_xlabel("Version", fontsize=config.label_fontsize)
-    ax.set_ylabel("New Characters Per Version", fontsize=config.label_fontsize)
+    _setup_chart_basics(
+        fig, ax, config, "timeline", title, patch_version,
+        x_label="Version", y_label="New Characters Per Version"
+    )
     
     # Set x-axis ticks to show all versions
     ax.set_xticks(df["Version"])
     
-    # Set tick label font sizes and rotate x labels to avoid overlap
-    ax.tick_params(axis='both', which='major', labelsize=config.tick_fontsize)
-    plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-    ax2.tick_params(axis='y', which='major', labelsize=config.tick_fontsize)
+    ax2.tick_params(axis='y', which='major', labelsize=config.get_font_size('tick', 'timeline'))
     
     # Add grid for better readability
-    grid_settings = config.get_grid_settings("timeline")
-    if grid_settings.get("visible", True):
-        ax.grid(
-            True, 
-            linestyle=grid_settings.get("linestyle", "--"), 
-            alpha=grid_settings.get("alpha", 0.7)
-        )
+    config.configure_grid(ax, "timeline")
     
     if config.tight_layout:
         plt.tight_layout()
     else:
-        # Add extra bottom margin to prevent x-label cropping
-        plt.subplots_adjust(bottom=0.15)
+        # Adjust for landscape ratio
+        plt.subplots_adjust(bottom=0.2, left=0.1, right=0.9)
     return fig
 
 
@@ -247,58 +274,37 @@ def plot_element_balance_evolution(df: pd.DataFrame, config: ChartConfig = None,
     if config is None:
         config = ChartConfig()
     
-    # Create figure and axis with 1:1 ratio
+    # Create figure and axis with landscape ratio for evolutionary data
     fig, ax = plt.subplots(figsize=config.get_size("area"))
     
-    # Melt the DataFrame for area chart (convert from wide to long format)
-    elements = ["Fire", "Ice", "Lightning", "Wind", "Physical", "Quantum", "Imaginary"]
-    melted_df = pd.melt(
-        df, 
-        id_vars=["Version"], 
-        value_vars=elements,
-        var_name="Element", 
-        value_name="Count"
+    # Create area chart
+    df.set_index("Version").plot(
+        kind="area", 
+        stacked=True, 
+        ax=ax, 
+        colormap=config.get_colormap("area"),
+        alpha=0.7  # Add transparency to make layers more visible
     )
     
-    # Create a pivot table for the area chart
-    pivot_df = melted_df.pivot(index="Version", columns="Element", values="Count")
-    
-    # Plot area chart
-    pivot_df.plot.area(ax=ax, alpha=0.7, colormap=config.get_colormap("area"))
-    
-    # Set title and labels
+    # Set up chart basics for landscape display
     title = config.get_title("area")
-    if patch_version:
-        title = f"{title} - {patch_version}"
-    ax.set_title(title, fontsize=config.title_fontsize)
-    ax.set_xlabel("Version", fontsize=config.label_fontsize)
-    ax.set_ylabel("Cumulative Character Count", fontsize=config.label_fontsize)
-    
-    # Set tick label font sizes
-    ax.tick_params(axis='both', which='major', labelsize=config.tick_fontsize)
-    
-    # Configure legend
-    legend_settings = config.get_legend_settings("area")
-    legend = ax.legend(
-        title=legend_settings.get("title", "Element"),
-        bbox_to_anchor=legend_settings.get("bbox_to_anchor", (1.05, 1)),
-        loc=legend_settings.get("loc", "upper left")
+    _setup_chart_basics(
+        fig, ax, config, "area", title, patch_version,
+        x_label="Version", y_label="Character Count"
     )
-    legend.get_title().set_fontsize(config.legend_fontsize)
-    for text in legend.get_texts():
-        text.set_fontsize(config.legend_fontsize)
+    
+    # Configure legend - for landscape charts, position legend to save horizontal space
+    config.configure_legend(ax, "area")
     
     # Add grid for better readability
-    grid_settings = config.get_grid_settings("area")
-    if grid_settings.get("visible", True):
-        ax.grid(
-            True, 
-            linestyle=grid_settings.get("linestyle", "--"), 
-            alpha=grid_settings.get("alpha", 0.7)
-        )
+    config.configure_grid(ax, "area")
     
     if config.tight_layout:
         plt.tight_layout()
+    else:
+        # Adjust for landscape ratio
+        plt.subplots_adjust(bottom=0.2, left=0.1, right=0.9)
+    
     return fig
 
 
@@ -323,54 +329,45 @@ def plot_path_rarity_distribution(df: pd.DataFrame, config: ChartConfig = None, 
     # Pivot the dataframe for grouped bar format
     pivot_df = df.pivot_table(index="Path", columns="Rarity", values="count", fill_value=0)
     
-    # Create figure and axis with 1:1 ratio
+    # Create figure and axis with portrait ratio (4:5)
     fig, ax = plt.subplots(figsize=config.get_size("grouped_bar"))
     
     # Create grouped bar chart
     pivot_df.plot(kind="bar", ax=ax, colormap=config.get_colormap("grouped_bar"))
     
-    # Set title and labels
+    # Set up chart basics for portrait display
     title = config.get_title("grouped_bar")
-    if patch_version:
-        title = f"{title} - {patch_version}"
-    ax.set_title(title, fontsize=config.title_fontsize)
-    ax.set_xlabel("Path", fontsize=config.label_fontsize)
-    ax.set_ylabel("Character Count", fontsize=config.label_fontsize)
-    
-    # Set tick label font sizes
-    ax.tick_params(axis='both', which='major', labelsize=config.tick_fontsize)
-    
-    # Configure legend
-    legend_settings = config.get_legend_settings("grouped_bar")
-    legend = ax.legend(
-        title=legend_settings.get("title", "Rarity"),
-        bbox_to_anchor=legend_settings.get("bbox_to_anchor", (1.05, 1)),
-        loc=legend_settings.get("loc", "upper left")
+    _setup_chart_basics(
+        fig, ax, config, "grouped_bar", title, patch_version,
+        x_label="Path", y_label="Character Count"
     )
-    legend.get_title().set_fontsize(config.legend_fontsize)
+    
+    # Configure legend for top right position (override the default settings)
+    legend = ax.legend(title="Rarity", loc="upper right")
+    
+    # Apply chart-specific font sizes for legend
+    legend.get_title().set_fontsize(config.get_font_size('legend', 'grouped_bar'))
     for text in legend.get_texts():
-        text.set_fontsize(config.legend_fontsize)
+        text.set_fontsize(config.get_font_size('legend', 'grouped_bar'))
     
     # Add data value annotations
     annotation_settings = config.get_annotation_settings("grouped_bar")
     for container in ax.containers:
-        ax.bar_label(
+        labels = ax.bar_label(
             container, 
             fmt=annotation_settings.get("fmt", "%.0f"),
-            padding=annotation_settings.get("padding", 3),
-            fontsize=config.annotation_fontsize
+            padding=annotation_settings.get("padding", 5),
+            fontsize=config.get_font_size('annotation', 'grouped_bar'),
+            fontweight=annotation_settings.get("fontweight", "normal")
         )
     
-    # Add grid for better readability
-    grid_settings = config.get_grid_settings("grouped_bar")
-    if grid_settings.get("visible", True):
-        ax.grid(
-            True, 
-            axis=grid_settings.get("axis", "y"),
-            linestyle=grid_settings.get("linestyle", "--"), 
-            alpha=grid_settings.get("alpha", 0.7)
-        )
+    # Add grid for better readability in vertical layout
+    config.configure_grid(ax, "grouped_bar")
     
     if config.tight_layout:
         plt.tight_layout()
+    else:
+        # Adjust for portrait ratio
+        plt.subplots_adjust(bottom=0.2, top=0.9)
+    
     return fig
