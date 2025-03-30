@@ -50,7 +50,7 @@ def scrape_data() -> pd.DataFrame:
     )
 
     add_char_version(character_data_dataframe)
-    
+
     return character_data_dataframe
 
 
@@ -65,26 +65,26 @@ def main() -> None:
     """
     parser = argparse.ArgumentParser(description="Honkai Star Rail Data Analysis Tool")
     parser.add_argument(
-        "--mode", 
-        type=str, 
-        choices=["all", "scrape", "visualize"], 
+        "--mode",
+        type=str,
+        choices=["all", "scrape", "visualize"],
         default="all",
-        help="Operation mode: 'all' runs complete pipeline, 'scrape' only scrapes data, 'visualize' only creates visualizations"
+        help="Operation mode: 'all' runs complete pipeline, 'scrape' only scrapes data, 'visualize' only creates visualizations",
     )
-    
+
     args = parser.parse_args()
-    
+
     if args.mode in ["all", "scrape"]:
         logger.info("Starting data scraping")
         char_data_df = scrape_data()
         load_to_sqlite(char_data_df)
         logger.info("Data scraping and storage complete")
-        
+
     if args.mode in ["all", "visualize"]:
         logger.info("Creating visualizations")
         visualize_data()
         logger.info("Visualization creation complete")
-    
+
     logger.info(f"Completed requested operation: {args.mode}")
 
 
