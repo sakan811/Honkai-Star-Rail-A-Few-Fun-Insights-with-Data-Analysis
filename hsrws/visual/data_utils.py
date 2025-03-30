@@ -49,14 +49,14 @@ def fetch_view_data(view_name):
         # Use text() to properly create a SQL text object
         sql_query = text(f"SELECT * FROM {view_name}")
         result = session.execute(sql_query)
-        
+
         # Get column names from the result's keys method
         if result.returns_rows:
             # Get result as a list of dictionaries for pandas
             rows = [dict(row._mapping) for row in result]
             if rows:
                 return pd.DataFrame(rows)
-        
+
         # Return empty DataFrame if no results
         return pd.DataFrame()
 

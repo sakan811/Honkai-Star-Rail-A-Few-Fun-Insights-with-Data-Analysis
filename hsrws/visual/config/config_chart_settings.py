@@ -3,73 +3,6 @@
 from typing import Dict, Tuple, Any
 
 
-def get_default_font_scale_by_chart() -> Dict[str, Dict[str, float]]:
-    """Get default font scale factors for each chart type."""
-    return {
-        "heatmap": {
-            "title": 1.1,     # Square format - increased title size
-            "label": 1.05,    # Larger labels
-            "tick": 1.0,      # Larger ticks to enhance readability
-            "annotation": 1.0, # Increased annotations for dense heatmap cells
-            "legend": 1.0    # Larger legend size
-        },
-        "bar": {
-            "title": 0.8,     # Landscape format - larger title
-            "label": 0.8,     # Larger label size
-            "tick": 0.8,      # Larger ticks for horizontal layout
-            "annotation": 0.8, # Larger annotation size
-            "legend": 0.8    # Larger legend size
-        },
-        "timeline": {
-            "title": 0.8,     # Landscape format - larger title
-            "label": 0.8,     # Larger label size
-            "tick": 0.8,     # Larger ticks for dense timeline
-            "annotation": 0.8, # Larger annotations for potential overlap
-            "legend": 0.8     # Larger legend size
-        },
-        "area": {
-            "title": 0.8,     # Landscape format - larger title
-            "label": 0.8,     # Larger label size
-            "tick": 0.8,     # Larger ticks for version numbers
-            "annotation": 0.8, # Larger annotation size
-            "legend": 0.8     # Larger legend size
-        },
-        "grouped_bar": {
-            "title": 1.0,     # Portrait format - larger title
-            "label": 1.0,    # Larger labels for readability
-            "tick": 1.0,     # Larger ticks for grouped bars
-            "annotation": 1.0, # Larger annotations to avoid overlap
-            "legend": 1.0    # Larger legend size
-        }
-    }
-
-
-def get_default_chart_sizes() -> Dict[str, Tuple[int, int]]:
-    """
-    Get default chart sizes optimized for Instagram.
-    
-    Square ratio (1:1) - Default for Instagram feed: 1080px x 1080px
-    Landscape ratio (1.91:1) - Landscape for Instagram: 1080px x 566px
-    Portrait ratio (4:5) - Vertical for Instagram: 1080px x 1350px
-    """
-    return {
-        # Heatmap - Square format (1:1) is ideal for heatmaps to maintain cell symmetry
-        "heatmap": (10, 10),  # 1:1 ratio
-        
-        # Bar chart - Landscape format (1.91:1) works better for horizontal bars
-        "bar": (10, 5.24),  # Close to 1.91:1 ratio
-        
-        # Timeline - Landscape format (1.91:1) works well for time series
-        "timeline": (10, 5.24),  # Close to 1.91:1 ratio
-        
-        # Area chart - Landscape format (1.91:1) works well for evolution visualization
-        "area": (10, 5.24),  # Close to 1.91:1 ratio
-        
-        # Grouped bar - Portrait format (4:5) works well for vertical comparisons
-        "grouped_bar": (8, 10)  # Close to 4:5 ratio
-    }
-
-
 def get_default_colormaps() -> Dict[str, str]:
     """Get default colormaps for each chart type."""
     return {
@@ -77,7 +10,7 @@ def get_default_colormaps() -> Dict[str, str]:
         "bar": "tab10",
         "timeline": "tab10",
         "area": "tab10",
-        "grouped_bar": "Paired"
+        "grouped_bar": "Paired",
     }
 
 
@@ -88,7 +21,7 @@ def get_default_titles() -> Dict[str, str]:
         "bar": "Honkai: Star Rail Character Rarity Distribution with Element Breakdown",
         "timeline": "Honkai: Star Rail Character Introduction Rate by Version",
         "area": "Honkai: Star Rail Elemental Balance Evolution Across Versions",
-        "grouped_bar": "Honkai: Star Rail Character Path Distribution by Rarity"
+        "grouped_bar": "Honkai: Star Rail Character Path Distribution by Rarity",
     }
 
 
@@ -97,7 +30,7 @@ def get_default_grid_settings() -> Dict[str, Dict[str, Any]]:
     return {
         "timeline": {"visible": True, "linestyle": "--", "alpha": 0.7},
         "area": {"visible": True, "linestyle": "--", "alpha": 0.7},
-        "grouped_bar": {"visible": True, "axis": "y", "linestyle": "--", "alpha": 0.7}
+        "grouped_bar": {"visible": True, "axis": "y", "linestyle": "--", "alpha": 0.7},
     }
 
 
@@ -105,11 +38,27 @@ def get_default_legend_settings() -> Dict[str, Dict[str, Any]]:
     """Get default legend settings for each chart type."""
     return {
         # For landscape charts (bar, timeline, area), position legend on the right side
-        "bar": {"title": "Element", "bbox_to_anchor": (1.15, 0.5), "loc": "center left"},
-        "area": {"title": "Element", "bbox_to_anchor": (1.15, 0.5), "loc": "center left"},
-        "timeline": {"title": "Data Type", "bbox_to_anchor": (1.15, 0.5), "loc": "center left"},
+        "bar": {
+            "title": "Element",
+            "bbox_to_anchor": (1.15, 0.5),
+            "loc": "center left",
+        },
+        "area": {
+            "title": "Element",
+            "bbox_to_anchor": (1.15, 0.5),
+            "loc": "center left",
+        },
+        "timeline": {
+            "title": "Data Type",
+            "bbox_to_anchor": (1.15, 0.5),
+            "loc": "center left",
+        },
         # For portrait chart (grouped_bar), position legend at the top
-        "grouped_bar": {"title": "Rarity", "bbox_to_anchor": (0.5, 1.15), "loc": "lower center"}
+        "grouped_bar": {
+            "title": "Rarity",
+            "bbox_to_anchor": (0.5, 1.15),
+            "loc": "lower center",
+        },
     }
 
 
@@ -120,17 +69,17 @@ def get_default_annotation_settings() -> Dict[str, Dict[str, Any]]:
             "textcoords": "offset points",
             "xytext": (0, 15),  # Increased vertical offset
             "ha": "center",
-            "fontsize_offset": 2  # Add additional size increase
+            "fontsize_offset": 2,  # Add additional size increase
         },
         "grouped_bar": {
             "fmt": "%.0f",
             "padding": 5,
-            "fontweight": "bold"  # Make annotations bold
+            "fontweight": "bold",  # Make annotations bold
         },
         "heatmap": {
             "fmt": ".0f",
-            "fontweight": "bold"  # Make annotations bold
-        }
+            "fontweight": "bold",  # Make annotations bold
+        },
     }
 
 
@@ -139,6 +88,12 @@ def get_default_marker_settings() -> Dict[str, Dict[str, Any]]:
     return {
         "timeline": {
             "primary": {"marker": "o", "markersize": 8, "linewidth": 2},
-            "secondary": {"marker": "s", "linestyle": "--", "color": "darkred", "alpha": 0.7, "markersize": 6}
+            "secondary": {
+                "marker": "s",
+                "linestyle": "--",
+                "color": "darkred",
+                "alpha": 0.7,
+                "markersize": 6,
+            },
         }
-    } 
+    }

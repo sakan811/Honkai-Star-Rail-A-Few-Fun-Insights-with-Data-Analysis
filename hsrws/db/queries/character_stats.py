@@ -64,11 +64,7 @@ def get_element_path_heatmap_stmt():
         SQLAlchemy SELECT statement for Element-Path heatmap data.
     """
     return (
-        select(
-            HsrCharacter.Element,
-            HsrCharacter.Path,
-            func.count().label("count")
-        )
+        select(HsrCharacter.Element, HsrCharacter.Path, func.count().label("count"))
         .group_by(HsrCharacter.Element, HsrCharacter.Path)
         .order_by(HsrCharacter.Element, HsrCharacter.Path)
     )
@@ -82,11 +78,7 @@ def get_rarity_element_distribution_stmt():
         SQLAlchemy SELECT statement for Rarity-Element distribution data.
     """
     return (
-        select(
-            HsrCharacter.Rarity,
-            HsrCharacter.Element,
-            func.count().label("count")
-        )
+        select(HsrCharacter.Rarity, HsrCharacter.Element, func.count().label("count"))
         .group_by(HsrCharacter.Rarity, HsrCharacter.Element)
         .order_by(HsrCharacter.Rarity, HsrCharacter.Element)
     )
@@ -100,10 +92,7 @@ def get_version_release_timeline_stmt():
         SQLAlchemy SELECT statement for version release timeline data.
     """
     return (
-        select(
-            HsrCharacter.Version,
-            func.count().label("character_count")
-        )
+        select(HsrCharacter.Version, func.count().label("character_count"))
         .group_by(HsrCharacter.Version)
         .order_by(HsrCharacter.Version)
     )
@@ -118,16 +107,10 @@ def get_version_element_evolution_stmt():
     """
     # This relies on the SQL view ElementCharacterCountByVersion
     # The actual data will be retrieved using raw SQL in data_utils.py
-    return select(
-        HsrCharacter.Version,
-        HsrCharacter.Element,
-        func.count().label("count")
-    ).group_by(
-        HsrCharacter.Version,
-        HsrCharacter.Element
-    ).order_by(
-        HsrCharacter.Version,
-        HsrCharacter.Element
+    return (
+        select(HsrCharacter.Version, HsrCharacter.Element, func.count().label("count"))
+        .group_by(HsrCharacter.Version, HsrCharacter.Element)
+        .order_by(HsrCharacter.Version, HsrCharacter.Element)
     )
 
 
@@ -139,11 +122,7 @@ def get_path_rarity_distribution_stmt():
         SQLAlchemy SELECT statement for Path-Rarity distribution data.
     """
     return (
-        select(
-            HsrCharacter.Path,
-            HsrCharacter.Rarity,
-            func.count().label("count")
-        )
+        select(HsrCharacter.Path, HsrCharacter.Rarity, func.count().label("count"))
         .group_by(HsrCharacter.Path, HsrCharacter.Rarity)
         .order_by(HsrCharacter.Path, HsrCharacter.Rarity)
     )

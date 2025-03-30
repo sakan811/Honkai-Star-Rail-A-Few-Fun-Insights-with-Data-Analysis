@@ -111,7 +111,9 @@ def append_stats(
         scraper.char_data_dict["SPD Lvl 80"].append(0)
 
 
-async def append_char_type_data(scraper: Scraper, character_data: dict[str, Any]) -> None:
+async def append_char_type_data(
+    scraper: Scraper, character_data: dict[str, Any]
+) -> None:
     """
     Appends character type data to the character data dictionary.
 
@@ -121,20 +123,22 @@ async def append_char_type_data(scraper: Scraper, character_data: dict[str, Any]
     """
     try:
         filter_values = character_data.get("filter_values", {})
-        
+
         # Extract path from character_paths
         path = get_first_value(filter_values, "character_paths", default="Unknown")
-        
+
         # Extract element from character_combat_type
-        element = get_first_value(filter_values, "character_combat_type", default="Unknown")
-        
+        element = get_first_value(
+            filter_values, "character_combat_type", default="Unknown"
+        )
+
         # Extract rarity from character_rarity
         rarity = get_first_value(filter_values, "character_rarity", default="Unknown")
-        
+
         # Remove "The " prefix from path if present
         if isinstance(path, str) and path.startswith("The "):
             path = path[4:]
-            
+
         # Remove "-Star" suffix from rarity if present
         if isinstance(rarity, str) and rarity.endswith("-Star"):
             rarity = rarity.split("-")[0]
