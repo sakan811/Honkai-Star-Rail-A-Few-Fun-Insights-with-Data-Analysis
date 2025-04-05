@@ -66,9 +66,7 @@ class TestScrapeHsrData(unittest.TestCase):
                             char["name"]
                         )
                         scraper_instance.char_data_dict["Path"].append(
-                            "Hunt"
-                            if char["name"] == "Character1"
-                            else "Harmony"
+                            "Hunt" if char["name"] == "Character1" else "Harmony"
                         )
                         scraper_instance.char_data_dict["Element"].append(
                             "Fire" if char["name"] == "Character1" else "Ice"

@@ -25,21 +25,52 @@ from hsrws.visual.plotting import (
 
 def save_figure(fig, filename, config):
     """
-    Saves a matplotlib figure to file.
+    Saves a matplotlib figure to file with a 1:1 aspect ratio.
 
     Args:
         fig: Matplotlib figure to save.
         filename: Output filename.
         config: Chart configuration object.
     """
+    import io
+    from PIL import Image
+
     # Ensure visualization directories exist
     os.makedirs("hsrws/visual/visual_img", exist_ok=True)
 
+    # Save original figure to a BytesIO buffer
+    buf = io.BytesIO()
     fig.savefig(
-        os.path.join("hsrws", "visual", "visual_img", filename),
+        buf,
+        format="png",
         bbox_inches=config.bbox_inches,
         dpi=config.dpi,
+        facecolor="white",
     )
+    buf.seek(0)
+
+    # Open the image with PIL
+    img = Image.open(buf)
+
+    # Get dimensions
+    width, height = img.size
+    max_dim = max(width, height)
+
+    # Create a square white image
+    square_img = Image.new("RGBA", (max_dim, max_dim), (255, 255, 255, 255))
+
+    # Calculate position to center the original image
+    paste_x = (max_dim - width) // 2
+    paste_y = (max_dim - height) // 2
+
+    # Paste the original image onto the square canvas
+    square_img.paste(img, (paste_x, paste_y))
+
+    # Save the square image
+    output_path = os.path.join("hsrws", "visual", "visual_img", filename)
+    square_img.save(output_path)
+
+    # Close the figure
     plt.close(fig)
 
 

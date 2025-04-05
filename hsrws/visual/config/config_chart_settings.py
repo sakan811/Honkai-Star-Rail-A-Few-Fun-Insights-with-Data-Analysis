@@ -1,6 +1,6 @@
 """Default chart settings for visualization module."""
 
-from typing import Dict, Tuple, Any
+from typing import Dict, Any
 
 
 def get_default_colormaps() -> Dict[str, str]:

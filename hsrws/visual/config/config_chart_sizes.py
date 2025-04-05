@@ -1,6 +1,6 @@
 """Size and scaling settings for charts."""
 
-from typing import Dict, Tuple, Any
+from typing import Dict, Tuple
 
 
 def get_default_font_scale_by_chart() -> Dict[str, Dict[str, float]]:
@@ -63,4 +63,4 @@ def get_default_chart_sizes() -> Dict[str, Tuple[int, int]]:
         "area": (10, 5.24),  # Close to 1.91:1 ratio
         # Grouped bar - Portrait format (4:5) works well for vertical comparisons
         "grouped_bar": (8, 10),  # Close to 4:5 ratio
-    } 
+    }
