@@ -84,7 +84,7 @@ def test_fetch_view_data():
 
     with (
         patch("hsrws.visual.data_utils.get_session") as mock_get_session,
-        patch("hsrws.visual.data_utils.text") as mock_text,
+        patch("hsrws.visual.data_utils.text"),
     ):
         mock_session = MagicMock()
         mock_session.execute.return_value = mock_result
@@ -104,7 +104,7 @@ def test_get_latest_patch():
     mock_df = pd.DataFrame({"latest_version": ["1.6"]})
 
     with (
-        patch("hsrws.visual.data_utils.get_latest_patch_stmt") as mock_stmt,
+        patch("hsrws.visual.data_utils.get_latest_patch_stmt"),
         patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch,
     ):
         mock_fetch.return_value = mock_df
@@ -118,7 +118,7 @@ def test_get_latest_patch():
 def test_get_element_path_heatmap_data(mock_session, mock_execute_result):
     """Test get_element_path_heatmap_data function."""
     # Execute
-    with patch("hsrws.visual.data_utils.get_element_path_heatmap_stmt") as mock_stmt:
+    with patch("hsrws.visual.data_utils.get_element_path_heatmap_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
                 {"Element": ["Fire"], "Path": ["Hunt"], "Count": [2]}
@@ -134,9 +134,7 @@ def test_get_element_path_heatmap_data(mock_session, mock_execute_result):
 def test_get_rarity_element_distribution_data(mock_session, mock_execute_result):
     """Test get_rarity_element_distribution_data function."""
     # Execute
-    with patch(
-        "hsrws.visual.data_utils.get_rarity_element_distribution_stmt"
-    ) as mock_stmt:
+    with patch("hsrws.visual.data_utils.get_rarity_element_distribution_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
                 {"Rarity": [5], "Element": ["Fire"], "Count": [2]}
@@ -152,9 +150,7 @@ def test_get_rarity_element_distribution_data(mock_session, mock_execute_result)
 def test_get_version_release_timeline_data(mock_session, mock_execute_result):
     """Test get_version_release_timeline_data function."""
     # Execute
-    with patch(
-        "hsrws.visual.data_utils.get_version_release_timeline_stmt"
-    ) as mock_stmt:
+    with patch("hsrws.visual.data_utils.get_version_release_timeline_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
                 {"Version": ["1.0"], "New_Characters": [5]}
@@ -187,9 +183,7 @@ def test_get_element_balance_evolution_data_fallback(mock_session, mock_execute_
     # Execute
     with patch("hsrws.visual.data_utils.fetch_view_data") as mock_fetch_view:
         mock_fetch_view.side_effect = Exception("View not found")
-        with patch(
-            "hsrws.visual.data_utils.get_version_element_evolution_stmt"
-        ) as mock_stmt:
+        with patch("hsrws.visual.data_utils.get_version_element_evolution_stmt"):
             with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
                 mock_fetch.return_value = pd.DataFrame(
                     {"Version": ["1.0"], "Fire": [1], "Ice": [1]}
@@ -206,9 +200,7 @@ def test_get_element_balance_evolution_data_fallback(mock_session, mock_execute_
 def test_get_path_rarity_distribution_data(mock_session, mock_execute_result):
     """Test get_path_rarity_distribution_data function."""
     # Execute
-    with patch(
-        "hsrws.visual.data_utils.get_path_rarity_distribution_stmt"
-    ) as mock_stmt:
+    with patch("hsrws.visual.data_utils.get_path_rarity_distribution_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
                 {"Path": ["Hunt"], "5-star": [2], "4-star": [1]}

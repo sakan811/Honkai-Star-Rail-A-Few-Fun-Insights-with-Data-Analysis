@@ -114,7 +114,22 @@ def test_save_figure(mock_plt):
     mock_config.bbox_inches = "tight"
     mock_config.dpi = 300
 
-    with patch("os.makedirs") as mock_makedirs:
+    # Create a mock image object with the necessary properties
+    mock_image = MagicMock()
+    mock_image.size = (100, 150)  # Width and height attributes
+
+    # Create a mock square image
+    mock_square_img = MagicMock()
+
+    with (
+        patch("os.makedirs") as mock_makedirs,
+        patch(
+            "PIL.Image.open", return_value=mock_image
+        ),  # Fix: patch PIL.Image directly
+        patch(
+            "PIL.Image.new", return_value=mock_square_img
+        ),  # Fix: patch PIL.Image directly
+    ):
         # Execute
         save_figure(mock_fig, "test_figure.png", mock_config)
 
@@ -122,6 +137,8 @@ def test_save_figure(mock_plt):
         mock_makedirs.assert_called_once()
         mock_fig.savefig.assert_called_once()
         mock_plt.close.assert_called_once_with(mock_fig)
+        mock_square_img.paste.assert_called_once()
+        mock_square_img.save.assert_called_once()
 
 
 @pytest.mark.visual
@@ -129,7 +146,7 @@ def test_create_advanced_charts(mock_plt, mock_sns, mock_data_utils, mock_plotti
     """Test creating all advanced charts."""
     # Setup
     with (
-        patch("os.makedirs") as mock_makedirs,
+        patch("os.makedirs"),
         patch("hsrws.visual.charts.save_figure") as mock_save_figure,
     ):
         # Execute
