@@ -110,4 +110,4 @@ class ChartConfig:
             scale: New scale factor for fonts
         """
         self.font_scale = scale
-        self._calculate_font_sizes() 
+        self._calculate_font_sizes()
