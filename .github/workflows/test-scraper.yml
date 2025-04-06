@@ -34,4 +34,4 @@ jobs:
       env:
         USER_AGENT: ${{ secrets.USER_AGENT }}
       run: |
-        python -m pytest tests
+        uv run -m pytest tests
