@@ -60,9 +60,9 @@ def add_char_version(df: pd.DataFrame) -> None:
         df: Character Dataframe.
     """
     logger.debug("Adding character version...")
-    version_and_character_dict: dict[int, list[str]] = get_version_dict()
-    df["Version"] = df["Character"].apply(
-        lambda character: next(
+    version_and_character_dict: dict[float, list[str]] = get_version_dict()
+    df["Version"] = df["Character"].apply(  # type: ignore
+        lambda character: next(  # type: ignore
             (
                 version
                 for version, characters in version_and_character_dict.items()

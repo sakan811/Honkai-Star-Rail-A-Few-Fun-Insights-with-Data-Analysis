@@ -1,7 +1,6 @@
 """Visualization functionality for HSR web scraper."""
 
 from hsrws.visual.charts import create_advanced_charts
-from hsrws.visual.config import ChartConfig
 from hsrws.visual.plotting import (
     plot_element_path_heatmap,
     plot_rarity_element_distribution,
@@ -12,7 +11,6 @@ from hsrws.visual.plotting import (
 
 __all__ = [
     "create_advanced_charts",
-    "ChartConfig",
     "plot_element_path_heatmap",
     "plot_rarity_element_distribution",
     "plot_version_release_timeline",

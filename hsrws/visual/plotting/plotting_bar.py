@@ -1,78 +1,69 @@
-"""Bar chart plotting functions for HSR visualization."""
+"""Bar plotting functions for HSR visualization."""
 
-import matplotlib.pyplot as plt
+import seaborn as sns
 import pandas as pd
+from matplotlib.figure import Figure
+from typing import Optional
 from loguru import logger
 
-from hsrws.visual.config import ChartConfig
-from hsrws.visual.plotting.plotting_base import _setup_chart_basics
+from hsrws.visual.data_utils import get_rarity_colors
 
 
 def plot_rarity_element_distribution(
-    df: pd.DataFrame, config: ChartConfig = None, patch_version: str = None
-) -> plt.Figure:
+    df: pd.DataFrame, patch_version: Optional[str] = None
+) -> Figure:
     """
-    Plot character rarity distribution with element breakdown as a stacked bar chart.
+    Plot character element distribution with rarity breakdown as a grouped bar chart.
 
     Args:
         df: DataFrame containing rarity, element, and count columns.
-        config: Optional chart configuration. If not provided, a default is used.
         patch_version: Optional patch version to include in title.
 
     Returns:
         Matplotlib figure object.
     """
-    logger.debug("Plotting rarity-element stacked bar chart...")
+    logger.debug("Plotting element-rarity grouped bar chart...")
 
-    # Use provided config or create default
-    if config is None:
-        config = ChartConfig()
-
-    # Pivot the dataframe for stacked bar format
-    pivot_df = df.pivot_table(
-        index="Rarity", columns="Element", values="count", fill_value=0
+    # Create catplot with seaborn (include legend by default)
+    g = sns.catplot(
+        data=df,
+        x="Element",
+        y="count",
+        hue="Rarity",
+        kind="bar",
+        palette=get_rarity_colors(),
+        legend_out=False,  # Keep legend inside the plot
     )
 
-    # Create figure and axis with landscape ratio
-    fig, ax = plt.subplots(figsize=config.get_size("bar"))
+    fig = g.figure
+    ax = g.ax
 
-    # Create stacked bar chart
-    pivot_df.plot(kind="bar", stacked=True, ax=ax, colormap=config.get_colormap("bar"))
+    ax.legend(title="Rarity")
+    ax.set_xlabel("Element")
+    ax.set_ylabel("Character Count")
 
-    # Set up chart basics
-    title = config.get_title("bar")
-    _setup_chart_basics(
-        fig,
-        ax,
-        config,
-        "bar",
-        title,
-        patch_version,
-        x_label="Rarity",
-        y_label="Character Count",
-    )
+    ticks = ax.get_xticks()
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
 
-    # Configure legend
-    config.configure_legend(ax, "bar")
+    title = "Honkai: Star Rail Character Element Distribution by Rarity"
 
-    if config.tight_layout:
-        plt.tight_layout()
-    else:
-        # Adjust for landscape ratio
-        plt.subplots_adjust(bottom=0.15, left=0.1, right=0.9)
+    if patch_version:
+        title += f" - {patch_version}"
+
+    ax.set_title(title)
 
     return fig
 
 
 def plot_path_rarity_distribution(
-    df: pd.DataFrame, config: ChartConfig = None, patch_version: str = None
-) -> plt.Figure:
+    df: pd.DataFrame, patch_version: Optional[str] = None
+) -> Figure:
     """
     Plot character path-rarity distribution as a grouped bar chart.
 
     Args:
         df: DataFrame containing path, rarity, and count columns.
-        config: Optional chart configuration. If not provided, a default is used.
         patch_version: Optional patch version to include in title.
 
     Returns:
@@ -80,60 +71,31 @@ def plot_path_rarity_distribution(
     """
     logger.debug("Plotting path-rarity grouped bar chart...")
 
-    # Use provided config or create default
-    if config is None:
-        config = ChartConfig()
-
-    # Pivot the dataframe for grouped bar format
-    pivot_df = df.pivot_table(
-        index="Path", columns="Rarity", values="count", fill_value=0
+    # Create catplot with seaborn (include legend by default)
+    g = sns.catplot(
+        data=df,
+        x="Path",
+        y="count",
+        hue="Rarity",
+        kind="bar",
+        palette=get_rarity_colors(),
+        legend_out=False,  # Keep legend inside the plot
     )
 
-    # Create figure and axis with portrait ratio (4:5)
-    fig, ax = plt.subplots(figsize=config.get_size("grouped_bar"))
+    fig = g.figure
+    ax = g.ax
 
-    # Create grouped bar chart
-    pivot_df.plot(kind="bar", ax=ax, colormap=config.get_colormap("grouped_bar"))
+    ticks = ax.get_xticks()
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
 
-    # Set up chart basics for portrait display
-    title = config.get_title("grouped_bar")
-    _setup_chart_basics(
-        fig,
-        ax,
-        config,
-        "grouped_bar",
-        title,
-        patch_version,
-        x_label="Path",
-        y_label="Character Count",
-    )
+    title = "Honkai: Star Rail Character Path Distribution by Rarity"
+    if patch_version:
+        title += f" - {patch_version}"
 
-    # Configure legend for top right position (override the default settings)
-    legend = ax.legend(title="Rarity", loc="upper right")
-
-    # Apply chart-specific font sizes for legend
-    legend.get_title().set_fontsize(config.get_font_size("legend", "grouped_bar"))
-    for text in legend.get_texts():
-        text.set_fontsize(config.get_font_size("legend", "grouped_bar"))
-
-    # Add data value annotations
-    annotation_settings = config.get_annotation_settings("grouped_bar")
-    for container in ax.containers:
-        ax.bar_label(
-            container,
-            fmt=annotation_settings.get("fmt", "%.0f"),
-            padding=annotation_settings.get("padding", 5),
-            fontsize=config.get_font_size("annotation", "grouped_bar"),
-            fontweight=annotation_settings.get("fontweight", "normal"),
-        )
-
-    # Add grid for better readability in vertical layout
-    config.configure_grid(ax, "grouped_bar")
-
-    if config.tight_layout:
-        plt.tight_layout()
-    else:
-        # Adjust for portrait ratio
-        plt.subplots_adjust(bottom=0.2, top=0.9)
+    ax.set_title(title)
+    ax.set_xlabel("Path")
+    ax.set_ylabel("Character Count")
+    ax.legend(title="Rarity")
 
     return fig

@@ -11,10 +11,8 @@ from hsrws.visual.plotting import (
     plot_element_path_heatmap,
     plot_rarity_element_distribution,
     plot_version_release_timeline,
-    plot_element_balance_evolution,
     plot_path_rarity_distribution,
 )
-from hsrws.visual.config import ChartConfig
 
 
 @pytest.fixture
@@ -33,12 +31,6 @@ def mock_sns():
     """Mock seaborn for testing."""
     with patch("seaborn.heatmap") as mock_heatmap:
         yield mock_heatmap
-
-
-@pytest.fixture
-def sample_config():
-    """Return a sample ChartConfig for testing."""
-    return ChartConfig()
 
 
 @pytest.fixture
@@ -172,8 +164,6 @@ def test_plot_element_path_heatmap():
         ]
     )
 
-    config = ChartConfig()
-
     # Patch both Pandas pivot and seaborn heatmap
     with (
         patch("pandas.DataFrame.pivot") as mock_pivot,
@@ -192,8 +182,8 @@ def test_plot_element_path_heatmap():
         mock_figure.return_value = mock_fig
         mock_fig.add_subplot.return_value = mock_ax
 
-        # Execute
-        result = plot_element_path_heatmap(df, config, "Patch (1.6)")
+        # Execute - remove config parameter
+        result = plot_element_path_heatmap(df, "Patch (1.6)")
 
         # Verify basics
         assert mock_pivot.called
@@ -214,32 +204,22 @@ def test_plot_rarity_element_distribution():
         ]
     )
 
-    config = ChartConfig()
-
-    # Skip the actual plotting by patching critical methods
-    with (
-        patch("hsrws.visual.plotting.plotting_bar.plt") as mock_plt,
-        patch("pandas.DataFrame.pivot_table") as mock_pivot_table,
-    ):
-        # Setup pivot mock to return a dataframe
-        pivot_df = pd.DataFrame({"Fire": [3, 2], "Ice": [2, 3]})
-        pivot_df.index = [5, 4]  # Rarity values
-        mock_pivot_table.return_value = pivot_df
-
-        # Setup matplotlib figure mock
+    # Patch seaborn catplot directly instead of plt
+    with patch("seaborn.catplot") as mock_catplot:
+        # Setup the mock return value
         mock_fig = MagicMock()
         mock_ax = MagicMock()
-        mock_plt.subplots.return_value = (mock_fig, mock_ax)
-
-        # Add plot method to pivot_df
-        pivot_df.plot = MagicMock()
+        mock_g = MagicMock()
+        mock_g.figure = mock_fig
+        mock_g.ax = mock_ax
+        mock_catplot.return_value = mock_g
 
         # Execute the function
-        result = plot_rarity_element_distribution(df, config, "Patch (1.6)")
+        result = plot_rarity_element_distribution(df, "Patch (1.6)")
 
-        # Verify pivot_table was called and a figure is returned
-        assert mock_pivot_table.called
-        assert result is not None
+        # Verify
+        mock_catplot.assert_called_once()
+        assert result is mock_fig
 
 
 @pytest.mark.visual
@@ -253,59 +233,56 @@ def test_plot_version_release_timeline():
         ]
     )
 
-    config = ChartConfig()
-
-    with patch("hsrws.visual.plotting.plotting_timeline.plt") as mock_plt:
+    # More comprehensive patching
+    with (
+        patch("hsrws.visual.plotting.plotting_timeline.plt") as mock_plt,
+        patch("hsrws.visual.plotting.plotting_timeline.sns.lineplot") as mock_lineplot,
+    ):
         # Setup matplotlib mock
         mock_fig = MagicMock()
         mock_ax = MagicMock()
         mock_plt.subplots.return_value = (mock_fig, mock_ax)
 
         # Execute
-        result = plot_version_release_timeline(df, config, "Patch (1.6)")
+        result = plot_version_release_timeline(df, "Patch (1.6)")
 
-        # Verify
+        # Assert
         assert mock_plt.subplots.called
-        assert result is not None
+        assert mock_lineplot.called
+        assert isinstance(result, MagicMock)  # Since we mocked Figure
 
 
 @pytest.mark.visual
 def test_plot_element_balance_evolution():
     """Test plotting element balance evolution."""
-    # Create test data
+    # Create test data with the correct columns
     df = pd.DataFrame(
         [
-            {"Version": "1.0", "Fire": 1, "Ice": 1},
-            {"Version": "1.1", "Fire": 2, "Ice": 2},
+            {"Version": "1.0", "Element": "Fire", "count": 1},
+            {"Version": "1.0", "Element": "Ice", "count": 1},
+            {"Version": "1.1", "Element": "Fire", "count": 2},
+            {"Version": "1.1", "Element": "Ice", "count": 2},
         ]
     )
 
-    config = ChartConfig()
-
-    with (
-        patch("hsrws.visual.plotting.plotting_area.plt") as mock_plt,
-        patch("pandas.DataFrame.set_index") as mock_set_index,
-    ):
-        # Setup set_index mock to return a dataframe with plot method
-        indexed_df = pd.DataFrame({"Fire": [1, 2], "Ice": [1, 2]})
-        indexed_df.index = ["1.0", "1.1"]  # Version values
-        mock_set_index.return_value = indexed_df
-
+    # Patch the seaborn lineplot directly
+    with patch("seaborn.lineplot") as mock_lineplot:
         # Setup matplotlib mock
-        mock_fig = MagicMock()
-        mock_ax = MagicMock()
-        mock_plt.subplots.return_value = (mock_fig, mock_ax)
+        with patch("matplotlib.pyplot.subplots") as mock_subplots:
+            mock_fig = MagicMock()
+            mock_ax = MagicMock()
+            mock_subplots.return_value = (mock_fig, mock_ax)
 
-        # Add plot method to indexed_df
-        indexed_df.plot = MagicMock()
+            # Execute the function
+            from hsrws.visual.plotting.plotting_line import (
+                plot_element_balance_evolution,
+            )
 
-        # Execute
-        result = plot_element_balance_evolution(df, config, "Patch (1.6)")
+            result = plot_element_balance_evolution(df, "Patch (1.6)")
 
-        # Verify
-        assert mock_set_index.called
-        assert mock_plt.subplots.called
-        assert result is not None
+            # Verify
+            mock_lineplot.assert_called_once()
+            assert result is mock_fig
 
 
 @pytest.mark.visual
@@ -321,29 +298,19 @@ def test_plot_path_rarity_distribution():
         ]
     )
 
-    config = ChartConfig()
-
-    with (
-        patch("hsrws.visual.plotting.plotting_bar.plt") as mock_plt,
-        patch("pandas.DataFrame.pivot_table") as mock_pivot_table,
-    ):
-        # Setup pivot mock to return a dataframe with plot method
-        pivot_df = pd.DataFrame({"5-star": [2, 1], "4-star": [1, 2]})
-        pivot_df.index = ["Destruction", "Hunt"]  # Path values
-        mock_pivot_table.return_value = pivot_df
-
-        # Setup matplotlib mock
+    # Patch seaborn catplot directly instead of plt
+    with patch("seaborn.catplot") as mock_catplot:
+        # Setup the mock return value
         mock_fig = MagicMock()
         mock_ax = MagicMock()
-        mock_plt.subplots.return_value = (mock_fig, mock_ax)
+        mock_g = MagicMock()
+        mock_g.figure = mock_fig
+        mock_g.ax = mock_ax
+        mock_catplot.return_value = mock_g
 
-        # Add plot method to pivot_df
-        pivot_df.plot = MagicMock()
-
-        # Execute
-        result = plot_path_rarity_distribution(df, config, "Patch (1.6)")
+        # Execute the function
+        result = plot_path_rarity_distribution(df, "Patch (1.6)")
 
         # Verify
-        assert mock_pivot_table.called
-        assert mock_plt.subplots.called
-        assert result is not None
+        mock_catplot.assert_called_once()
+        assert result is mock_fig

@@ -1,6 +1,5 @@
 """Database functionality for HSR web scraper."""
 
-from hsrws.db.sqlite import load_to_sqlite, create_views, drop_views
 from hsrws.db.database import get_engine, get_session
 from hsrws.db.models import HsrCharacter, Base
 from hsrws.db.queries import (
@@ -11,9 +10,6 @@ from hsrws.db.queries import (
 )
 
 __all__ = [
-    "load_to_sqlite",
-    "create_views",
-    "drop_views",
     "get_engine",
     "get_session",
     "HsrCharacter",

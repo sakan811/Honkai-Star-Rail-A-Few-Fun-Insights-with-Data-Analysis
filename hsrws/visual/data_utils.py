@@ -1,8 +1,8 @@
 """Data utility functions for visualization."""
 
+from typing import Any
 import pandas as pd
-from sqlalchemy import text
-from loguru import logger
+from sqlalchemy import Select
 from hsrws.db import get_session
 from hsrws.db.queries import (
     get_latest_patch_stmt,
@@ -14,7 +14,7 @@ from hsrws.db.queries import (
 )
 
 
-def fetch_data_orm(stmt):
+def fetch_data_orm(stmt: Select[tuple[Any, ...]]):
     """
     Fetches data from the database using SQLAlchemy ORM.
 
@@ -35,32 +35,6 @@ def fetch_data_orm(stmt):
         return pd.DataFrame(result, columns=column_names)
 
 
-def fetch_view_data(view_name):
-    """
-    Fetches data from a SQL view.
-
-    Args:
-        view_name: Name of the SQL view to query.
-
-    Returns:
-        DataFrame with query results.
-    """
-    with get_session() as session:
-        # Use text() to properly create a SQL text object
-        sql_query = text(f"SELECT * FROM {view_name}")
-        result = session.execute(sql_query)
-
-        # Get column names from the result's keys method
-        if result.returns_rows:
-            # Get result as a list of dictionaries for pandas
-            rows = [dict(row._mapping) for row in result]
-            if rows:
-                return pd.DataFrame(rows)
-
-        # Return empty DataFrame if no results
-        return pd.DataFrame()
-
-
 def get_latest_patch():
     """
     Gets the latest patch version from the database.
@@ -69,7 +43,7 @@ def get_latest_patch():
         Latest patch version number formatted as "Patch (X.X)".
     """
     result = fetch_data_orm(get_latest_patch_stmt())
-    version = result.iloc[0]["latest_version"]
+    version: float = result.iloc[0]["latest_version"]  # type: ignore
     return f"Patch ({version})"
 
 
@@ -110,13 +84,7 @@ def get_element_balance_evolution_data():
     Returns:
         DataFrame with elemental balance evolution data.
     """
-    try:
-        # Use the SQL view for this complex query
-        return fetch_view_data("ElementCharacterCountByVersion")
-    except Exception as e:
-        # Fallback: If view doesn't exist, use the direct query
-        logger.warning(f"View query failed: {e}. Using direct query instead.")
-        return fetch_data_orm(get_version_element_evolution_stmt())
+    return fetch_data_orm(get_version_element_evolution_stmt())
 
 
 def get_path_rarity_distribution_data():
@@ -127,3 +95,53 @@ def get_path_rarity_distribution_data():
         DataFrame with Path-Rarity distribution data.
     """
     return fetch_data_orm(get_path_rarity_distribution_stmt())
+
+
+def get_element_colors():
+    """
+    Gets a mapping of elements to their display colors.
+
+    Returns:
+        Dictionary mapping element names to color values.
+    """
+    return {
+        "Fire": "red",
+        "Lightning": "purple",
+        "Quantum": "darkblue",
+        "Ice": "lightblue",
+        "Imaginary": "yellow",
+        "Wind": "green",
+        "Physical": "gray",
+    }
+
+
+def get_path_colors():
+    """
+    Gets a mapping of paths to their display colors.
+
+    Returns:
+        Dictionary mapping path names to color values.
+    """
+    return {
+        "Destruction": "grey",
+        "Preservation": "blue",
+        "Remembrance": "cyan",
+        "Nihility": "purple",
+        "Abundance": "yellow",
+        "Hunt": "green",
+        "Erudition": "pink",
+        "Harmony": "orange",
+    }
+
+
+def get_rarity_colors():
+    """
+    Gets a mapping of rarity levels to their display colors.
+
+    Returns:
+        Dictionary mapping rarity levels to color values.
+    """
+    return {
+        "4": "purple",
+        "5": "gold",
+    }

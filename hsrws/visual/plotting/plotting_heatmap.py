@@ -1,17 +1,16 @@
 """Heatmap plotting functions for HSR visualization."""
 
+from typing import Optional
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import pandas as pd
 import seaborn as sns
 from loguru import logger
 
-from hsrws.visual.config import ChartConfig
-from hsrws.visual.plotting.plotting_base import _setup_chart_basics
-
 
 def plot_element_path_heatmap(
-    df: pd.DataFrame, config: ChartConfig = None, patch_version: str = None
-) -> plt.Figure:
+    df: pd.DataFrame, patch_version: Optional[str] = None
+) -> Figure:
     """
     Plot a heatmap of element vs path distribution.
 
@@ -25,55 +24,39 @@ def plot_element_path_heatmap(
     """
     logger.debug("Plotting element-path heatmap...")
 
-    # Use provided config or create default
-    if config is None:
-        config = ChartConfig()
-
-    # Create figure and axis with square ratio for symmetric heatmap cells
-    fig, ax = plt.subplots(figsize=config.get_size("heatmap"))
-
     # Pivot the dataframe to create heatmap format
     pivot_df = df.pivot(index="Element", columns="Path", values="count")
 
     # Fill NaN values with 0 instead of leaving blank
     pivot_df = pivot_df.fillna(0)
 
-    # Get annotation settings
-    annotation_settings = config.get_annotation_settings("heatmap")
+    fig, ax = plt.subplots()
 
     # Create heatmap with cell annotations
     sns.heatmap(
         pivot_df,
         annot=True,
-        fmt=annotation_settings.get("fmt", ".0f"),
-        cmap=config.get_colormap("heatmap"),
+        fmt=".0f",
+        cmap="viridis",
         linewidths=0.5,
         ax=ax,
-        annot_kws={
-            "size": config.get_font_size("annotation", "heatmap"),
-            "fontweight": annotation_settings.get("fontweight", "normal"),
-        },
     )
 
-    # Set up chart basics for square display
-    title = config.get_title("heatmap")
-    _setup_chart_basics(
-        fig,
-        ax,
-        config,
-        "heatmap",
-        title,
-        patch_version,
-        x_label="Path",
-        y_label="Element",
-    )
+    ax.set_xlabel("Path")
+    ax.set_ylabel("Element")
+
+    ticks = ax.get_xticks()
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
 
     # Horizontal y-axis labels for better readability
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
 
-    if config.tight_layout:
-        plt.tight_layout()
-    else:
-        plt.subplots_adjust(left=0.15, right=0.9, bottom=0.15, top=0.9)
+    title = "Honkai: Star Rail Character Distribution by Element and Path"
+    if patch_version:
+        title += f" - {patch_version}"
+
+    # Add padding between title and plot (in points)
+    ax.set_title(title, pad=15)  # Increase from default of 6 points
 
     return fig

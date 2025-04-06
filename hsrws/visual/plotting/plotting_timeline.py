@@ -1,16 +1,16 @@
 """Timeline plotting functions for HSR visualization."""
 
+from typing import Optional
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import pandas as pd
 from loguru import logger
-
-from hsrws.visual.config import ChartConfig
-from hsrws.visual.plotting.plotting_base import _setup_chart_basics
+import seaborn as sns
 
 
 def plot_version_release_timeline(
-    df: pd.DataFrame, config: ChartConfig = None, patch_version: str = None
-) -> plt.Figure:
+    df: pd.DataFrame, patch_version: Optional[str] = None
+) -> Figure:
     """
     Plot version release timeline showing character introduction rate.
 
@@ -24,87 +24,63 @@ def plot_version_release_timeline(
     """
     logger.debug("Plotting version release timeline...")
 
-    # Use provided config or create default
-    if config is None:
-        config = ChartConfig()
+    fig, ax = plt.subplots()
 
-    # Create figure and axis with landscape aspect ratio
-    fig, ax = plt.subplots(figsize=config.get_size("timeline"))
-
-    # Get marker settings
-    primary_marker = config.get_marker_settings("timeline", "primary")
-    secondary_marker = config.get_marker_settings("timeline", "secondary")
-
-    # Create timeline plot
-    ax.plot(
-        df["Version"],
-        df["character_count"],
-        marker=primary_marker.get("marker", "o"),
-        markersize=primary_marker.get("markersize", 8),
-        linewidth=primary_marker.get("linewidth", 2),
+    # Primary line for new characters per version
+    sns.lineplot(
+        data=df,
+        x="Version",
+        y="character_count",
+        marker="o",
+        markersize=8,
+        linewidth=2.5,
     )
 
-    # Add data points annotation
-    annotation_settings = config.get_annotation_settings("timeline")
+    # Add data annotations
     for x, y in zip(df["Version"], df["character_count"]):
-        fontsize = config.get_font_size("annotation", "timeline")
-        if annotation_settings.get("fontsize_offset", 0) > 0:
-            fontsize += annotation_settings.get("fontsize_offset")
-
         ax.annotate(
             f"{y:.0f}",
             (x, y),
-            textcoords=annotation_settings.get("textcoords", "offset points"),
-            xytext=annotation_settings.get("xytext", (0, 15)),
-            ha=annotation_settings.get("ha", "center"),
-            fontsize=fontsize,
-            fontweight=annotation_settings.get("fontweight", "bold"),
+            textcoords="offset points",
+            xytext=(0, 10),
+            ha="center",
+            fontweight="bold",
         )
 
     # Calculate cumulative sum for additional information
     df["cumulative_count"] = df["character_count"].cumsum()
+
+    # Secondary line for cumulative count
     ax2 = ax.twinx()
-    ax2.plot(
-        df["Version"],
-        df["cumulative_count"],
-        marker=secondary_marker.get("marker", "s"),
-        linestyle=secondary_marker.get("linestyle", "--"),
-        color=secondary_marker.get("color", "darkred"),
-        alpha=secondary_marker.get("alpha", 0.7),
-        markersize=secondary_marker.get("markersize", 6),
-    )
-    ax2.set_ylabel(
-        "Cumulative Character Count",
-        fontsize=config.get_font_size("label", "timeline"),
-        color=secondary_marker.get("color", "darkred"),
+    sns.lineplot(
+        data=df,
+        x="Version",
+        y="cumulative_count",
+        ax=ax2,
+        color="darkred",
+        linestyle="--",
+        marker="s",
+        markersize=6,
+        alpha=0.7,
     )
 
-    # Set up chart basics - landscape ratio is optimal for timelines
-    title = config.get_title("timeline")
-    _setup_chart_basics(
-        fig,
-        ax,
-        config,
-        "timeline",
-        title,
-        patch_version,
-        x_label="Version",
-        y_label="New Characters Per Version",
-    )
+    ax.set_xlabel("Version")
+    ax.set_ylabel("New Characters Per Version")
+    ax2.set_ylabel("Cumulative Character Count", color="darkred")
 
-    # Set x-axis ticks to show all versions
+    # Show all versions as ticks but only label some to avoid crowding
     ax.set_xticks(df["Version"])
 
-    ax2.tick_params(
-        axis="y", which="major", labelsize=config.get_font_size("tick", "timeline")
-    )
+    # Show labels for approximately 1/3 of the versions
+    n_versions = len(df["Version"])
+    step = max(1, n_versions // 3)
+    labels = [str(v) if i % step == 0 else "" for i, v in enumerate(df["Version"])]
+    ax.set_xticklabels(labels)
 
-    # Add grid for better readability
-    config.configure_grid(ax, "timeline")
+    title = "Honkai: Star Rail Character Introduction Rate by Version"
+    if patch_version:
+        title += f" - {patch_version}"
 
-    if config.tight_layout:
-        plt.tight_layout()
-    else:
-        # Adjust for landscape ratio
-        plt.subplots_adjust(bottom=0.2, left=0.1, right=0.9)
+    ax.set_title(title, pad=15)
+
     return fig

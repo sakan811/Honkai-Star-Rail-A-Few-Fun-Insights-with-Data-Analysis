@@ -25,7 +25,7 @@ class Scraper(BaseModel):
     page_num: int = Field(0, ge=0)
     char_data_dict: dict[str, list[Any]] = Field(default_factory=default_char_data_dict)
 
-    async def scrape_hsr_data(self, url: str, headers: dict) -> pd.DataFrame:
+    async def scrape_hsr_data(self, url: str, headers: dict[str, Any]) -> pd.DataFrame:
         """
         Scrapes HSR character data from JSON response.
 
@@ -58,8 +58,8 @@ class Scraper(BaseModel):
 
     @staticmethod
     async def _fetch_character_list(
-        url: str, headers: dict, payload_data: dict
-    ) -> list[dict]:
+        url: str, headers: dict[str, Any], payload_data: dict[str, Any]
+    ) -> list[dict[str, Any]]:
         """
         Fetches the character list from the API.
 

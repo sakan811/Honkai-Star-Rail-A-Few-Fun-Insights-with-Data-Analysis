@@ -35,8 +35,6 @@ Click [here](./docs/VISUAL.md) to view the visualizations.
 
 ### Install Dependencies with UV Python
 
-UV is a fast Python package installer and resolver. To use UV for this project:
-
 1. Install UV (if not already installed): <https://docs.astral.sh/uv/getting-started/installation/>
 
 2. Create a virtual environment and install project dependencies using UV:

@@ -62,7 +62,9 @@ def default_char_data_dict() -> dict[str, list[Any]]:
     }
 
 
-def get_first_value(data: dict[str, Any], *keys: str, default=None) -> str | int | None:
+def get_first_value(
+    data: dict[str, Any], *keys: str, default: Any = None
+) -> str | int | None:
     """
     Retrieves the first value from a nested dictionary structure.
 
