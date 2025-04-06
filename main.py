@@ -37,15 +37,15 @@ def scrape_data() -> pd.DataFrame:
     url: str = "https://sg-wiki-api.hoyolab.com/hoyowiki/hsr/wapi/get_entry_page_list"
     headers: dict[str, Any] = get_headers()
 
-    scraper: Scraper = Scraper() # type: ignore
+    scraper: Scraper = Scraper()  # type: ignore
     character_data_dataframe: pd.DataFrame = asyncio.run(
         scraper.scrape_hsr_data(url, headers)
     )
 
-    character_data_dataframe["Character"] = character_data_dataframe["Character"].apply( # type: ignore
+    character_data_dataframe["Character"] = character_data_dataframe["Character"].apply(  # type: ignore
         transform_char_name
     )
-    character_data_dataframe["Path"] = character_data_dataframe["Path"].apply( # type: ignore
+    character_data_dataframe["Path"] = character_data_dataframe["Path"].apply(  # type: ignore
         clean_path_name
     )
 

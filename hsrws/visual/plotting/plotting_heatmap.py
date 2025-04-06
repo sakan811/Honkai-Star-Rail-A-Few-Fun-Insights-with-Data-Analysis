@@ -7,12 +7,9 @@ import pandas as pd
 import seaborn as sns
 from loguru import logger
 
-from hsrws.visual.config import ChartConfig
-from hsrws.visual.config.config_chart_settings import get_default_titles
-
 
 def plot_element_path_heatmap(
-    df: pd.DataFrame, config: Optional[ChartConfig] = None, patch_version: Optional[str] = None
+    df: pd.DataFrame, patch_version: Optional[str] = None
 ) -> Figure:
     """
     Plot a heatmap of element vs path distribution.
@@ -34,7 +31,7 @@ def plot_element_path_heatmap(
     pivot_df = pivot_df.fillna(0)
 
     fig, ax = plt.subplots()
-    
+
     # Create heatmap with cell annotations
     sns.heatmap(
         pivot_df,
@@ -47,13 +44,19 @@ def plot_element_path_heatmap(
 
     ax.set_xlabel("Path")
     ax.set_ylabel("Element")
-    
+
+    ticks = ax.get_xticks()
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+
     # Horizontal y-axis labels for better readability
     ax.set_yticklabels(ax.get_yticklabels(), rotation=0)
-    
-    titles = get_default_titles()
-    title = titles["heatmap"]  + f" - {patch_version}"
-    
-    ax.set_title(title)
-    
+
+    title = "Honkai: Star Rail Character Distribution by Element and Path"
+    if patch_version:
+        title += f" - {patch_version}"
+
+    # Add padding between title and plot (in points)
+    ax.set_title(title, pad=15)  # Increase from default of 6 points
+
     return fig

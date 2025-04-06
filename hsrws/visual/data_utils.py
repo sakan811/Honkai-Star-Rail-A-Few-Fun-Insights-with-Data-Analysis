@@ -2,8 +2,7 @@
 
 from typing import Any
 import pandas as pd
-from sqlalchemy import Select, text
-from loguru import logger
+from sqlalchemy import Select
 from hsrws.db import get_session
 from hsrws.db.queries import (
     get_latest_patch_stmt,
@@ -44,7 +43,7 @@ def get_latest_patch():
         Latest patch version number formatted as "Patch (X.X)".
     """
     result = fetch_data_orm(get_latest_patch_stmt())
-    version: float = result.iloc[0]["latest_version"] # type: ignore
+    version: float = result.iloc[0]["latest_version"]  # type: ignore
     return f"Patch ({version})"
 
 
@@ -101,7 +100,7 @@ def get_path_rarity_distribution_data():
 def get_element_colors():
     """
     Gets a mapping of elements to their display colors.
-    
+
     Returns:
         Dictionary mapping element names to color values.
     """
@@ -114,11 +113,12 @@ def get_element_colors():
         "Wind": "green",
         "Physical": "gray",
     }
-    
+
+
 def get_path_colors():
     """
     Gets a mapping of paths to their display colors.
-    
+
     Returns:
         Dictionary mapping path names to color values.
     """
@@ -132,15 +132,16 @@ def get_path_colors():
         "Erudition": "pink",
         "Harmony": "orange",
     }
-    
+
+
 def get_rarity_colors():
     """
     Gets a mapping of rarity levels to their display colors.
-    
+
     Returns:
         Dictionary mapping rarity levels to color values.
     """
     return {
-        "4": "gold", 
-        "5": "purple",
+        "4": "purple",
+        "5": "gold",
     }

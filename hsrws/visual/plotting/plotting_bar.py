@@ -1,12 +1,11 @@
-"""Bar chart plotting functions for HSR visualization."""
+"""Bar plotting functions for HSR visualization."""
 
-from typing import Optional
-from matplotlib.figure import Figure
-import pandas as pd
 import seaborn as sns
+import pandas as pd
+from matplotlib.figure import Figure
+from typing import Optional
 from loguru import logger
 
-from hsrws.visual.config.config_chart_settings import get_default_titles
 from hsrws.visual.data_utils import get_rarity_colors
 
 
@@ -35,23 +34,25 @@ def plot_rarity_element_distribution(
         palette=get_rarity_colors(),
         legend_out=False,  # Keep legend inside the plot
     )
-    
+
     fig = g.figure
     ax = g.ax
-    
+
     ax.legend(title="Rarity")
     ax.set_xlabel("Element")
     ax.set_ylabel("Character Count")
-    
-    # Set up chart basics
-    titles = get_default_titles() 
-    title = titles.get("grouped_bar", "Honkai: Star Rail Character Path Distribution by Rarity")
-    
+
+    ticks = ax.get_xticks()
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+
+    title = "Honkai: Star Rail Character Element Distribution by Rarity"
+
     if patch_version:
         title += f" - {patch_version}"
-        
+
     ax.set_title(title)
-    
+
     return fig
 
 
@@ -69,7 +70,7 @@ def plot_path_rarity_distribution(
         Matplotlib figure object.
     """
     logger.debug("Plotting path-rarity grouped bar chart...")
-    
+
     # Create catplot with seaborn (include legend by default)
     g = sns.catplot(
         data=df,
@@ -80,15 +81,21 @@ def plot_path_rarity_distribution(
         palette=get_rarity_colors(),
         legend_out=False,  # Keep legend inside the plot
     )
-    
+
     fig = g.figure
     ax = g.ax
-        
-    title = "Honkai: Star Rail Character Path Distribution by Rarity" + f" - {patch_version}"
-    
+
+    ticks = ax.get_xticks()
+    ax.set_xticks(ticks)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha="right")
+
+    title = "Honkai: Star Rail Character Path Distribution by Rarity"
+    if patch_version:
+        title += f" - {patch_version}"
+
     ax.set_title(title)
     ax.set_xlabel("Path")
     ax.set_ylabel("Character Count")
     ax.legend(title="Rarity")
-    
+
     return fig

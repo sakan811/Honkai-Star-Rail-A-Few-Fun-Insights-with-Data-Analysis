@@ -109,24 +109,22 @@ def get_version_element_evolution_stmt():
     """
     # First create a subquery with the count per version and element
     version_element_counts = (
-        select(
-            HsrCharacter.Version,
-            HsrCharacter.Element,
-            func.count().label("count")
-        )
+        select(HsrCharacter.Version, HsrCharacter.Element, func.count().label("count"))
         .group_by(HsrCharacter.Version, HsrCharacter.Element)
         .order_by(HsrCharacter.Version, HsrCharacter.Element)
         .subquery()
     )
-    
+
     # Then use window function to calculate cumulative sum
     return select(
         version_element_counts.c.Version,
         version_element_counts.c.Element,
-        func.sum(version_element_counts.c.count).over(
+        func.sum(version_element_counts.c.count)
+        .over(
             partition_by=version_element_counts.c.Element,
-            order_by=version_element_counts.c.Version
-        ).label("count")
+            order_by=version_element_counts.c.Version,
+        )
+        .label("count"),
     ).order_by(version_element_counts.c.Version, version_element_counts.c.Element)
 
 

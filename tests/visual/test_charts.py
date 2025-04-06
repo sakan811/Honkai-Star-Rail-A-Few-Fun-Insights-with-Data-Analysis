@@ -110,9 +110,7 @@ def test_save_figure(mock_plt):
     """Test saving a figure to file."""
     # Setup
     mock_fig = MagicMock()
-    mock_config = MagicMock()
-    mock_config.bbox_inches = "tight"
-    mock_config.dpi = 300
+    dpi = 300
 
     # Create a mock image object with the necessary properties
     mock_image = MagicMock()
@@ -123,15 +121,11 @@ def test_save_figure(mock_plt):
 
     with (
         patch("os.makedirs") as mock_makedirs,
-        patch(
-            "PIL.Image.open", return_value=mock_image
-        ),  # Fix: patch PIL.Image directly
-        patch(
-            "PIL.Image.new", return_value=mock_square_img
-        ),  # Fix: patch PIL.Image directly
+        patch("PIL.Image.open", return_value=mock_image),
+        patch("PIL.Image.new", return_value=mock_square_img),
     ):
         # Execute
-        save_figure(mock_fig, "test_figure.png", mock_config)
+        save_figure(mock_fig, "test_figure.png", dpi)
 
         # Verify
         mock_makedirs.assert_called_once()

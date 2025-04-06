@@ -9,7 +9,9 @@ from hsrws.core.scraper import Scraper
 from hsrws.utils.payload import get_first_value
 
 
-async def process_character_list(scraper: Scraper, char_list: list[dict[str, Any]]) -> None:
+async def process_character_list(
+    scraper: Scraper, char_list: list[dict[str, Any]]
+) -> None:
     """
     Processes the character list.
 

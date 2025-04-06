@@ -7,7 +7,6 @@ import pandas as pd
 from loguru import logger
 import seaborn as sns
 
-from hsrws.visual.config.config_chart_settings import get_default_titles
 from hsrws.visual.data_utils import get_element_colors
 
 
@@ -31,17 +30,25 @@ def plot_element_balance_evolution(
 
     # Get element-specific colors instead of using tab10
     element_colors = get_element_colors()
-    
+
     fig, ax = plt.subplots()
-    sns.lineplot(data=df, x="Version", y="count", hue="Element", palette=element_colors, linewidth=2.5)
+    sns.lineplot(
+        data=df,
+        x="Version",
+        y="count",
+        hue="Element",
+        palette=element_colors,
+        linewidth=2.5,
+    )
 
     ax.legend(title="Element")
     ax.set_xlabel("Version")
     ax.set_ylabel("Cumulative Character Count")
-    
-    titles = get_default_titles()
-    title = titles["line"] + f" - {patch_version}"
-    
+
+    title = "Honkai: Star Rail Elemental Balance Evolution Across Versions"
+    if patch_version:
+        title += f" - {patch_version}"
+
     ax.set_title(title)
-    
+
     return fig
