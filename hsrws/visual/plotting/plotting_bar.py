@@ -6,13 +6,14 @@ from loguru import logger
 
 from hsrws.visual.config import ChartConfig
 from hsrws.visual.plotting.plotting_base import _setup_chart_basics
+from hsrws.visual.data_utils import get_rarity_colors
 
 
 def plot_rarity_element_distribution(
     df: pd.DataFrame, config: ChartConfig = None, patch_version: str = None
 ) -> plt.Figure:
     """
-    Plot character rarity distribution with element breakdown as a stacked bar chart.
+    Plot character element distribution with rarity breakdown as a grouped bar chart.
 
     Args:
         df: DataFrame containing rarity, element, and count columns.
@@ -22,44 +23,66 @@ def plot_rarity_element_distribution(
     Returns:
         Matplotlib figure object.
     """
-    logger.debug("Plotting rarity-element stacked bar chart...")
+    logger.debug("Plotting element-rarity grouped bar chart...")
 
     # Use provided config or create default
     if config is None:
         config = ChartConfig()
 
-    # Pivot the dataframe for stacked bar format
+    # Pivot the dataframe for grouped bar format (Element on X-axis)
     pivot_df = df.pivot_table(
-        index="Rarity", columns="Element", values="count", fill_value=0
+        index="Element", columns="Rarity", values="count", fill_value=0
     )
 
-    # Create figure and axis with landscape ratio
-    fig, ax = plt.subplots(figsize=config.get_size("bar"))
+    # Get rarity-specific colors
+    rarity_colors = get_rarity_colors()
 
-    # Create stacked bar chart
-    pivot_df.plot(kind="bar", stacked=True, ax=ax, colormap=config.get_colormap("bar"))
+    # Create figure and axis with portrait ratio (4:5)
+    fig, ax = plt.subplots(figsize=config.get_size("grouped_bar"))
 
-    # Set up chart basics
-    title = config.get_title("bar")
+    # Create grouped bar chart with rarity-specific colors
+    pivot_df.plot(kind="bar", ax=ax, color=rarity_colors)
+
+    # Set up chart basics for portrait display
+    title = config.get_title("grouped_bar")
     _setup_chart_basics(
         fig,
         ax,
         config,
-        "bar",
+        "grouped_bar",
         title,
         patch_version,
-        x_label="Rarity",
+        x_label="Element",
         y_label="Character Count",
     )
 
-    # Configure legend
-    config.configure_legend(ax, "bar")
+    # Configure legend for top right position (override the default settings)
+    legend = ax.legend(title="Rarity", loc="upper right")
+
+    # Apply chart-specific font sizes for legend
+    legend.get_title().set_fontsize(config.get_font_size("legend", "grouped_bar"))
+    for text in legend.get_texts():
+        text.set_fontsize(config.get_font_size("legend", "grouped_bar"))
+
+    # Add data value annotations
+    annotation_settings = config.get_annotation_settings("grouped_bar")
+    for container in ax.containers:
+        ax.bar_label(
+            container,
+            fmt=annotation_settings.get("fmt", "%.0f"),
+            padding=annotation_settings.get("padding", 5),
+            fontsize=config.get_font_size("annotation", "grouped_bar"),
+            fontweight=annotation_settings.get("fontweight", "normal"),
+        )
+
+    # Add grid for better readability in vertical layout
+    config.configure_grid(ax, "grouped_bar")
 
     if config.tight_layout:
         plt.tight_layout()
     else:
-        # Adjust for landscape ratio
-        plt.subplots_adjust(bottom=0.15, left=0.1, right=0.9)
+        # Adjust for portrait ratio
+        plt.subplots_adjust(bottom=0.2, top=0.9)
 
     return fig
 
@@ -89,11 +112,14 @@ def plot_path_rarity_distribution(
         index="Path", columns="Rarity", values="count", fill_value=0
     )
 
+    # Get rarity-specific colors
+    rarity_colors = get_rarity_colors()
+
     # Create figure and axis with portrait ratio (4:5)
     fig, ax = plt.subplots(figsize=config.get_size("grouped_bar"))
 
-    # Create grouped bar chart
-    pivot_df.plot(kind="bar", ax=ax, colormap=config.get_colormap("grouped_bar"))
+    # Create grouped bar chart with rarity-specific colors
+    pivot_df.plot(kind="bar", ax=ax, color=rarity_colors)
 
     # Set up chart basics for portrait display
     title = config.get_title("grouped_bar")

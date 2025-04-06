@@ -127,3 +127,51 @@ def get_path_rarity_distribution_data():
         DataFrame with Path-Rarity distribution data.
     """
     return fetch_data_orm(get_path_rarity_distribution_stmt())
+
+
+def get_element_colors():
+    """
+    Gets a mapping of elements to their display colors.
+    
+    Returns:
+        Dictionary mapping element names to color values.
+    """
+    return {
+        "Fire": "red",
+        "Lightning": "purple",
+        "Quantum": "darkblue",
+        "Ice": "lightblue",
+        "Imaginary": "yellow",
+        "Wind": "green",
+        "Physical": "gray",
+    }
+    
+def get_path_colors():
+    """
+    Gets a mapping of paths to their display colors.
+    
+    Returns:
+        Dictionary mapping path names to color values.
+    """
+    return {
+        "Destruction": "grey",
+        "Preservation": "blue",
+        "Remembrance": "cyan",
+        "Nihility": "purple",
+        "Abundance": "yellow",
+        "Hunt": "green",
+        "Erudition": "pink",
+        "Harmony": "orange",
+    }
+    
+def get_rarity_colors():
+    """
+    Gets a mapping of rarity levels to their display colors.
+    
+    Returns:
+        Dictionary mapping rarity levels to color values.
+    """
+    return {
+        "4": "gold", 
+        "5": "purple",
+    }
