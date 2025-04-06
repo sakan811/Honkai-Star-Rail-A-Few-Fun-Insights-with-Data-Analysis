@@ -15,9 +15,13 @@ and <https://honkai-star-rail.fandom.com/wiki/Character/List>
 
 Click [here](./docs/VISUAL.md) to view the visualizations.
 
-## To Run Web-Scraping Process
+## Setup and Installation
+
+### Clone the Repository
 
 * Clone this repo: <https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis.git>
+
+### Configure Environment
 
 * Create **.env** file with the **USER_AGENT** variable.
 
@@ -28,15 +32,31 @@ Click [here](./docs/VISUAL.md) to view the visualizations.
 * Find your **User Agent** with this website: <https://www.whatismybrowser.com/detect/what-is-my-user-agent/>
 
 * Enter your **User Agent** into the **USER_AGENT** variable in the **.env** file
-* Run:
 
-  * ```bash
-    # Run complete pipeline (scraping and visualization)
-    python main.py
+### Install Dependencies with UV Python
 
-    # Run only data scraping
-    python main.py --mode scrape
+UV is a fast Python package installer and resolver. To use UV for this project:
 
-    # Run only visualization generation
-    python main.py --mode visualize
-    ```
+1. Install UV (if not already installed): <https://docs.astral.sh/uv/getting-started/installation/>
+
+2. Create a virtual environment and install project dependencies using UV:
+
+   ```bash
+   uv venv
+   uv sync
+   ```
+
+## Running the Application
+
+Run the application using one of the following commands:
+
+```bash
+# Run complete pipeline (scraping and visualization)
+python main.py
+
+# Run only data scraping
+python main.py --mode scrape
+
+# Run only visualization generation
+python main.py --mode visualize
+```
