@@ -38,14 +38,15 @@ def save_figure(fig: Figure, filename: str, config: ChartConfig):
     # Ensure visualization directories exist
     os.makedirs("hsrws/visual/visual_img", exist_ok=True)
 
-    # Save original figure to a BytesIO buffer
+    # Save original figure to a BytesIO buffer with extra padding
     buf = io.BytesIO()
     fig.savefig( # type: ignore
         buf,
         format="png",
-        bbox_inches=config.bbox_inches,
+        bbox_inches="tight",  # Use tight to remove excessive whitespace
         dpi=config.dpi,
         facecolor="white",
+        pad_inches=0.4,  # Add consistent padding
     )
     buf.seek(0)
 
@@ -55,8 +56,13 @@ def save_figure(fig: Figure, filename: str, config: ChartConfig):
     # Get dimensions
     width, height = img.size
     max_dim = max(width, height)
+    
+    # For area charts with external legends, add extra padding on the right
+    if "area" in filename:
+        # Add 15% extra width to accommodate the legend
+        max_dim = max(int(width * 1.15), height)
 
-    # Create a square white image
+    # Create a square white image with extra size
     square_img = Image.new("RGBA", (max_dim, max_dim), (255, 255, 255, 255))
 
     # Calculate position to center the original image
@@ -69,6 +75,7 @@ def save_figure(fig: Figure, filename: str, config: ChartConfig):
     # Save the square image
     output_path = os.path.join("hsrws", "visual", "visual_img", filename)
     square_img.save(output_path)
+    logger.info(f"Saved {filename} with dimensions {square_img.size}")
 
     # Close the figure
     plt.close(fig)
@@ -95,28 +102,28 @@ def create_advanced_charts():
     # Create rarity-element stacked bar chart
     rarity_element_data = get_rarity_element_distribution_data()
     rarity_element_fig = plot_rarity_element_distribution(
-        rarity_element_data, config, latest_patch
+        rarity_element_data, latest_patch
     )
     save_figure(rarity_element_fig, "rarity_element_distribution.png", config)
 
     # Create version release timeline
     version_release_data = get_version_release_timeline_data()
     version_release_fig = plot_version_release_timeline(
-        version_release_data, config, latest_patch
+        version_release_data, latest_patch
     )
     save_figure(version_release_fig, "version_release_timeline.png", config)
 
     # Create elemental balance evolution area chart
     element_evolution_data = get_element_balance_evolution_data()
     element_evolution_fig = plot_element_balance_evolution(
-        element_evolution_data, config, latest_patch
+        element_evolution_data, latest_patch
     )
     save_figure(element_evolution_fig, "element_balance_evolution.png", config)
 
     # Create path-rarity grouped bar chart
     path_rarity_data = get_path_rarity_distribution_data()
     path_rarity_fig = plot_path_rarity_distribution(
-        path_rarity_data, config, latest_patch
+        path_rarity_data, latest_patch
     )
     save_figure(path_rarity_fig, "path_rarity_distribution.png", config)
 

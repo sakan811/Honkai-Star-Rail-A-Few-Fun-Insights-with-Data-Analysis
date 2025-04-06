@@ -1,18 +1,20 @@
-"""Tests for data utility functions."""
+"""Tests for the data utility functions."""
 
+import pandas as pd
 import pytest
 from unittest.mock import patch, MagicMock, PropertyMock
-import pandas as pd
 
 from hsrws.visual.data_utils import (
     fetch_data_orm,
-    fetch_view_data,
     get_latest_patch,
     get_element_path_heatmap_data,
     get_rarity_element_distribution_data,
     get_version_release_timeline_data,
     get_element_balance_evolution_data,
     get_path_rarity_distribution_data,
+    get_element_colors,
+    get_path_colors,
+    get_rarity_colors,
 )
 
 
@@ -42,72 +44,40 @@ def mock_execute_result():
 
 
 @pytest.mark.visual
-def test_fetch_data_orm():
+def test_fetch_data_orm(mock_session):
     """Test fetch_data_orm function."""
     # Setup
+    mock_result = MagicMock()
+    mock_result.all.return_value = [("Fire", 5), ("Ice", 3)]
+    mock_session.execute.return_value = mock_result
+
+    # Create a mock stmt with column names
     mock_stmt = MagicMock()
-    mock_result = MagicMock()
-    mock_result.all.return_value = [("1.6",)]
+    # Mock the columns property
+    columns_property = PropertyMock()
+    columns_property.keys.return_value = ["element", "count"]
+    type(mock_stmt).columns = columns_property
 
-    # Use dict-style mock for columns attribute with a mock keys method
-    columns_mock = MagicMock()
-    keys_mock = MagicMock()
-    keys_mock.return_value = ["latest_version"]
-    columns_mock.keys = keys_mock
-    mock_stmt.columns = columns_mock
-
-    with patch("hsrws.visual.data_utils.get_session") as mock_get_session:
-        mock_session = MagicMock()
-        mock_session.execute.return_value = mock_result
-        mock_get_session.return_value.__enter__.return_value = mock_session
-
-        # Execute
-        result = fetch_data_orm(mock_stmt)
+    # Execute
+    result = fetch_data_orm(mock_stmt)
 
     # Verify
     assert isinstance(result, pd.DataFrame)
-
-
-@pytest.mark.visual
-def test_fetch_view_data():
-    """Test fetch_view_data function."""
-    # Setup
-    mock_mapping1 = MagicMock()
-    mock_mapping1._mapping = {"element": "Fire", "count": 5}
-    mock_mapping2 = MagicMock()
-    mock_mapping2._mapping = {"element": "Ice", "count": 3}
-
-    # Create a proper mock result with returns_rows attribute
-    mock_result = MagicMock()
-    type(mock_result).returns_rows = PropertyMock(return_value=True)
-    mock_result.__iter__.return_value = [mock_mapping1, mock_mapping2]
-
-    with (
-        patch("hsrws.visual.data_utils.get_session") as mock_get_session,
-        patch("hsrws.visual.data_utils.text"),
-    ):
-        mock_session = MagicMock()
-        mock_session.execute.return_value = mock_result
-        mock_get_session.return_value.__enter__.return_value = mock_session
-
-        # Execute
-        result = fetch_view_data("TestView")
-
-    # Verify
-    assert isinstance(result, pd.DataFrame)
+    assert mock_session.execute.called
     assert len(result) == 2  # Two rows from our mock data
 
 
 @pytest.mark.visual
-def test_get_latest_patch():
+def test_get_latest_patch(mock_session, mock_execute_result):
     """Test get_latest_patch function."""
-    mock_df = pd.DataFrame({"latest_version": ["1.6"]})
+    # Setup
+    mock_session.execute.return_value.all.return_value = [(1.6,)]
+    columns_property = PropertyMock()
+    columns_property.keys.return_value = ["latest_version"]
+    type(mock_session.execute.return_value).columns = columns_property
 
-    with (
-        patch("hsrws.visual.data_utils.get_latest_patch_stmt"),
-        patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch,
-    ):
-        mock_fetch.return_value = mock_df
+    # Execute
+    with patch("hsrws.visual.data_utils.get_latest_patch_stmt"):
         result = get_latest_patch()
 
     # Verify
@@ -121,7 +91,7 @@ def test_get_element_path_heatmap_data(mock_session, mock_execute_result):
     with patch("hsrws.visual.data_utils.get_element_path_heatmap_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
-                {"Element": ["Fire"], "Path": ["Hunt"], "Count": [2]}
+                {"Element": ["Fire"], "Path": ["Destruction"], "Count": [2]}
             )
             result = get_element_path_heatmap_data()
 
@@ -137,7 +107,7 @@ def test_get_rarity_element_distribution_data(mock_session, mock_execute_result)
     with patch("hsrws.visual.data_utils.get_rarity_element_distribution_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
-                {"Rarity": [5], "Element": ["Fire"], "Count": [2]}
+                {"Rarity": ["5"], "Element": ["Fire"], "Count": [2]}
             )
             result = get_rarity_element_distribution_data()
 
@@ -166,33 +136,15 @@ def test_get_version_release_timeline_data(mock_session, mock_execute_result):
 def test_get_element_balance_evolution_data(mock_session, mock_execute_result):
     """Test get_element_balance_evolution_data function."""
     # Execute
-    with patch("hsrws.visual.data_utils.fetch_view_data") as mock_fetch_view:
-        mock_fetch_view.return_value = pd.DataFrame(
-            {"Version": ["1.0"], "Fire": [1], "Ice": [1]}
-        )
-        result = get_element_balance_evolution_data()
+    with patch("hsrws.visual.data_utils.get_version_element_evolution_stmt"):
+        with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
+            mock_fetch.return_value = pd.DataFrame(
+                {"Version": ["1.0"], "Fire": [1], "Ice": [1]}
+            )
+            result = get_element_balance_evolution_data()
 
     # Verify
     assert isinstance(result, pd.DataFrame)
-    mock_fetch_view.assert_called_once_with("ElementCharacterCountByVersion")
-
-
-@pytest.mark.visual
-def test_get_element_balance_evolution_data_fallback(mock_session, mock_execute_result):
-    """Test get_element_balance_evolution_data function with fallback."""
-    # Execute
-    with patch("hsrws.visual.data_utils.fetch_view_data") as mock_fetch_view:
-        mock_fetch_view.side_effect = Exception("View not found")
-        with patch("hsrws.visual.data_utils.get_version_element_evolution_stmt"):
-            with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
-                mock_fetch.return_value = pd.DataFrame(
-                    {"Version": ["1.0"], "Fire": [1], "Ice": [1]}
-                )
-                result = get_element_balance_evolution_data()
-
-    # Verify
-    assert isinstance(result, pd.DataFrame)
-    mock_fetch_view.assert_called_once()
     mock_fetch.assert_called_once()
 
 
@@ -203,10 +155,37 @@ def test_get_path_rarity_distribution_data(mock_session, mock_execute_result):
     with patch("hsrws.visual.data_utils.get_path_rarity_distribution_stmt"):
         with patch("hsrws.visual.data_utils.fetch_data_orm") as mock_fetch:
             mock_fetch.return_value = pd.DataFrame(
-                {"Path": ["Hunt"], "5-star": [2], "4-star": [1]}
+                {"Path": ["Destruction"], "Rarity": ["5"], "Count": [2]}
             )
             result = get_path_rarity_distribution_data()
 
     # Verify
     assert isinstance(result, pd.DataFrame)
     mock_fetch.assert_called_once()
+
+
+@pytest.mark.visual
+def test_get_element_colors():
+    """Test get_element_colors function."""
+    result = get_element_colors()
+    assert isinstance(result, dict)
+    assert "Fire" in result
+    assert result["Fire"] == "red"
+
+
+@pytest.mark.visual
+def test_get_path_colors():
+    """Test get_path_colors function."""
+    result = get_path_colors()
+    assert isinstance(result, dict)
+    assert "Destruction" in result
+    assert result["Destruction"] == "grey"
+
+
+@pytest.mark.visual
+def test_get_rarity_colors():
+    """Test get_rarity_colors function."""
+    result = get_rarity_colors()
+    assert isinstance(result, dict)
+    assert "4" in result
+    assert result["4"] == "gold"

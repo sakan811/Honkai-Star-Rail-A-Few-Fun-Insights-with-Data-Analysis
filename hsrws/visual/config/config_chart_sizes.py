@@ -44,7 +44,7 @@ def get_default_font_scale_by_chart() -> Dict[str, Dict[str, float]]:
     }
 
 
-def get_default_chart_sizes() -> Dict[str, Tuple[int, int]]:
+def get_default_chart_sizes() -> Dict[str, Tuple[float, float]]:
     """
     Get default chart sizes optimized for Instagram.
 

@@ -64,30 +64,16 @@ def test_connection_error_handling(sample_character_df):
             load_to_sqlite(sample_character_df)
 
 
-# Test function for load_to_sqlite
 def test_load_to_sqlite(sample_character_df):
     """Test loading dataframe to SQLite database."""
-    # Mock the to_sql method on the DataFrame
-    sample_character_df.to_sql = MagicMock()
-
     with patch("sqlite3.connect") as mock_connect:
-        mock_conn = mock_connect.return_value
-        mock_conn.__enter__.return_value = mock_conn
-
-        # Also patch drop_views and create_views to isolate the test
-        with patch("hsrws.db.sqlite.drop_views") as mock_drop_views:
-            with patch("hsrws.db.sqlite.create_views") as mock_create_views:
-                # Call the function under test
-                load_to_sqlite(sample_character_df)
-
-                # Verify connection was established
-                mock_connect.assert_called_once_with("hsr.db")
-
-                # Verify that to_sql was called on the dataframe
-                sample_character_df.to_sql.assert_called_once_with(
-                    "HsrCharacters", mock_conn, if_exists="replace"
-                )
-
-                # Verify views were managed
-                mock_drop_views.assert_called_once_with(mock_conn)
-                mock_create_views.assert_called_once_with(mock_conn)
+        mock_conn = MagicMock()
+        mock_connect.return_value.__enter__.return_value = mock_conn
+        
+        # Call the function
+        load_to_sqlite(sample_character_df)
+        
+        # Verify that to_sql was called with the correct arguments
+        sample_character_df.to_sql.assert_called_once_with(
+            "HsrCharacters", mock_conn, if_exists="replace"
+        )

@@ -34,7 +34,7 @@ class ChartConfig:
     """
 
     # Default chart dimensions with 1:1 ratio (square for Instagram)
-    figure_size: Tuple[int, int] = (10, 10)
+    figure_size: Tuple[float, float] = (10, 10)
     dpi: int = 300
 
     # Font configuration
@@ -67,7 +67,7 @@ class ChartConfig:
     auto_rotate_labels: bool = True
 
     # Chart-specific configurations with aspect ratios optimized for Instagram
-    chart_sizes: Dict[str, Tuple[int, int]] = field(
+    chart_sizes: Dict[str, Tuple[float, float]] = field(
         default_factory=get_default_chart_sizes
     )
     colormaps: Dict[str, str] = field(default_factory=get_default_colormaps)

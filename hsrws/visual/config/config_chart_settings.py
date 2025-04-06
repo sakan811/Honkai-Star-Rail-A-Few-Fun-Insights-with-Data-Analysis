@@ -20,7 +20,7 @@ def get_default_titles() -> Dict[str, str]:
         "heatmap": "Honkai: Star Rail Character Distribution by Element and Path",
         "bar": "Honkai: Star Rail Character Rarity Distribution with Element Breakdown",
         "timeline": "Honkai: Star Rail Character Introduction Rate by Version",
-        "area": "Honkai: Star Rail Elemental Balance Evolution Across Versions",
+        "line": "Honkai: Star Rail Elemental Balance Evolution Across Versions",
         "grouped_bar": "Honkai: Star Rail Character Path Distribution by Rarity",
     }
 

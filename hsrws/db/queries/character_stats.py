@@ -102,18 +102,32 @@ def get_version_release_timeline_stmt():
 
 def get_version_element_evolution_stmt():
     """
-    Returns the statement to get elemental balance evolution across versions.
+    Returns the statement to get cumulative elemental balance evolution across versions.
 
     Returns:
-        SQLAlchemy SELECT statement for elemental balance evolution data.
+        SQLAlchemy SELECT statement for cumulative elemental balance evolution data.
     """
-    # This relies on the SQL view ElementCharacterCountByVersion
-    # The actual data will be retrieved using raw SQL in data_utils.py
-    return (
-        select(HsrCharacter.Version, HsrCharacter.Element, func.count().label("count"))
+    # First create a subquery with the count per version and element
+    version_element_counts = (
+        select(
+            HsrCharacter.Version,
+            HsrCharacter.Element,
+            func.count().label("count")
+        )
         .group_by(HsrCharacter.Version, HsrCharacter.Element)
         .order_by(HsrCharacter.Version, HsrCharacter.Element)
+        .subquery()
     )
+    
+    # Then use window function to calculate cumulative sum
+    return select(
+        version_element_counts.c.Version,
+        version_element_counts.c.Element,
+        func.sum(version_element_counts.c.count).over(
+            partition_by=version_element_counts.c.Element,
+            order_by=version_element_counts.c.Version
+        ).label("count")
+    ).order_by(version_element_counts.c.Version, version_element_counts.c.Element)
 
 
 def get_path_rarity_distribution_stmt():
