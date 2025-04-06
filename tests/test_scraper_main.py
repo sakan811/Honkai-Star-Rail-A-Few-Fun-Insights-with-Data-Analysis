@@ -72,9 +72,7 @@ async def test_main_script_scrape_function():
 
         # Setup additional required mocks
         with patch("argparse.ArgumentParser.parse_args", return_value=mock_args):
-            with (
-                patch("main.load_to_sqlite") as mock_load_sqlite
-            ):  
+            with patch("main.load_to_sqlite") as mock_load_sqlite:
                 # Execute the main function
                 main()
 

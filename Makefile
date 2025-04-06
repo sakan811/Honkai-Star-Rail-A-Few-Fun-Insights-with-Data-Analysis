@@ -21,4 +21,4 @@ lint:
 lint-unsafe-fix:
 	ruff check . --fix --unsafe-fixes
 
-all: format lint test
+pre-ci: format lint test
