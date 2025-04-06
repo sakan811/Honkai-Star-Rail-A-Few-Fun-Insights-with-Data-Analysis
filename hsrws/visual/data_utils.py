@@ -36,32 +36,6 @@ def fetch_data_orm(stmt: Select[tuple[Any, ...]]):
         return pd.DataFrame(result, columns=column_names)
 
 
-def fetch_view_data(view_name: str):
-    """
-    Fetches data from a SQL view.
-
-    Args:
-        view_name: Name of the SQL view to query.
-
-    Returns:
-        DataFrame with query results.
-    """
-    with get_session() as session:
-        # Use text() to properly create a SQL text object
-        sql_query = text(f"SELECT * FROM {view_name}")
-        result = session.execute(sql_query)
-
-        # Get column names from the result's keys method
-        if result.returns_rows: # type: ignore
-            # Get result as a list of dictionaries for pandas
-            rows = [dict(row._mapping) for row in result] # type: ignore
-            if rows:
-                return pd.DataFrame(rows)
-
-        # Return empty DataFrame if no results
-        return pd.DataFrame()
-
-
 def get_latest_patch():
     """
     Gets the latest patch version from the database.
@@ -111,13 +85,7 @@ def get_element_balance_evolution_data():
     Returns:
         DataFrame with elemental balance evolution data.
     """
-    try:
-        # Use the SQL view for this complex query
-        return fetch_view_data("ElementCharacterCountByVersion")
-    except Exception as e:
-        # Fallback: If view doesn't exist, use the direct query
-        logger.warning(f"View query failed: {e}. Using direct query instead.")
-        return fetch_data_orm(get_version_element_evolution_stmt())
+    return fetch_data_orm(get_version_element_evolution_stmt())
 
 
 def get_path_rarity_distribution_data():
