@@ -1,7 +1,7 @@
 """Version-related utility functions."""
 
 
-def get_version_dict() -> dict[int, list[str]]:
+def get_version_dict() -> dict[float, list[str]]:
     """
     Gets a dictionary of characters released in each version.
 

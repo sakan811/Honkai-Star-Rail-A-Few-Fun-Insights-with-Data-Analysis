@@ -1,7 +1,8 @@
 """Data utility functions for visualization."""
 
+from typing import Any
 import pandas as pd
-from sqlalchemy import text
+from sqlalchemy import Select, text
 from loguru import logger
 from hsrws.db import get_session
 from hsrws.db.queries import (
@@ -14,7 +15,7 @@ from hsrws.db.queries import (
 )
 
 
-def fetch_data_orm(stmt):
+def fetch_data_orm(stmt: Select[tuple[Any, ...]]):
     """
     Fetches data from the database using SQLAlchemy ORM.
 
@@ -35,7 +36,7 @@ def fetch_data_orm(stmt):
         return pd.DataFrame(result, columns=column_names)
 
 
-def fetch_view_data(view_name):
+def fetch_view_data(view_name: str):
     """
     Fetches data from a SQL view.
 
@@ -51,9 +52,9 @@ def fetch_view_data(view_name):
         result = session.execute(sql_query)
 
         # Get column names from the result's keys method
-        if result.returns_rows:
+        if result.returns_rows: # type: ignore
             # Get result as a list of dictionaries for pandas
-            rows = [dict(row._mapping) for row in result]
+            rows = [dict(row._mapping) for row in result] # type: ignore
             if rows:
                 return pd.DataFrame(rows)
 
@@ -69,7 +70,7 @@ def get_latest_patch():
         Latest patch version number formatted as "Patch (X.X)".
     """
     result = fetch_data_orm(get_latest_patch_stmt())
-    version = result.iloc[0]["latest_version"]
+    version: float = result.iloc[0]["latest_version"] # type: ignore
     return f"Patch ({version})"
 
 

@@ -6,6 +6,7 @@ from loguru import logger
 
 from hsrws.visual.config import ChartConfig
 from hsrws.visual.plotting.plotting_base import _setup_chart_basics
+from hsrws.visual.data_utils import get_element_colors
 
 
 def plot_element_balance_evolution(
@@ -28,15 +29,23 @@ def plot_element_balance_evolution(
     if config is None:
         config = ChartConfig()
 
+    # Get element-specific colors
+    element_colors = get_element_colors()
+    
+    # Filter the color dictionary to include only columns that exist in the DataFrame
+    # Excluding the 'Version' column which is used as the index
+    available_columns = [col for col in df.columns if col != 'Version']
+    color_mapping = {col: element_colors.get(col, 'gray') for col in available_columns}
+
     # Create figure and axis with landscape ratio for evolutionary data
     fig, ax = plt.subplots(figsize=config.get_size("area"))
 
-    # Create area chart
+    # Create area chart with element-specific colors
     df.set_index("Version").plot(
         kind="area",
         stacked=True,
         ax=ax,
-        colormap=config.get_colormap("area"),
+        color=color_mapping,
         alpha=0.7,  # Add transparency to make layers more visible
     )
 

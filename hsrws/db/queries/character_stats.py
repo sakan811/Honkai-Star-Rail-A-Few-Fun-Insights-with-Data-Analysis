@@ -1,17 +1,19 @@
 """SQLAlchemy queries for character statistics."""
 
-from sqlalchemy import func, select
+from sqlalchemy import Column, Select, func, select
 from hsrws.db.models import HsrCharacter
 
 
-def get_latest_patch_stmt():
+def get_latest_patch_stmt() -> Select[tuple[float]]:
     """
     Returns the statement to get the latest patch version.
 
     Returns:
         SQLAlchemy SELECT statement.
     """
-    return select(func.max(HsrCharacter.Version).label("latest_version"))
+    version_data: Column[float] = HsrCharacter.Version
+    latest_version_data = func.max(version_data)
+    return select(latest_version_data.label("latest_version"))
 
 
 def get_path_distribution_stmt():

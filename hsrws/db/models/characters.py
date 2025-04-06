@@ -24,4 +24,4 @@ class HsrCharacter(Base):
     Path = Column(String)
     Element = Column(String)
     Rarity = Column(String)
-    Version = Column(Float)
+    Version: Column[float] = Column(Float)

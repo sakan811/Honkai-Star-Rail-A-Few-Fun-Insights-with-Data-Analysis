@@ -1,9 +1,12 @@
 """Chart creation functionality."""
 
 import os
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 import seaborn as sns
 from loguru import logger
+import io
+from PIL import Image
 
 from hsrws.visual.config import ChartConfig
 from hsrws.visual.data_utils import (
@@ -23,7 +26,7 @@ from hsrws.visual.plotting import (
 )
 
 
-def save_figure(fig, filename, config):
+def save_figure(fig: Figure, filename: str, config: ChartConfig):
     """
     Saves a matplotlib figure to file with a 1:1 aspect ratio.
 
@@ -32,15 +35,12 @@ def save_figure(fig, filename, config):
         filename: Output filename.
         config: Chart configuration object.
     """
-    import io
-    from PIL import Image
-
     # Ensure visualization directories exist
     os.makedirs("hsrws/visual/visual_img", exist_ok=True)
 
     # Save original figure to a BytesIO buffer
     buf = io.BytesIO()
-    fig.savefig(
+    fig.savefig( # type: ignore
         buf,
         format="png",
         bbox_inches=config.bbox_inches,
