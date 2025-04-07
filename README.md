@@ -1,6 +1,6 @@
 # Honkai Star Rail: A Few Fun Insights with Data Analysis
 
-Some insights about **Honkai Star Rail**'s characters' data.
+Insights about **Honkai Star Rail**'s characters' data.
 
 Data is based on <https://wiki.hoyolab.com/pc/hsr/aggregate/character>
 and <https://honkai-star-rail.fandom.com/wiki/Character/List>
