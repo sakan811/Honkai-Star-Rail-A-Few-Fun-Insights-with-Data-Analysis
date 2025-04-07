@@ -16,7 +16,6 @@ def plot_version_release_timeline(
 
     Args:
         df: DataFrame containing version and character_count columns.
-        config: Optional chart configuration. If not provided, a default is used.
         patch_version: Optional patch version to include in title.
 
     Returns:

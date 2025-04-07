@@ -11,6 +11,7 @@ from hsrws.db.queries import (
     get_version_release_timeline_stmt,
     get_version_element_evolution_stmt,
     get_path_rarity_distribution_stmt,
+    get_version_path_evolution_stmt,
 )
 
 
@@ -95,6 +96,16 @@ def get_path_rarity_distribution_data():
         DataFrame with Path-Rarity distribution data.
     """
     return fetch_data_orm(get_path_rarity_distribution_stmt())
+
+
+def get_path_balance_evolution_data():
+    """
+    Gets the path balance evolution data across versions.
+
+    Returns:
+        DataFrame with path balance evolution data.
+    """
+    return fetch_data_orm(get_version_path_evolution_stmt())
 
 
 def get_element_colors():

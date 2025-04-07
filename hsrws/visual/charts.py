@@ -15,6 +15,7 @@ from hsrws.visual.data_utils import (
     get_version_release_timeline_data,
     get_element_balance_evolution_data,
     get_path_rarity_distribution_data,
+    get_path_balance_evolution_data,
 )
 from hsrws.visual.plotting import (
     plot_element_path_heatmap,
@@ -22,6 +23,7 @@ from hsrws.visual.plotting import (
     plot_version_release_timeline,
     plot_element_balance_evolution,
     plot_path_rarity_distribution,
+    plot_path_balance_evolution,
 )
 
 
@@ -118,6 +120,13 @@ def create_advanced_charts():
     path_rarity_data = get_path_rarity_distribution_data()
     path_rarity_fig = plot_path_rarity_distribution(path_rarity_data, latest_patch)
     save_figure(path_rarity_fig, "path_rarity_distribution.png")
+
+    # Create path balance evolution line chart
+    path_evolution_data = get_path_balance_evolution_data()
+    path_evolution_fig = plot_path_balance_evolution(
+        path_evolution_data, latest_patch
+    )
+    save_figure(path_evolution_fig, "path_balance_evolution.png")
 
     logger.info(
         f"Advanced insight charts have been created in the 'hsrws/visual/visual_img' directory for {latest_patch}."

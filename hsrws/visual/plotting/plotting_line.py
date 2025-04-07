@@ -7,7 +7,7 @@ import pandas as pd
 from loguru import logger
 import seaborn as sns
 
-from hsrws.visual.data_utils import get_element_colors
+from hsrws.visual.data_utils import get_element_colors, get_path_colors
 
 
 def plot_element_balance_evolution(
@@ -20,7 +20,6 @@ def plot_element_balance_evolution(
     Args:
         df: DataFrame with Version, Element, and count columns from ORM query
              or already pivoted with Version and element columns.
-        config: Optional chart configuration. If not provided, a default is used.
         patch_version: Optional patch version to include in title.
 
     Returns:
@@ -46,6 +45,49 @@ def plot_element_balance_evolution(
     ax.set_ylabel("Cumulative Character Count")
 
     title = "Honkai: Star Rail Elemental Balance Evolution Across Versions"
+    if patch_version:
+        title += f" - {patch_version}"
+
+    ax.set_title(title)
+
+    return fig
+
+
+def plot_path_balance_evolution(
+    df: pd.DataFrame, patch_version: Optional[str] = None
+) -> Figure:
+    """
+    Plot path balance evolution across versions as a line chart.
+    Shows the cumulative sum of characters for each path across versions.
+
+    Args:
+        df: DataFrame with Version, Path, and count columns from ORM query
+             or already pivoted with Version and path columns.
+        patch_version: Optional patch version to include in title.
+
+    Returns:
+        Matplotlib figure object.
+    """
+    logger.debug("Plotting path balance evolution line chart...")
+
+    # Get path-specific colors
+    path_colors = get_path_colors()
+
+    fig, ax = plt.subplots()
+    sns.lineplot(
+        data=df,
+        x="Version",
+        y="count",
+        hue="Path",
+        palette=path_colors,
+        linewidth=2.5,
+    )
+
+    ax.legend(title="Path")
+    ax.set_xlabel("Version")
+    ax.set_ylabel("Cumulative Character Count")
+
+    title = "Honkai: Star Rail Path Balance Evolution Across Versions"
     if patch_version:
         title += f" - {patch_version}"
 

@@ -10,6 +10,7 @@ from hsrws.db.queries.character_stats import (
     get_version_release_timeline_stmt,
     get_version_element_evolution_stmt,
     get_path_rarity_distribution_stmt,
+    get_version_path_evolution_stmt,
 )
 
 __all__ = [
@@ -22,4 +23,5 @@ __all__ = [
     "get_version_release_timeline_stmt",
     "get_version_element_evolution_stmt",
     "get_path_rarity_distribution_stmt",
+    "get_version_path_evolution_stmt",
 ]
