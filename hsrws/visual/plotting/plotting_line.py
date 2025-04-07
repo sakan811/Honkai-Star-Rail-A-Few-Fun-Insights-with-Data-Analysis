@@ -40,7 +40,8 @@ def plot_element_balance_evolution(
         linewidth=2.5,
     )
 
-    ax.legend(title="Element")
+    # Place legend outside the plot area to the right
+    ax.legend(title="Element", bbox_to_anchor=(1.05, 1), loc="upper left")
     ax.set_xlabel("Version")
     ax.set_ylabel("Cumulative Character Count")
 
@@ -49,6 +50,9 @@ def plot_element_balance_evolution(
         title += f" - {patch_version}"
 
     ax.set_title(title)
+    
+    # Adjust layout to make room for the legend
+    plt.tight_layout()
 
     return fig
 
@@ -83,7 +87,8 @@ def plot_path_balance_evolution(
         linewidth=2.5,
     )
 
-    ax.legend(title="Path")
+    # Place legend outside the plot area to the right
+    ax.legend(title="Path", bbox_to_anchor=(1.05, 1), loc="upper left")
     ax.set_xlabel("Version")
     ax.set_ylabel("Cumulative Character Count")
 
@@ -92,5 +97,8 @@ def plot_path_balance_evolution(
         title += f" - {patch_version}"
 
     ax.set_title(title)
+    
+    # Adjust layout to make room for the legend
+    plt.tight_layout()
 
     return fig
