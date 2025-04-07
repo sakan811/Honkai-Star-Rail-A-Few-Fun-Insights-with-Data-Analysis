@@ -22,3 +22,15 @@ lint-unsafe-fix:
 	ruff check . --fix --unsafe-fixes
 
 pre-ci: format lint test
+
+compose-up-build:
+	docker-compose -f docker-compose.build.yml up -d --build
+
+compose-up:
+	docker-compose up -d
+
+compose-down:
+	docker-compose down
+
+compose-clean:
+	docker-compose down --volumes --remove-orphans

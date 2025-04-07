@@ -17,50 +17,38 @@ Click [here](./docs/VISUAL.md) to view the visualizations.
 
 ## Setup and Installation
 
-### Clone the Repository
+### Prerequisites
 
-* Clone this repo: <https://github.com/sakan811/Honkai-Star-Rail-A-Few-Fun-Insights-with-Data-Analysis.git>
+* Install Docker Desktop: <https://www.docker.com/products/docker-desktop/>
 
-### Configure Environment
+### Deploying the Application
 
-* Create **.env** file (Git Bash)
+* Download [Docker Compose](./docker-compose.yml) file from this repository.
 
-  * ```bash
-    touch ./.env
-    ```
-
-* Add an **USER_AGENT** variable.
-
-  * ```text
-    USER_AGENT=
-    ```
+* Place the **docker-compose.yml** file in a directory of your choice.
 
 * Find your **User Agent** with this website: <https://www.whatismybrowser.com/detect/what-is-my-user-agent/>
 
-* Enter your **User Agent** into the **USER_AGENT** variable in the **.env** file
-
-### Install Dependencies with UV Python
-
-1. Install UV (if not already installed): <https://docs.astral.sh/uv/getting-started/installation/>
-
-2. Create a virtual environment and install project dependencies using UV:
-
-   ```bash
-   uv venv
-   uv sync
-   ```
+* Enter your **User Agent** into the **USER_AGENT** variable in the **docker-compose.yml** file
 
 ## Running the Application
 
-Run the application using one of the following commands:
+* Run:
 
-```bash
-# Run complete pipeline (scraping and visualization)
-python main.py
+  ```bash
+  docker-compose up -d
+  ```
 
-# Run only data scraping
-python main.py --mode scrape
+* Scrape data:
+  
+  ```bash
+  curl http://localhost:1234/scrape
+  ```
 
-# Run only visualization generation
-python main.py --mode visualize
-```
+* Make visualizations:
+
+  ```bash
+  curl http://localhost:1234/visualize
+  ```
+
+  * This will create visualizations in the **visual_img** folder in the same directory.

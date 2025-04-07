@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  app:
+    image: sakanbeer88/hsr-data-analyzer:latest
+    ports:
+      - "1234:1234"
+    volumes:
+      - ./visual_img:/app/hsrws/visual/visual_img
+    environment:
+      - USER_AGENT=
+    command: ["python", "main.py"]
