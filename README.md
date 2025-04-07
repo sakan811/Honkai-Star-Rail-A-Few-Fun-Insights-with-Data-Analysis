@@ -23,7 +23,13 @@ Click [here](./docs/VISUAL.md) to view the visualizations.
 
 ### Configure Environment
 
-* Create **.env** file with the **USER_AGENT** variable.
+* Create **.env** file (Git Bash)
+
+  * ```bash
+    touch ./.env
+    ```
+
+* Add an **USER_AGENT** variable.
 
   * ```text
     USER_AGENT=
