@@ -82,7 +82,9 @@ def api_scrape():
         )
     except Exception as e:
         logger.error(f"Error during data scraping: {e}")
-        return jsonify({"status": "error", "message": "An internal error has occurred."}), 500
+        return jsonify(
+            {"status": "error", "message": "An internal error has occurred."}
+        ), 500
 
 
 @app.route("/visualize", methods=["GET"])
@@ -97,7 +99,9 @@ def api_visualize():
         )
     except Exception as e:
         logger.error(f"Error during visualization: {e}")
-        return jsonify({"status": "error", "message": "An internal error has occurred."}), 500
+        return jsonify(
+            {"status": "error", "message": "An internal error has occurred."}
+        ), 500
 
 
 if __name__ == "__main__":

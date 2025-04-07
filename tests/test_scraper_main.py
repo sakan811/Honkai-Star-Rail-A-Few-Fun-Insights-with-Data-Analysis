@@ -52,7 +52,7 @@ def test_scrape_route_error(client):
         assert response.status_code == 500
         json_data = response.get_json()
         assert json_data["status"] == "error"
-        assert "API Scraping error" in json_data["message"]
+        assert "An internal error has occurred." in json_data["message"]
 
 
 def test_visualize_route_success(client):
@@ -79,7 +79,7 @@ def test_visualize_route_error(client):
         assert response.status_code == 500
         json_data = response.get_json()
         assert json_data["status"] == "error"
-        assert "Visualization error" in json_data["message"]
+        assert "An internal error has occurred." in json_data["message"]
 
 
 if __name__ == "__main__":
