@@ -4,10 +4,10 @@ run:
 	python main.py
 
 visualize:
-	python main.py --mode visualize
+	curl http://localhost:1234/visualize
 
 scrape:
-	python main.py --mode scrape
+	curl http://localhost:1234/scrape
 
 test:
 	python -m pytest tests

@@ -1,0 +1,73 @@
+# Version control
+.git
+.gitignore
+.github
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+ENV/
+
+# Environment variables
+.env
+
+# Database files (these should be built inside the container)
+hsr.db
+*.sqlite
+*.sqlite3
+
+# Unit test / coverage reports
+.coverage
+htmlcov/
+.tox/
+tests/
+
+# Logs
+*.log
+main.log
+
+# Documentation
+docs/
+*.md
+LICENSE
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Excel files generated during development (can be regenerated)
+hsr/*.xlsx
+data/*.xlsx
+
+# Generated images (can be regenerated)
+hsrws/visual/visual_img/
+
+# Build files
+*.egg-info/
+dist/
+build/
+
+# UV/pip specific
+.uv/
+uv.lock
+
+# Temporary files
+.tmp/
+.temp/
+.cache/
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Flask specific
+flask_session/
+instance/

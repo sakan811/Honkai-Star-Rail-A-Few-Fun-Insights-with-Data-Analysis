@@ -1,103 +1,85 @@
 """Tests for the scraper main script."""
 
 import pytest
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
 import pandas as pd
 
 
-@pytest.mark.asyncio
-async def test_main_script_successful_flow():
-    """Test the main script with a successful flow."""
+# Flask API Tests
+@pytest.fixture
+def client():
+    """Create a test client for the Flask app."""
+    from main import app
+
+    app.config["TESTING"] = True
+    with app.test_client() as client:
+        yield client
+
+
+def test_scrape_route_success(client):
+    """Test the /scrape API endpoint with successful response."""
     # Create mock DataFrame that would be returned by the scraper
     mock_df = pd.DataFrame(
         {
-            "Character": ["Dan Heng", "March 7th", "Silver Wolf"],
-            "Path": ["The Hunt", "Preservation", "Nihility"],
-            "Rarity": [4, 4, 5],
-            "Element": ["Wind", "Ice", "Quantum"],
-            "Version": [1.0, 1.0, 1.2],  # Add Version column to mock data
+            "Character": ["Dan Heng"],
+            "Path": ["The Hunt"],
+            "Rarity": [4],
+            "Element": ["Wind"],
         }
     )
 
-    # Create a mock for argparse.ArgumentParser.parse_args
-    mock_args = MagicMock()
-    mock_args.mode = "all"  # Test the full pipeline
+    with patch("main.scrape_data", return_value=mock_df) as mock_scrape_data:
+        with patch("main.load_to_sqlite") as mock_load_sqlite:
+            response = client.get("/scrape")
 
-    # Setup all necessary mocks
-    with (
-        patch("argparse.ArgumentParser.parse_args", return_value=mock_args),
-        # Note: We're patching main.scrape_data
-        patch("main.scrape_data", return_value=mock_df) as mock_scrape_data,
-        # Note: We're patching main.load_to_sqlite (where it's imported)
-        patch("main.load_to_sqlite") as mock_load_sqlite,
-        # Completely mock the visualize_data function to avoid all the chart issues
-        patch("main.visualize_data") as mock_visualize,
-    ):
-        # Import main here to avoid loading it before patching
-        from main import main
+            # Assert response is successful
+            assert response.status_code == 200
+            json_data = response.get_json()
+            assert json_data["status"] == "success"
+            assert "data_shape" in json_data
 
-        # Execute the main function
-        main()
+            # Verify function calls
+            mock_scrape_data.assert_called_once()
+            mock_load_sqlite.assert_called_once_with(mock_df)
 
-        # Verify all the expected function calls
-        mock_scrape_data.assert_called_once()
-        mock_load_sqlite.assert_called_once_with(mock_df)
+
+def test_scrape_route_error(client):
+    """Test the /scrape API endpoint with error handling."""
+    with patch("main.scrape_data", side_effect=Exception("API Scraping error")):
+        response = client.get("/scrape")
+
+        # Assert response indicates error
+        assert response.status_code == 500
+        json_data = response.get_json()
+        assert json_data["status"] == "error"
+        assert "API Scraping error" in json_data["message"]
+
+
+def test_visualize_route_success(client):
+    """Test the /visualize API endpoint with successful response."""
+    with patch("main.visualize_data") as mock_visualize:
+        response = client.get("/visualize")
+
+        # Assert response is successful
+        assert response.status_code == 200
+        json_data = response.get_json()
+        assert json_data["status"] == "success"
+        assert json_data["message"] == "Visualization creation complete"
+
+        # Verify function calls
         mock_visualize.assert_called_once()
 
 
-@pytest.mark.asyncio
-async def test_main_script_scrape_function():
-    """Test the scrape_data function with mocked dependencies."""
-    # Create mock DataFrame that would be returned by the scraper
-    mock_df = pd.DataFrame(
-        {
-            "Character": ["Dan Heng", "March 7th", "Silver Wolf"],
-            "Path": ["The Hunt", "Preservation", "Nihility"],
-            "Rarity": [4, 4, 5],
-            "Element": ["Wind", "Ice", "Quantum"],
-        }
-    )
+def test_visualize_route_error(client):
+    """Test the /visualize API endpoint with error handling."""
+    with patch("main.visualize_data", side_effect=Exception("Visualization error")):
+        response = client.get("/visualize")
 
-    # Skip the actual implementation and just mock scrape_data entirely
-    with patch("main.scrape_data") as mock_scrape_data:
-        # Set the return value
-        mock_scrape_data.return_value = mock_df
-
-        # Import main here to avoid loading it before patching
-        from main import main
-
-        # Create a mock for argparse.ArgumentParser.parse_args
-        mock_args = MagicMock()
-        mock_args.mode = "scrape"  # Only test scrape mode
-
-        # Setup additional required mocks
-        with patch("argparse.ArgumentParser.parse_args", return_value=mock_args):
-            with patch("main.load_to_sqlite") as mock_load_sqlite:
-                # Execute the main function
-                main()
-
-                # Verify all the expected function calls
-                mock_scrape_data.assert_called_once()
-                mock_load_sqlite.assert_called_once_with(mock_df)
-
-
-@pytest.mark.asyncio
-async def test_main_script_with_scraping_error():
-    """Test main script handling of scraping errors."""
-    # Create a mock for argparse.ArgumentParser.parse_args
-    mock_args = MagicMock()
-    mock_args.mode = "scrape"  # Only test scrape mode
-
-    with (
-        patch("argparse.ArgumentParser.parse_args", return_value=mock_args),
-        patch("main.scrape_data", side_effect=Exception("Scraping error")),
-    ):
-        # Import main here to avoid loading it before patching
-        from main import main
-
-        # Run the main function and expect an exception
-        with pytest.raises(Exception, match="Scraping error"):
-            main()
+        # Assert response indicates error
+        assert response.status_code == 500
+        json_data = response.get_json()
+        assert json_data["status"] == "error"
+        assert "Visualization error" in json_data["message"]
 
 
 if __name__ == "__main__":
