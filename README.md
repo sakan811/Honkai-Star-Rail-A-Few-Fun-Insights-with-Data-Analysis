@@ -1,6 +1,8 @@
 # Honkai Star Rail: A Few Fun Insights with Data Analysis
 
-Insights about **Honkai Star Rail**'s characters' data.
+This project collects, analyzes, and visualizes character data from Honkai Star Rail.
+
+The application scrapes character information, then transforms this data into insightful visualizations.
 
 Data is based on <https://wiki.hoyolab.com/pc/hsr/aggregate/character>
 and <https://honkai-star-rail.fandom.com/wiki/Character/List>
@@ -19,36 +21,36 @@ Click [here](./docs/VISUAL.md) to view the visualizations.
 
 ### Prerequisites
 
-* Install Docker Desktop: <https://www.docker.com/products/docker-desktop/>
+- Install Docker Desktop: <https://www.docker.com/products/docker-desktop/>
 
 ### Deploying the Application
 
-* Download [Docker Compose](./docker-compose.yml) file from this repository.
+- Download [Docker Compose](./docker-compose.yml) file from this repository.
 
-* Place the **docker-compose.yml** file in a directory of your choice.
+- Place the **docker-compose.yml** file in a directory of your choice.
 
-* Find your **User Agent** with this website: <https://www.whatismybrowser.com/detect/what-is-my-user-agent/>
+- Find your **User Agent** with this website: <https://www.whatismybrowser.com/detect/what-is-my-user-agent/>
 
-* Enter your **User Agent** into the **USER_AGENT** variable in the **docker-compose.yml** file
+- Enter your **User Agent** into the **USER_AGENT** variable in the **docker-compose.yml** file
 
 ## Running the Application
 
-* Run:
+- Run:
 
   ```bash
   docker-compose up -d
   ```
 
-* Scrape data:
+- Scrape data:
   
   ```bash
   curl http://localhost:1234/scrape
   ```
 
-* Make visualizations:
+- Make visualizations:
 
   ```bash
   curl http://localhost:1234/visualize
   ```
 
-  * This will create visualizations in the **visual_img** folder in the same directory.
+  - This will create visualizations in the **visual_img** folder in the same directory.
