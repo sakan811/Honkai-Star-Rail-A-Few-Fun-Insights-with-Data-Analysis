@@ -1,6 +1,7 @@
 """Main script for Honkai Star Rail data analysis."""
 
 import asyncio
+import os
 import sys
 from typing import Any
 
@@ -81,7 +82,7 @@ def api_scrape():
         )
     except Exception as e:
         logger.error(f"Error during data scraping: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "An internal error has occurred."}), 500
 
 
 @app.route("/visualize", methods=["GET"])
@@ -96,8 +97,9 @@ def api_visualize():
         )
     except Exception as e:
         logger.error(f"Error during visualization: {e}")
-        return jsonify({"status": "error", "message": str(e)}), 500
+        return jsonify({"status": "error", "message": "An internal error has occurred."}), 500
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=1234)
+    debug_mode = os.getenv("FLASK_DEBUG", "False").lower() in ("true", "1", "t")
+    app.run(debug=debug_mode, host="0.0.0.0", port=1234)

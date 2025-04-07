@@ -14,4 +14,4 @@ ENV PATH="/app/.venv/bin:$PATH"
 EXPOSE 1234
 
 # Run the Flask server by default
-CMD ["python", "main.py", "--mode=server", "--host=0.0.0.0", "--port=5000"]
+CMD ["gunicorn", "--bind", "0.0.0.0:1234", "main:app"]
