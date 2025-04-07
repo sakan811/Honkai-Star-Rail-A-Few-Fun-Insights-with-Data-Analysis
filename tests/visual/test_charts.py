@@ -41,6 +41,9 @@ def mock_data_utils():
         patch(
             "hsrws.visual.charts.get_path_rarity_distribution_data"
         ) as mock_path_data,
+        patch(
+            "hsrws.visual.charts.get_path_balance_evolution_data"
+        ) as mock_path_evolution_data,
     ):
         # Configure mock returns
         import pandas as pd
@@ -61,6 +64,9 @@ def mock_data_utils():
         mock_path_data.return_value = pd.DataFrame(
             {"Path": ["Hunt"], "5-star": [2], "4-star": [1]}
         )
+        mock_path_evolution_data.return_value = pd.DataFrame(
+            {"Version": ["1.0"], "Path": ["Hunt"], "count": [2]}
+        )
 
         yield {
             "latest_patch": mock_latest_patch,
@@ -69,6 +75,7 @@ def mock_data_utils():
             "timeline_data": mock_timeline_data,
             "evolution_data": mock_evolution_data,
             "path_data": mock_path_data,
+            "path_evolution_data": mock_path_evolution_data,
         }
 
 
@@ -87,6 +94,9 @@ def mock_plotting():
             "hsrws.visual.charts.plot_element_balance_evolution"
         ) as mock_evolution_plot,
         patch("hsrws.visual.charts.plot_path_rarity_distribution") as mock_path_plot,
+        patch(
+            "hsrws.visual.charts.plot_path_balance_evolution"
+        ) as mock_path_evolution_plot,
     ):
         # Configure mock returns
         mock_fig = MagicMock()
@@ -95,6 +105,7 @@ def mock_plotting():
         mock_timeline_plot.return_value = mock_fig
         mock_evolution_plot.return_value = mock_fig
         mock_path_plot.return_value = mock_fig
+        mock_path_evolution_plot.return_value = mock_fig
 
         yield {
             "heatmap_plot": mock_heatmap_plot,
@@ -102,6 +113,7 @@ def mock_plotting():
             "timeline_plot": mock_timeline_plot,
             "evolution_plot": mock_evolution_plot,
             "path_plot": mock_path_plot,
+            "path_evolution_plot": mock_path_evolution_plot,
         }
 
 
@@ -155,4 +167,4 @@ def test_create_advanced_charts(mock_plt, mock_sns, mock_data_utils, mock_plotti
             assert mock_plot.called
 
         # Verify figures were saved
-        assert mock_save_figure.call_count == 5
+        assert mock_save_figure.call_count == 6

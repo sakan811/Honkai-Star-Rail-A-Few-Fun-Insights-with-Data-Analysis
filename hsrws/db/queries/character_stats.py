@@ -140,3 +140,31 @@ def get_path_rarity_distribution_stmt():
         .group_by(HsrCharacter.Path, HsrCharacter.Rarity)
         .order_by(HsrCharacter.Path, HsrCharacter.Rarity)
     )
+
+
+def get_version_path_evolution_stmt():
+    """
+    Returns the statement to get cumulative path balance evolution across versions.
+
+    Returns:
+        SQLAlchemy SELECT statement for cumulative path balance evolution data.
+    """
+    # First create a subquery with the count per version and path
+    version_path_counts = (
+        select(HsrCharacter.Version, HsrCharacter.Path, func.count().label("count"))
+        .group_by(HsrCharacter.Version, HsrCharacter.Path)
+        .order_by(HsrCharacter.Version, HsrCharacter.Path)
+        .subquery()
+    )
+
+    # Then use window function to calculate cumulative sum
+    return select(
+        version_path_counts.c.Version,
+        version_path_counts.c.Path,
+        func.sum(version_path_counts.c.count)
+        .over(
+            partition_by=version_path_counts.c.Path,
+            order_by=version_path_counts.c.Version,
+        )
+        .label("count"),
+    ).order_by(version_path_counts.c.Version, version_path_counts.c.Path)

@@ -2,6 +2,7 @@
 
 import pandas as pd
 from unittest.mock import patch
+from hsrws.data.transformer import add_char_version
 
 
 def test_add_char_version():
@@ -18,17 +19,8 @@ def test_add_char_version():
     with patch(
         "hsrws.data.transformer.get_version_dict", return_value=mock_version_dict
     ):
-        # Simulate the functionality directly since we're testing the specific transformation
-        df["Version"] = df["Character"].apply(
-            lambda character: next(
-                (
-                    version
-                    for version, characters in mock_version_dict.items()
-                    if character in characters
-                ),
-                1.0,  # Default version if not found
-            )
-        )
+        # Call the actual function instead of reimplementing it
+        add_char_version(df)
 
     # Verify results
     assert "Version" in df.columns

@@ -16,7 +16,6 @@ def plot_element_path_heatmap(
 
     Args:
         df: DataFrame containing element, path, and count columns.
-        config: Optional chart configuration. If not provided, a default is used.
         patch_version: Optional patch version to include in title.
 
     Returns:
