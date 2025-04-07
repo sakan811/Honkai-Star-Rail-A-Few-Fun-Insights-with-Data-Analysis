@@ -123,9 +123,7 @@ def create_advanced_charts():
 
     # Create path balance evolution line chart
     path_evolution_data = get_path_balance_evolution_data()
-    path_evolution_fig = plot_path_balance_evolution(
-        path_evolution_data, latest_patch
-    )
+    path_evolution_fig = plot_path_balance_evolution(path_evolution_data, latest_patch)
     save_figure(path_evolution_fig, "path_balance_evolution.png")
 
     logger.info(

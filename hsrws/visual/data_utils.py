@@ -29,8 +29,8 @@ def fetch_data_orm(stmt: Select[tuple[Any, ...]]):
         result = session.execute(stmt).all()
         # Convert to pandas DataFrame with column names
         column_names = (
-            stmt.columns.keys()
-            if hasattr(stmt, "columns")
+            [col.key for col in stmt.selected_columns]
+            if hasattr(stmt, "selected_columns")
             else [c["name"] for c in stmt.column_descriptions]
         )
         return pd.DataFrame(result, columns=column_names)

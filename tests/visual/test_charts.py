@@ -155,4 +155,4 @@ def test_create_advanced_charts(mock_plt, mock_sns, mock_data_utils, mock_plotti
             assert mock_plot.called
 
         # Verify figures were saved
-        assert mock_save_figure.call_count == 5
+        assert mock_save_figure.call_count == 6
