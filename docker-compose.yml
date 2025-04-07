@@ -9,4 +9,4 @@ services:
       - ./visual_img:/app/hsrws/visual/visual_img
     environment:
       - USER_AGENT=
-    command: ["python", "main.py"]
+    command: ["gunicorn", "--bind", "0.0.0.0:1234", "main:app"]
