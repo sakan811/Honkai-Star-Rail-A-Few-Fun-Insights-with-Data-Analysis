@@ -6,8 +6,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from loguru import logger
 import seaborn as sns
-from unittest.mock import patch, MagicMock
-import pytest
 
 from hsrws.visual.data_utils import get_element_colors, get_path_colors
 
@@ -104,85 +102,3 @@ def plot_path_balance_evolution(
     plt.tight_layout()
 
     return fig
-
-
-@pytest.mark.visual
-def test_plot_path_balance_evolution():
-    """Test plotting path balance evolution."""
-    # Create test data with the correct columns
-    df = pd.DataFrame(
-        [
-            {"Version": "1.0", "Path": "Hunt", "count": 1},
-            {"Version": "1.0", "Path": "Harmony", "count": 1},
-            {"Version": "1.1", "Path": "Hunt", "count": 2},
-            {"Version": "1.1", "Path": "Harmony", "count": 2},
-        ]
-    )
-
-    # Patch the seaborn lineplot and pyplot
-    with patch("seaborn.lineplot") as mock_lineplot:
-        # Setup matplotlib mock
-        with (
-            patch("matplotlib.pyplot.subplots") as mock_subplots,
-            patch("matplotlib.pyplot.tight_layout") as mock_tight_layout,
-        ):
-            mock_fig = MagicMock()
-            mock_ax = MagicMock()
-            mock_subplots.return_value = (mock_fig, mock_ax)
-
-            # Execute the function
-            from hsrws.visual.plotting.plotting_line import plot_path_balance_evolution
-
-            result = plot_path_balance_evolution(df, "Patch (1.6)")
-
-            # Verify
-            mock_lineplot.assert_called_once()
-            # Verify legend placement
-            mock_ax.legend.assert_called_once_with(
-                title="Path", bbox_to_anchor=(1.05, 1), loc="upper left"
-            )
-            # Verify tight_layout is called
-            mock_tight_layout.assert_called_once()
-            assert result is mock_fig
-
-
-@pytest.mark.visual
-def test_plot_element_balance_evolution():
-    """Test plotting element balance evolution."""
-    # Create test data with the correct columns
-    df = pd.DataFrame(
-        [
-            {"Version": "1.0", "Element": "Fire", "count": 1},
-            {"Version": "1.0", "Element": "Ice", "count": 1},
-            {"Version": "1.1", "Element": "Fire", "count": 2},
-            {"Version": "1.1", "Element": "Ice", "count": 2},
-        ]
-    )
-
-    # Patch the seaborn lineplot and pyplot
-    with patch("seaborn.lineplot") as mock_lineplot:
-        # Setup matplotlib mock
-        with (
-            patch("matplotlib.pyplot.subplots") as mock_subplots,
-            patch("matplotlib.pyplot.tight_layout") as mock_tight_layout,
-        ):
-            mock_fig = MagicMock()
-            mock_ax = MagicMock()
-            mock_subplots.return_value = (mock_fig, mock_ax)
-
-            # Execute the function
-            from hsrws.visual.plotting.plotting_line import (
-                plot_element_balance_evolution,
-            )
-
-            result = plot_element_balance_evolution(df, "Patch (1.6)")
-
-            # Verify
-            mock_lineplot.assert_called_once()
-            # Verify legend placement
-            mock_ax.legend.assert_called_once_with(
-                title="Element", bbox_to_anchor=(1.05, 1), loc="upper left"
-            )
-            # Verify tight_layout is called
-            mock_tight_layout.assert_called_once()
-            assert result is mock_fig
