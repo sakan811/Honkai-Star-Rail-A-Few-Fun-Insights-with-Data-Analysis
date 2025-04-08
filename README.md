@@ -42,7 +42,7 @@ Click [here](./docs/VISUAL.md) to view the visualizations.
 - Run:
 
   ```bash
-  docker-compose up -d
+  docker compose up -d
   ```
 
 - Scrape data:
