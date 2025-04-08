@@ -1,4 +1,4 @@
-.PHONY: test format lint clean
+.PHONY: test format lint clean image-remove
 
 run:
 	python main.py
@@ -31,6 +31,9 @@ compose-up:
 
 compose-down:
 	docker compose down
+
+image-remove:
+	docker rmi sakanbeer88/hsr-data-analyzer:latest
 
 compose-clean:
 	docker compose down --volumes --remove-orphans
