@@ -1,4 +1,4 @@
-.PHONY: test format lint clean
+.PHONY: test format lint clean image-remove
 
 run:
 	python main.py
@@ -24,13 +24,16 @@ lint-unsafe-fix:
 pre-ci: format lint test
 
 compose-up-build:
-	docker-compose -f docker-compose.build.yml up -d --build
+	docker compose -f docker-compose.build.yml up -d --build
 
 compose-up:
-	docker-compose up -d
+	docker compose up -d
 
 compose-down:
-	docker-compose down
+	docker compose down
+
+image-remove:
+	docker rmi sakanbeer88/hsr-data-analyzer:latest
 
 compose-clean:
-	docker-compose down --volumes --remove-orphans
+	docker compose down --volumes --remove-orphans
